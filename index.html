@@ -3123,7 +3123,7 @@
             rawStock.forEach(item => {
                 const isFresh = String(item.conservacion || "").includes("Refrigerado");
                 const calculatedServings = getRawStockServings(item);
-                const servingsLabel = calculatedServings !== null ? `≈ ${calculatedServings} raciones según el recetario` : '';
+                const servingsLabel = calculatedServings !== null ? `≈ ${calculatedServings} raciones aprox.` : '';
                 const badgeColor = isFresh ? "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800" : "bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800";
 
                 const card = document.createElement('div');
@@ -3289,9 +3289,7 @@
             const reference = getPreparedServingsReference(item, item.unidad);
             const servings = getPreparedServings(item);
             if (servings === null) return 'Raciones: sin referencia suficiente';
-            if (reference.mode === 'receta') return `≈ ${servings} raciones según el recetario`;
-            if (reference.mode === 'similar') return `≈ ${servings} raciones según platos similares`;
-            return `≈ ${servings} raciones aprox. según el recetario`;
+            return `≈ ${servings} raciones aprox.`;
         }
 
         function handleAddPrepStock(e) {
