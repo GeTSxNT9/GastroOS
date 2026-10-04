@@ -4569,5 +4569,23 @@
       "sulfitos"
     ],
     "ingredientes": []
+  },
+  {
+    "id": "1791124520027",
+    "nombre": "Ternera estofada con verduras",
+    "categoria": "Segundo",
+    "subcategoria_primero": "",
+    "subtipo_primero": "",
+    "proteina_segundo": "Carne",
+    "animal_carne": "carne_ternera",
+    "especie_pescado": "",
+    "especie_animal": "carne_ternera",
+    "tecnica_cocina": "tecnica_guiso",
+    "tecnica": "tecnica_guiso",
+    "precocinado": false,
+    "plato_elaborado": true,
+    "demanda": "Media",
+    "alergenos": [],
+    "ingredientes": []
   }
 ]
