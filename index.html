@@ -679,9 +679,15 @@
                     </select>
                 </div>
 
-                <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900 mt-2">
-                    <label for="dishPrecooked" class="text-sm font-bold text-indigo-900 dark:text-indigo-300">¿Plato precocinado?</label>
-                    <input type="checkbox" id="dishPrecooked" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                <div class="grid grid-cols-1 gap-2 mt-2">
+                    <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900">
+                        <label for="dishPrecooked" class="text-sm font-bold text-indigo-900 dark:text-indigo-300">¿Plato precocinado?</label>
+                        <input type="checkbox" id="dishPrecooked" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                    </div>
+                    <div class="flex items-center justify-between bg-purple-50 dark:bg-purple-950/40 p-3 rounded-lg border border-purple-100 dark:border-purple-900">
+                        <label for="dishPrepared" class="text-sm font-bold text-purple-900 dark:text-purple-300">¿Plato elaborado?</label>
+                        <input type="checkbox" id="dishPrepared" class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+                    </div>
                 </div>
 
                 <div class="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4">
@@ -795,15 +801,15 @@
                 </div>
                 <form id="rawStockForm" class="bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3 mb-4">
                     <div>
-                        <input type="text" id="rawName" placeholder="Nombre" required class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+                        <select id="rawName" required class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+                            <option value="">Seleccionar ingrediente principal...</option>
+                        </select>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" inputmode="decimal" id="rawQty" placeholder="Cantidad" required class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
                         <select id="rawUnit" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
                             <option value="kg">kg</option>
-                            <option value="g">g</option>
                             <option value="L">L</option>
-                            <option value="ml">ml</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -816,8 +822,8 @@
                             <option value="Congelados">Congelados</option>
                         </select>
                         <select id="rawConserv" required class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-                            <option value="Refrigerado/Fresco (Prioridad Alta)">Refrigerado o Fresco</option>
-                            <option value="Congelado (Prioridad Baja)">Congelado</option>
+                            <option value="Refrigerado">Refrigerado</option>
+                            <option value="Congelado">Congelado</option>
                         </select>
                     </div>
                     <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-bold text-xs shadow-sm">+ Añadir materia prima</button>
@@ -832,30 +838,20 @@
                 </div>
                 <form id="prepStockForm" class="bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3 mb-4">
                     <div>
-                        <input type="text" id="prepName" placeholder="Nombre" required class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+                        <select id="prepName" required class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+                            <option value="">Seleccionar plato elaborado...</option>
+                        </select>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" inputmode="decimal" id="prepCantidad" placeholder="Cantidad" required class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
                         <select id="prepUnidad" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
                             <option value="kg">kg</option>
-                            <option value="g">g</option>
                             <option value="L">L</option>
-                            <option value="ml">ml</option>
                         </select>
                     </div>
                     <div>
                         <select id="prepAsignacion" class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
                             <option value="Sin asignar">Sin asignar</option>
-                            <option value="Lunes - Primero">Lunes - Primero</option>
-                            <option value="Lunes - Segundo">Lunes - Segundo</option>
-                            <option value="Martes - Primero">Martes - Primero</option>
-                            <option value="Martes - Segundo">Martes - Segundo</option>
-                            <option value="Miércoles - Primero">Miércoles - Primero</option>
-                            <option value="Miércoles - Segundo">Miércoles - Segundo</option>
-                            <option value="Jueves - Primero">Jueves - Primero</option>
-                            <option value="Jueves - Segundo">Jueves - Segundo</option>
-                            <option value="Viernes - Primero">Viernes - Primero</option>
-                            <option value="Viernes - Segundo">Viernes - Segundo</option>
                         </select>
                     </div>
                     <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold text-xs shadow-sm">+ Registrar plato elaborado</button>
@@ -1201,6 +1197,7 @@
             const dish = { ...d };
             dish.demanda = dish.demanda || "Media";
             dish.precocinado = !!dish.precocinado;
+            dish.plato_elaborado = !!dish.plato_elaborado;
             dish.subcategoria_primero = dish.subcategoria_primero || "";
             dish.subtipo_primero = dish.subtipo_primero || "";
             dish.proteina_segundo = dish.proteina_segundo || "";
@@ -1439,7 +1436,13 @@
             settings = { ...defaultSettings, ...(storedSettingsSafe && typeof storedSettingsSafe === 'object' && !Array.isArray(storedSettingsSafe) ? storedSettingsSafe : {}) };
             if (settings.darkMode === undefined) settings.darkMode = false;
             const storedRawSafe = safeLoadJSON('chefTrack_rawStock', []);
-            rawStock = Array.isArray(storedRawSafe) ? storedRawSafe : [];
+            rawStock = Array.isArray(storedRawSafe) ? storedRawSafe.map(item => {
+                const conservation = String(item?.conservacion || "");
+                return {
+                    ...item,
+                    conservacion: /congel/i.test(conservation) ? "Congelado" : "Refrigerado"
+                };
+            }) : [];
             const storedPrepSafe = safeLoadJSON('chefTrack_preparedStock', []);
             preparedStock = Array.isArray(storedPrepSafe) ? storedPrepSafe : [];
             currentMenu = safeLoadJSON('chefTrack_currentMenu', null);
@@ -1611,6 +1614,9 @@
             document.getElementById('checkMargen').addEventListener('change', updateCalculatedRaciones);
             document.getElementById('rawStockForm').addEventListener('submit', handleAddRawStock);
             document.getElementById('prepStockForm').addEventListener('submit', handleAddPrepStock);
+            document.getElementById('prepName').addEventListener('change', () => {
+                renderPreparedAssignmentOptions(document.getElementById('prepName').value);
+            });
 
             document.getElementById('btnSubTabMenu').addEventListener('click', () => switchGeneratorSubTab('menu'));
             document.getElementById('btnSubTabShopping').addEventListener('click', () => switchGeneratorSubTab('shopping'));
@@ -1753,6 +1759,7 @@
                 const missing = !hasCompleteTechnicalTags(d);
                 const missingBadge = missing ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800">Etiquetado pendiente ☓</span>' : '';
                 const precookedBadge = d.precocinado ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Precocinado</span>' : '';
+                const preparedDishBadge = d.plato_elaborado ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Plato elaborado</span>' : '';
 
                 const card = document.createElement('div');
                 card.className = "bg-white/80 p-4 rounded-2xl relative transition-all";
@@ -1765,7 +1772,7 @@
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(d.categoria)}</span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300">${escapeHtml(tagType)}</span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${demObj.class}">${demObj.text}</span>
-                            ${missingBadge}${precookedBadge}
+                            ${missingBadge}${precookedBadge}${preparedDishBadge}
                         </div>
                     </div>
                     <div class="absolute top-3 right-3 flex flex-col gap-2">
@@ -2010,6 +2017,7 @@
                 }
                 dishes = parsedFile.recipes.map(normalizeDishData);
                 localStorage.setItem('chefTrack_dishes', JSON.stringify(dishes));
+                refreshStockReferenceSelectors();
                 githubLastLoadIssue = 'local-seed';
                 return true;
             } catch (error) {
@@ -2090,6 +2098,7 @@
                 }
 
                 localStorage.setItem('chefTrack_dishes', JSON.stringify(dishes));
+                refreshStockReferenceSelectors();
                 githubLastLoadIssue = "success";
                 localStorage.removeItem('chefTrack_githubFileMissing');
                 localStorage.setItem('chefTrack_githubLastSync', new Date().toISOString());
@@ -2560,6 +2569,7 @@
                 tecnica_cocina: (isCarne || isPescado) ? document.getElementById('dishTechnique').value : "",
                 tecnica: (isCarne || isPescado) ? document.getElementById('dishTechnique').value : "",
                 precocinado: document.getElementById('dishPrecooked').checked,
+                plato_elaborado: document.getElementById('dishPrepared').checked,
                 demanda: document.getElementById('dishDemand').value,
                 alergenos: Array.from(document.querySelectorAll('input[name="dishAllergen"]:checked')).map(input => input.value),
                 ingredientes: []
@@ -2633,6 +2643,7 @@
             }
 
             document.getElementById('dishPrecooked').checked = !!d.precocinado;
+            document.getElementById('dishPrepared').checked = !!d.plato_elaborado;
             document.getElementById('dishDemand').value = d.demanda || "Media";
             document.querySelectorAll('input[name="dishAllergen"]').forEach(input => {
                 input.checked = d.alergenos.includes(input.value);
@@ -2750,6 +2761,7 @@
             document.getElementById('btnCancel').classList.add('hidden');
             document.getElementById('ingredientsContainer').innerHTML = '';
             document.getElementById('dishPrecooked').checked = false;
+            document.getElementById('dishPrepared').checked = false;
             document.querySelectorAll('input[name="dishAllergen"]').forEach(input => { input.checked = false; });
             updateFormVisibility();
         }
@@ -2857,10 +2869,175 @@
             else setGitHubSyncStatus("Etiqueta guardada solo en este navegador. Configura GitHub para compartirla con otros dispositivos.", 'warning');
         }
         // --- 5. STOCK Y PREVISIÓN ---
+
+        function getSecondProteinIngredients() {
+            const unique = new Map();
+            dishes
+                .map(normalizeDishData)
+                .filter(d => d?.categoria === "Segundo")
+                .forEach(d => {
+                    (Array.isArray(d.ingredientes) ? d.ingredientes : []).forEach(ing => {
+                        const providerCategory = String(ing?.categoria_proveedor || "").trim();
+                        const name = String(ing?.nombre || "").trim();
+                        if (!name || !["Carne", "Pescado"].includes(providerCategory)) return;
+                        const key = normalizeFoodKey(name);
+                        if (!unique.has(key)) unique.set(key, name);
+                    });
+                });
+            return [...unique.values()].sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+        }
+
+        function renderRawIngredientOptions(selectedValue = "") {
+            const select = document.getElementById("rawName");
+            if (!select) return;
+            const ingredients = getSecondProteinIngredients();
+            const current = String(selectedValue || select.value || "");
+            select.innerHTML = '<option value="">Seleccionar ingrediente principal...</option>';
+            ingredients.forEach(name => {
+                const option = document.createElement("option");
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+            if (current && ingredients.includes(current)) select.value = current;
+        }
+
+        function getPreparedDishRecipes() {
+            const unique = new Map();
+            dishes
+                .map(normalizeDishData)
+                .filter(d => d?.plato_elaborado)
+                .forEach(d => {
+                    const name = String(d.nombre || "").trim();
+                    if (!name) return;
+                    const key = normalizeFoodKey(name);
+                    if (!unique.has(key)) unique.set(key, d);
+                });
+            return [...unique.values()].sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), "es", { sensitivity: "base" }));
+        }
+
+        function getPreparedDishByName(name) {
+            const target = normalizeFoodKey(name);
+            return getPreparedDishRecipes().find(d => normalizeFoodKey(d.nombre) === target) || null;
+        }
+
+        function getPreparedAssignmentOptions(dish) {
+            const options = [{ value: "Sin asignar", label: "Sin asignar" }];
+            if (!dish) return options;
+
+            const normalized = normalizeDishData(dish);
+            const isFirst = normalized.categoria === "Primero";
+            const isSecond = normalized.categoria === "Segundo";
+            const isMeat = normalized.proteina_segundo === "Carne";
+            const isFish = normalized.proteina_segundo === "Pescado";
+            const isGuiso = normalized.tecnica_cocina === "tecnica_guiso";
+            const assignedWeeklyGuisos = preparedStock
+                .map(item => getPreparedDishByName(item.nombre))
+                .filter(Boolean)
+                .filter(d => d.tecnica_cocina === "tecnica_guiso")
+                .length;
+
+            daysList.forEach((dayName, dayIndex) => {
+                const slotCandidates = isFirst
+                    ? [{ slot: "Primero", spec: { cat: "Primero", allowedParents: [normalized.subcategoria_primero] } }]
+                    : isSecond
+                        ? [{ slot: "Segundo", spec: { cat: "Segundo", protein: normalized.proteina_segundo } }]
+                        : [];
+
+                slotCandidates.forEach(({ slot, spec }) => {
+                    let compatible = isStructuralMatch(normalized, spec);
+                    if (compatible && isGuiso && (!isMeat || !GUISO_DAYS.has(dayIndex))) compatible = false;
+                    if (compatible && isGuiso && assignedWeeklyGuisos >= MAX_WEEKLY_GUISOS &&
+                        !preparedStock.some(item => normalizeFoodKey(item.nombre) === normalizeFoodKey(normalized.nombre))) {
+                        compatible = false;
+                    }
+
+                    // Una asignación manual de guiso ya consume el cupo de ese día.
+                    // También contamos otros platos elaborados ya asignados para no
+                    // ofrecer una combinación que haga imposible cumplir las reglas.
+                    const sameDay = preparedStock
+                        .filter(item => item.asignacion === `${dayName} - ${slot}` && normalizeFoodKey(item.nombre) !== normalizeFoodKey(normalized.nombre))
+                        .map(item => getPreparedDishByName(item.nombre))
+                        .filter(Boolean);
+
+                    if (compatible && isSecond) {
+                        const sameDaySeconds = preparedStock
+                            .filter(item => item.asignacion === `${dayName} - Segundo` && normalizeFoodKey(item.nombre) !== normalizeFoodKey(normalized.nombre))
+                            .map(item => getPreparedDishByName(item.nombre))
+                            .filter(Boolean);
+
+                        if (isMeat) {
+                            const guisosAlready = sameDaySeconds.filter(d => d.tecnica_cocina === "tecnica_guiso").length;
+                            const meatAlready = sameDaySeconds.filter(d => d.proteina_segundo === "Carne").length;
+                            if (meatAlready >= 2) compatible = false;
+                            if (isGuiso && guisosAlready >= 1) compatible = false;
+                            if (!isGuiso && GUISO_DAYS.has(dayIndex) && guisosAlready >= 1 && sameDaySeconds.filter(d => d.proteina_segundo === "Carne").length >= 2) compatible = false;
+                        } else if (isFish) {
+                            const fishAlready = sameDaySeconds.filter(d => d.proteina_segundo === "Pescado").length;
+                            if (fishAlready >= 1) compatible = false;
+                        }
+                    }
+
+                    if (compatible) {
+                        options.push({
+                            value: `${dayName} - ${slot}`,
+                            label: `${dayName} - ${slot}${isGuiso ? " · Guiso válido" : ""}`
+                        });
+                    }
+                });
+            });
+
+            return options;
+        }
+
+        function renderPreparedDishOptions(selectedValue = "") {
+            const nameSelect = document.getElementById("prepName");
+            const assignmentSelect = document.getElementById("prepAsignacion");
+            if (!nameSelect || !assignmentSelect) return;
+
+            const recipes = getPreparedDishRecipes();
+            const currentName = String(selectedValue || nameSelect.value || "");
+            nameSelect.innerHTML = '<option value="">Seleccionar plato elaborado...</option>';
+            recipes.forEach(dish => {
+                const option = document.createElement("option");
+                option.value = dish.nombre;
+                option.textContent = dish.nombre;
+                nameSelect.appendChild(option);
+            });
+            if (currentName && recipes.some(d => d.nombre === currentName)) nameSelect.value = currentName;
+
+            renderPreparedAssignmentOptions(nameSelect.value, assignmentSelect.value);
+        }
+
+        function renderPreparedAssignmentOptions(dishName = "", selectedValue = "") {
+            const assignmentSelect = document.getElementById("prepAsignacion");
+            if (!assignmentSelect) return;
+            const dish = getPreparedDishByName(dishName);
+            const options = getPreparedAssignmentOptions(dish);
+            assignmentSelect.innerHTML = "";
+            options.forEach(item => {
+                const option = document.createElement("option");
+                option.value = item.value;
+                option.textContent = item.label;
+                assignmentSelect.appendChild(option);
+            });
+            if (selectedValue && options.some(item => item.value === selectedValue)) {
+                assignmentSelect.value = selectedValue;
+            } else {
+                assignmentSelect.value = "Sin asignar";
+            }
+        }
+
+        function refreshStockReferenceSelectors() {
+            renderRawIngredientOptions();
+            renderPreparedDishOptions();
+        }
+
         function renderStockView() {
             document.getElementById('inputComensales').value = settings.comensales;
             document.getElementById('checkMargen').checked = settings.margenActivo;
             updateCalculatedRaciones(false);
+            refreshStockReferenceSelectors();
             renderRawStock();
             renderPreparedStock();
         }
@@ -2888,11 +3065,11 @@
             const cantStr = document.getElementById('rawQty').value.toString().replace(',', '.');
             const item = {
                 id: Date.now().toString(),
-                nombre: document.getElementById('rawName').value,
+                nombre: document.getElementById('rawName').value.trim(),
                 cantidad: parseFloat(cantStr) || 0,
                 unidad: document.getElementById('rawUnit').value,
                 categoria_proveedor: document.getElementById('rawCategory').value,
-                conservacion: document.getElementById('rawConserv').value
+                conservacion: document.getElementById('rawConserv').value === 'Refrigerado' ? 'Refrigerado' : 'Congelado'
             };
             rawStock.unshift(item);
             saveAll();
@@ -2909,7 +3086,7 @@
             }
 
             rawStock.forEach(item => {
-                const isFresh = item.conservacion.includes("Fresco") || item.conservacion.includes("Refrigerado");
+                const isFresh = String(item.conservacion || "").includes("Refrigerado");
                 const badgeColor = isFresh ? "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800" : "bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800";
 
                 const card = document.createElement('div');
@@ -2918,7 +3095,7 @@
                     <div class="pr-2">
                         <div class="flex items-center gap-1.5 mb-1">
                             <h4 class="font-bold text-gray-800 dark:text-gray-100 text-xs">${escapeHtml(item.nombre)}</h4>
-                            <span class="text-[9px] px-1.5 py-0.5 rounded font-bold border ${badgeColor}">${isFresh ? 'Fresco' : 'Congelado'}</span>
+                            <span class="text-[9px] px-1.5 py-0.5 rounded font-bold border ${badgeColor}">${isFresh ? 'Refrigerado' : 'Congelado'}</span>
                         </div>
                         <div class="text-[11px] text-gray-500 dark:text-gray-400">
                             <span class="font-bold text-indigo-700 dark:text-indigo-400">${escapeHtml(item.cantidad)} ${escapeHtml(item.unidad)}</span> • ${escapeHtml(item.categoria_proveedor)}
@@ -2993,7 +3170,7 @@
             const cantStr = document.getElementById('prepCantidad').value.toString().replace(',', '.');
             const item = {
                 id: Date.now().toString(),
-                nombre: document.getElementById('prepName').value,
+                nombre: document.getElementById('prepName').value.trim(),
                 cantidadTotal: parseFloat(cantStr) || 0,
                 unidad: document.getElementById('prepUnidad').value,
                 asignacion: document.getElementById('prepAsignacion').value
@@ -3002,6 +3179,7 @@
             saveAll();
             renderPreparedStock();
             document.getElementById('prepStockForm').reset();
+            renderPreparedDishOptions();
         }
 
         function renderPreparedStock() {
@@ -3439,7 +3617,7 @@
             const freshNames = rawStock
                 .filter(r => {
                     const conservation = String(r?.conservacion || "");
-                    return (conservation.includes("Fresco") || conservation.includes("Refrigerado")) &&
+                    return conservation.includes("Refrigerado") &&
                         Number(r?.cantidad) > 0;
                 })
                 .map(r => String(r?.nombre || "").toLowerCase())
@@ -3449,6 +3627,14 @@
                 const ingredientName = String(ing?.nombre || "").toLowerCase();
                 return ingredientName && freshNames.some(raw => ingredientName.includes(raw) || raw.includes(ingredientName));
             });
+        }
+
+        function shuffleInPlace(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
 
         function candidateScore(dish, spec, dayIndex, previousMenu = null, slotIndex = 0, menuDays = {}, chosenTechniques = []) {
@@ -3549,6 +3735,11 @@
                 }
 
                 if (candidates.length) {
+                    // Fisher-Yates antes del scoring: si varios platos tienen la misma
+                    // puntuación, el orden original de `dishes` deja de actuar como
+                    // desempate determinista. Las restricciones duras ya han sido
+                    // aplicadas antes de esta mezcla y no se relajan aquí.
+                    shuffleInPlace(candidates);
                     candidates.sort((a, b) =>
                         candidateScore(b, spec, dayIndex, previousMenu, slotIndex, menuDays, chosenTechniques) -
                         candidateScore(a, spec, dayIndex, previousMenu, slotIndex, menuDays, chosenTechniques)
@@ -3633,8 +3824,11 @@
                 const assignedList = spec.cat === "Primero" ? assignedPrimero : assignedSegundo;
                 let lockedDish = null;
 
-                while (assignedList.length && !lockedDish) {
-                    const prep = assignedList.shift();
+                // No consumimos una asignación manual incompatible con este slot:
+                // un pescado asignado a "Segundo", por ejemplo, debe poder llegar al
+                // slot de pescado aunque primero se evalúen los dos slots de carne.
+                for (let assignedIndex = 0; assignedIndex < assignedList.length; assignedIndex++) {
+                    const prep = assignedList[assignedIndex];
                     const candidate = getPreparedCandidate(prep, spec, dayName, index);
                     if (
                         isStructuralMatch(candidate, spec) &&
@@ -3644,6 +3838,8 @@
                         !violatesFutureGuisoProtection(candidate, dayIndex, menuDays, usedDishIdsThisWeek)
                     ) {
                         lockedDish = candidate;
+                        assignedList.splice(assignedIndex, 1);
+                        break;
                     }
                 }
 
@@ -4061,6 +4257,7 @@
             const warningBadge = slot.warning ? `<span class="text-[10px] bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 px-1.5 py-0.5 rounded font-bold ml-2">${escapeHtml(slot.warning)}</span>` : '';
             const stockBadge = slot.isPreparedStock ? `<span class="text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 rounded font-bold ml-2">Stock Elaborado</span>` : '';
             const precookedBadge = (slot.dish && slot.dish.precocinado) ? `<span class="text-[10px] bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 px-1.5 py-0.5 rounded font-bold ml-2">Precocinado</span>` : '';
+            const preparedDishBadge = (slot.dish && slot.dish.plato_elaborado) ? `<span class="text-[10px] bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded font-bold ml-2">Plato elaborado</span>` : '';
             const allergenNames = slot.dish && Array.isArray(slot.dish.alergenos)
                 ? slot.dish.alergenos.map(a => ALLERGEN_LABELS[a]).filter(Boolean)
                 : [];
@@ -4077,7 +4274,7 @@
                     <div class="flex items-center gap-2 flex-1">
                         <div>
                             <div class="text-[10px] font-bold text-gray-500 uppercase">${escapeHtml(slot.slotLabel)}</div>
-                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">${escapeHtml(dishName)} ${warningBadge} ${stockBadge} ${precookedBadge}</div>
+                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">${escapeHtml(dishName)} ${warningBadge} ${stockBadge} ${precookedBadge} ${preparedDishBadge}</div>
                             ${allergenLine}
                         </div>
                     </div>
@@ -4090,10 +4287,12 @@
 
         // --- EXPORTAR MENÚ EN FORMATO TXT LIMPIO ---
         function getWeekDatesForMenu() {
+            // La exportación siempre representa la semana SIGUIENTE a la fecha
+            // real de exportación, independientemente del día en que se ejecute.
             const base = new Date();
             base.setHours(0, 0, 0, 0);
-            const day = base.getDay() || 7;
-            base.setDate(base.getDate() - day + 1);
+            const day = base.getDay() || 7; // ISO: lunes=1 ... domingo=7
+            base.setDate(base.getDate() - day + 1 + 7);
             return daysList.map((_, index) => {
                 const d = new Date(base);
                 d.setDate(base.getDate() + index);
