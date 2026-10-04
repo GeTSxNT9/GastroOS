@@ -4587,5 +4587,25 @@
     "demanda": "Media",
     "alergenos": [],
     "ingredientes": []
+  },
+  {
+    "id": "1791124552243",
+    "nombre": "Migas aragonesas",
+    "categoria": "Primero",
+    "subcategoria_primero": "Tenedor",
+    "subtipo_primero": "otros_hidratos",
+    "proteina_segundo": "",
+    "animal_carne": "",
+    "especie_pescado": "",
+    "especie_animal": "",
+    "tecnica_cocina": "",
+    "tecnica": "",
+    "precocinado": false,
+    "plato_elaborado": true,
+    "demanda": "Alta",
+    "alergenos": [
+      "gluten"
+    ],
+    "ingredientes": []
   }
 ]
