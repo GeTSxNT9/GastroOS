@@ -525,7 +525,7 @@ html.dark {
 main { padding: 12px !important; }
 main > h2 { margin-bottom: 12px !important; }
 main section, #dishForm { border-radius: var(--radius-card) !important; }
-#view-banco { padding-top: 10px !important; }
+#view-banco { padding-top: 10px !important; padding-bottom: 16px !important; }
 #view-banco > div:first-child { margin-bottom: 8px !important; }
 
 /* Recetario search/action row */
@@ -542,6 +542,10 @@ html.dark #searchInput {
     background: #1C1C1E !important;
     border-color: rgba(255,255,255,.12) !important;
 }
+#view-banco > div:nth-child(2) {
+    position: relative !important;
+    justify-content: center !important;
+}
 #btnBulkEdit {
     flex: 0 0 auto !important;
     width: auto !important;
@@ -553,7 +557,7 @@ html.dark #searchInput {
     border: 1px solid var(--border-soft) !important;
     font-size: 11px !important;
 }
-#bulkSelectedCount { margin-left: 2px; }
+#bulkSelectedCount { margin-left: 0 !important; position: absolute; right: 0; }
 #bulkToolbar { margin-bottom: 10px !important; padding: 10px !important; }
 
 /* Filters: compact iOS pills */
@@ -689,74 +693,16 @@ html.dark #btnSaveToHistory, html.dark #btnDownloadMenuTxt {
 }
 #dishForm label.block.text-xs { margin-bottom: 3px !important; }
 
-/* iOS switches: existing checkbox IDs/hooks remain untouched */
-#dishPrecooked, #dishPrepared {
-    position: absolute !important;
-    opacity: 0 !important;
-    width: 1px !important;
-    height: 1px !important;
-}
-#dishPrecookedContainer > label,
-#dishPrecooked + label,
-#dishPrepared + label {
-    cursor: pointer;
-}
-#dishPrecookedContainer,
-#dishPrecooked + label,
-#dishPrepared + label {
-    /* no-op compatibility hook */
-}
-#dishPrecooked ~ label::after,
-#dishPrepared ~ label::after {
-    content: "";
-    display: inline-block;
-    width: 44px;
-    height: 26px;
-    border-radius: 999px;
-    background: #D1D1D6;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
-    vertical-align: middle;
-    margin-left: 10px;
-    transition: .2s ease;
-}
-#dishPrecooked:checked ~ label::after,
-#dishPrepared:checked ~ label::after {
-    background: var(--accent);
-}
-#dishPrecooked + label::before,
-#dishPrepared + label::before {
-    content: "";
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    margin-top: 2px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,.18);
-    transform: translateX(23px);
-    transition: .2s ease;
-    z-index: 1;
-    pointer-events: none;
-}
-#dishPrecooked:checked + label::before,
-#dishPrepared:checked + label::before { transform: translateX(43px); }
-#dishPrecooked + label, #dishPrepared + label { position: relative; }
-
-/* The actual form has checkbox followed by label in each row. */
-#dishForm > div.grid.grid-cols-1 > div {
-    min-height: 44px !important;
-    padding: 8px 10px !important;
-    border-radius: 12px !important;
-    background: var(--accent-soft) !important;
-    border: 1px solid var(--border-soft) !important;
-}
-#dishForm > div.grid.grid-cols-1 > div:nth-child(2) {
-    background: var(--accent-soft) !important;
+/* Precocinado / elaborado: preserve the original card + checkbox appearance and behavior. */
+#dishPrecooked, #dishPrepared { accent-color: var(--g-accent); }
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div {
+    min-height: 0 !important;
 }
 
 /* Allergens become compact chips while preserving checkbox names/values. */
 #allergensContainer {
     display: flex !important;
+    margin-bottom: 28px !important;
     flex-wrap: wrap !important;
     gap: 6px !important;
 }
@@ -798,7 +744,7 @@ html.dark #allergensContainer > label:has(input:checked) {
 #view-stock > section { padding: 11px !important; }
 #view-stock > section:first-child > div.grid {
     display: grid !important;
-    grid-template-columns: minmax(0,1fr) auto !important;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
     gap: 8px !important;
     align-items: center !important;
 }
@@ -904,13 +850,14 @@ html.dark #allergensContainer > label:has(input:checked) {
 
 /* Bottom navigation */
 body > nav, nav.fixed {
-    height: 70px !important;
-    padding-top: 5px !important;
+    height: 76px !important;
+    padding-top: 14px !important;
 }
 .nav-btn {
     position: relative;
     color: var(--inactive) !important;
     min-height: 56px;
+    padding-top: 2px !important;
 }
 .nav-btn svg { color: currentColor !important; }
 .nav-btn span { color: currentColor !important; }
@@ -953,52 +900,6 @@ body > nav, nav.fixed {
 </style>
 
 
-<style id="gastroos-switch-fix">
-.gastro-toggle-row {
-    position: relative !important;
-    min-height: 44px !important;
-}
-.gastro-toggle-row > input[type="checkbox"] {
-    appearance: none !important;
-    -webkit-appearance: none !important;
-    width: 44px !important;
-    height: 26px !important;
-    flex: 0 0 44px !important;
-    margin: 0 !important;
-    border-radius: 999px !important;
-    background: #D1D1D6 !important;
-    border: 0 !important;
-    position: relative !important;
-    opacity: 1 !important;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,.05) !important;
-    cursor: pointer !important;
-}
-.gastro-toggle-row > input[type="checkbox"]::after {
-    content: "";
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    transition: transform .2s ease;
-}
-.gastro-toggle-row > input[type="checkbox"]:checked {
-    background: var(--accent) !important;
-}
-.gastro-toggle-row > input[type="checkbox"]:checked::after {
-    transform: translateX(18px);
-}
-.gastro-toggle-row > label {
-    order: -1;
-}
-.gastro-toggle-row > input + label::after,
-.gastro-toggle-row > input + label::before {
-    display: none !important;
-}
-</style>
 
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
@@ -1183,12 +1084,12 @@ body > nav, nav.fixed {
                     </select>
                 </div>
 
-                <div class="gastro-toggle-group grid grid-cols-1 gap-2 mt-2">
-                    <div class="gastro-toggle-row flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900">
+                <div class="grid grid-cols-1 gap-2 mt-2">
+                    <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900">
                         <label for="dishPrecooked" class="text-sm font-bold text-indigo-900 dark:text-indigo-300">¿Plato precocinado?</label>
                         <input type="checkbox" id="dishPrecooked" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     </div>
-                    <div class="gastro-toggle-row flex items-center justify-between bg-purple-50 dark:bg-purple-950/40 p-3 rounded-lg border border-purple-100 dark:border-purple-900">
+                    <div class="flex items-center justify-between bg-purple-50 dark:bg-purple-950/40 p-3 rounded-lg border border-purple-100 dark:border-purple-900">
                         <label for="dishPrepared" class="text-sm font-bold text-purple-900 dark:text-purple-300">¿Plato elaborado?</label>
                         <input type="checkbox" id="dishPrepared" class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
                     </div>
