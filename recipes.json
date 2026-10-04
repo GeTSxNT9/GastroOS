@@ -4415,6 +4415,25 @@
     "plato_elaborado": false,
     "demanda": "Alta",
     "alergenos": [],
-    "ingredientes": []
+    "ingredientes": [
+      {
+        "nombre": "Albóndigas de carne",
+        "cantidad": 200,
+        "unidad": "g",
+        "categoria_proveedor": "Congelados"
+      },
+      {
+        "nombre": "Cebolla picada",
+        "cantidad": "",
+        "unidad": "g",
+        "categoria_proveedor": "Congelados"
+      },
+      {
+        "nombre": "Zanahoria picada",
+        "cantidad": "",
+        "unidad": "g",
+        "categoria_proveedor": "Congelados"
+      }
+    ]
   }
 ]
