@@ -1402,6 +1402,239 @@ body > nav, nav.fixed {
 }
 </style>
 
+
+<style id="gastroos-dark-mode-final">
+/* ==========================================================
+   MODO OSCURO — corrección final de contraste y legibilidad
+   ========================================================== */
+html.dark body {
+    background:
+        radial-gradient(circle at 12% -10%, rgba(41,151,255,.08), transparent 30%),
+        radial-gradient(circle at 88% 0%, rgba(120,119,198,.07), transparent 28%),
+        #0b0b0d !important;
+    color: #f5f5f7 !important;
+}
+
+html.dark main,
+html.dark #main-container {
+    color: #f5f5f7 !important;
+}
+
+/* Superficies principales */
+html.dark main section,
+html.dark #dishForm,
+html.dark #dishesList > div,
+html.dark #generatedMenuContainer > div,
+html.dark #historyListContainer > div,
+html.dark #rawStockList > div,
+html.dark #prepStockList > div,
+html.dark #shoppingListBreakdown > div,
+html.dark #subtab-shopping-content > div,
+html.dark #subtab-menu-content > div,
+html.dark #view-banco .recetario-search-actions,
+html.dark #bulkToolbar {
+    background-color: rgba(28,28,30,.94) !important;
+    color: #f5f5f7 !important;
+    border-color: rgba(255,255,255,.10) !important;
+}
+
+/* Cabecera y navegación */
+html.dark body > header,
+html.dark header {
+    background: rgba(28,28,30,.94) !important;
+    color: #f5f5f7 !important;
+    border-bottom-color: rgba(255,255,255,.10) !important;
+}
+html.dark #themeToggleBtn {
+    background: #2c2c2e !important;
+    color: #f5f5f7 !important;
+    border-color: rgba(255,255,255,.12) !important;
+}
+html.dark body > nav,
+html.dark nav.fixed {
+    background: rgba(28,28,30,.94) !important;
+    border-top-color: rgba(255,255,255,.10) !important;
+    box-shadow: 0 -8px 25px rgba(0,0,0,.25) !important;
+}
+html.dark .nav-btn:not(.active):not(.text-indigo-600):not(.text-indigo-400) {
+    color: #a1a1aa !important;
+}
+
+/* Textos secundarios que no pasan por las clases gray ya normalizadas */
+html.dark .text-slate-500,
+html.dark .text-slate-600,
+html.dark .text-slate-700,
+html.dark .text-zinc-500,
+html.dark .text-zinc-600,
+html.dark .text-zinc-700 {
+    color: #a1a1aa !important;
+}
+html.dark .text-gray-800,
+html.dark .text-gray-700,
+html.dark .text-gray-600 {
+    color: #f5f5f7 !important;
+}
+html.dark .text-gray-500,
+html.dark .text-gray-400 {
+    color: #a1a1aa !important;
+}
+
+/* Controles */
+html.dark #searchInput,
+html.dark input:not([type="checkbox"]):not([type="file"]),
+html.dark select,
+html.dark textarea {
+    background: #27272a !important;
+    color: #f5f5f7 !important;
+    border-color: rgba(255,255,255,.10) !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.025) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder,
+html.dark #searchInput::placeholder {
+    color: #8f8f98 !important;
+    opacity: 1 !important;
+}
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus,
+html.dark #searchInput:focus {
+    background: #303033 !important;
+    color: #fff !important;
+}
+
+/* Elementos blancos/grises que todavía vienen de Tailwind sin dark variant */
+html.dark main .bg-white,
+html.dark main .bg-white\/80,
+html.dark main .bg-gray-50,
+html.dark main .bg-gray-100,
+html.dark main .bg-slate-50,
+html.dark main .bg-slate-100 {
+    background-color: #1c1c1e !important;
+    color: #f5f5f7 !important;
+}
+html.dark main .border-gray-200,
+html.dark main .border-gray-300,
+html.dark main .border-gray-100,
+html.dark main .border-slate-200,
+html.dark main .border-slate-300 {
+    border-color: rgba(255,255,255,.10) !important;
+}
+
+/* Filtros del Recetario y pestañas del generador */
+html.dark .filter-lvl1,
+html.dark .filter-lvl2,
+html.dark .generator-day-tab {
+    background: #1c1c1e !important;
+    color: #f5f5f7 !important;
+    border-color: rgba(255,255,255,.10) !important;
+}
+html.dark .filter-lvl1.active,
+html.dark .filter-lvl1.bg-indigo-600,
+html.dark .generator-day-tab.active,
+html.dark .generator-day-tab.bg-indigo-600 {
+    background: #f5f5f7 !important;
+    color: #111113 !important;
+}
+
+/* Panel de edición múltiple */
+html.dark #bulkToolbar {
+    background: #1c1c1e !important;
+    border-color: rgba(41,151,255,.28) !important;
+}
+html.dark #btnBulkEdit {
+    background: #2c2c2e !important;
+    color: #2997ff !important;
+    border-color: rgba(255,255,255,.12) !important;
+}
+
+/* Stock / previsión */
+html.dark #view-stock > section:first-child > div.grid > div:nth-child(2),
+html.dark #view-stock > section:first-child > div.grid > div:nth-child(3) {
+    background: #1c1c1e !important;
+    border-color: rgba(255,255,255,.10) !important;
+    color: #f5f5f7 !important;
+}
+html.dark #totalRacionesDisplay {
+    color: #fff !important;
+}
+html.dark #totalRacionesSubtext {
+    color: #c7c7cc !important;
+}
+html.dark #rawStockForm,
+html.dark #prepStockForm {
+    color: #f5f5f7 !important;
+}
+
+/* Tarjetas del menú semanal */
+html.dark .gastro-slot {
+    background: #27272a !important;
+    border-color: rgba(255,255,255,.10) !important;
+    color: #f5f5f7 !important;
+}
+html.dark .gastro-slot:hover {
+    background: #343437 !important;
+}
+html.dark .gastro-slot-action {
+    background: #f2f2f7 !important;
+    color: #334155 !important;
+    border-color: rgba(255,255,255,.14) !important;
+}
+html.dark .gastro-section-label {
+    color: #aeb0b8 !important;
+}
+
+/* Botones secundarios del generador */
+html.dark #btnSaveToHistory,
+html.dark #btnDownloadMenuTxt {
+    background: #2c2c2e !important;
+    color: #f5f5f7 !important;
+    border-color: rgba(255,255,255,.12) !important;
+}
+html.dark #btnSubTabMenu,
+html.dark #btnSubTabShopping {
+    color: #f5f5f7 !important;
+}
+
+/* Tarjetas precocinado / elaborado del formulario */
+html.dark #dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:first-child {
+    background: rgba(30,27,75,.62) !important;
+    border-color: rgba(129,140,248,.35) !important;
+}
+html.dark #dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:last-child {
+    background: rgba(59,7,100,.48) !important;
+    border-color: rgba(192,132,252,.30) !important;
+}
+html.dark #dishForm > div.grid.grid-cols-1.gap-2.mt-2 label {
+    color: #f5f5f7 !important;
+}
+
+/* Importación, modales y mensajes */
+html.dark label[for="fileImport"] {
+    background: #2c2c2e !important;
+    color: #f5f5f7 !important;
+    border-color: rgba(255,255,255,.10) !important;
+}
+html.dark #modalChangeDish > div,
+html.dark #modalChangeDish > div > div:first-child {
+    background: #1c1c1e !important;
+    color: #f5f5f7 !important;
+}
+html.dark #modalChangeDish #modalDishList > div {
+    background: #27272a !important;
+    color: #f5f5f7 !important;
+    border-color: rgba(255,255,255,.10) !important;
+}
+
+/* Enlaces/acciones azules conservan contraste alto en oscuro */
+html.dark button.text-indigo-600,
+html.dark button.text-indigo-700,
+html.dark .text-indigo-600,
+html.dark .text-indigo-700 {
+    color: #66b3ff !important;
+}
+</style>
+
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
 
@@ -2437,6 +2670,8 @@ body > nav, nav.fixed {
             } else {
                 document.documentElement.classList.remove('dark');
             }
+            const themeMeta = document.querySelector('meta[name="theme-color"]');
+            if (themeMeta) themeMeta.setAttribute('content', settings.darkMode ? '#0b0b0d' : '#F5F5F7');
         }
 
         // --- 3. EVENTOS Y VISTAS ---
@@ -5337,7 +5572,9 @@ body > nav, nav.fixed {
             const warningBadge = slot.warning ? `<span class="text-[10px] bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 px-1.5 py-0.5 rounded font-bold ml-2">${escapeHtml(slot.warning)}</span>` : '';
             const stockBadge = slot.isPreparedStock ? `<span class="text-[10px] bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 rounded font-bold ml-2">Stock Elaborado</span>` : '';
             const precookedBadge = (slot.dish && slot.dish.precocinado) ? `<span class="text-[10px] bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 px-1.5 py-0.5 rounded font-bold ml-2">Precocinado</span>` : '';
-            const preparedDishBadge = (slot.dish && slot.dish.plato_elaborado) ? `<span class="text-[10px] bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded font-bold ml-2">Plato elaborado</span>` : '';
+            // En el menú semanal no mostramos la etiqueta interna "Plato elaborado".
+            // Si procede de stock elaborado, la única etiqueta visible es "Stock Elaborado".
+            const preparedDishBadge = '';
             const allergenNames = slot.dish && Array.isArray(slot.dish.alergenos)
                 ? slot.dish.alergenos.map(a => ALLERGEN_LABELS[a]).filter(Boolean)
                 : [];
