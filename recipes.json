@@ -4414,7 +4414,11 @@
     "precocinado": false,
     "plato_elaborado": false,
     "demanda": "Alta",
-    "alergenos": [],
+    "alergenos": [
+      "gluten",
+      "frutos_cascara",
+      "sulfitos"
+    ],
     "ingredientes": [
       {
         "nombre": "Albóndigas de carne",
