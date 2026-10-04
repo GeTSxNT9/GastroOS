@@ -834,7 +834,7 @@
             <section class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <div class="flex items-center gap-2 mb-3">
                     <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    <h2 class="text-base font-bold text-gray-800 dark:text-gray-100">PLATOS ELABORADOS</h2>
+                    <h2 class="text-base font-bold text-gray-800 dark:text-gray-100">PLATOS ELABORADOS EN STOCK</h2>
                 </div>
                 <form id="prepStockForm" class="bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3 mb-4">
                     <div>
@@ -2965,6 +2965,10 @@
                             const meatAlready = sameDaySeconds.filter(d => d.proteina_segundo === "Carne").length;
                             if (meatAlready >= 2) compatible = false;
                             if (isGuiso && guisosAlready >= 1) compatible = false;
+                            // En L/M/V debe quedar exactamente un guiso entre las dos carnes.
+                            // Por tanto, no permitimos dar de alta una segunda carne no-guiso
+                            // si ya existe otra carne fija ese día y todavía no hay guiso.
+                            if (!isGuiso && GUISO_DAYS.has(dayIndex) && guisosAlready === 0 && meatAlready >= 1) compatible = false;
                             if (!isGuiso && GUISO_DAYS.has(dayIndex) && guisosAlready >= 1 && sameDaySeconds.filter(d => d.proteina_segundo === "Carne").length >= 2) compatible = false;
                         } else if (isFish) {
                             const fishAlready = sameDaySeconds.filter(d => d.proteina_segundo === "Pescado").length;
@@ -3054,6 +3058,43 @@
             document.getElementById('totalRacionesSubtext').innerText = infoText;
         }
 
+        function getRawStockServings(item) {
+            if (!item) return null;
+            const stockName = normalizeFoodKey(item.nombre);
+            const stockUnit = String(item.unidad || '').trim().toLowerCase();
+            const stockDimension = ['kg', 'g'].includes(stockUnit) ? 'weight' : (['l', 'ml'].includes(stockUnit) ? 'volume' : null);
+            if (!stockName || !stockDimension || Number(item.cantidad) <= 0) return null;
+
+            // Las cantidades del recetario son por ración. Para estimar las raciones
+            // del stock buscamos únicamente recetas de SEGUNDOS de carne/pescado que
+            // utilicen ese ingrediente principal y calculamos una media de sus
+            // cantidades por ración. Es una estimación, no una cifra de producción.
+            const perServingAmounts = [];
+            dishes
+                .map(normalizeDishData)
+                .filter(d => d?.categoria === 'Segundo' && ['Carne', 'Pescado'].includes(d.proteina_segundo))
+                .forEach(dish => {
+                    (dish.ingredientes || []).forEach(ing => {
+                        const ingredientName = normalizeFoodKey(ing?.nombre);
+                        const ingredientUnit = String(ing?.unidad || '').trim().toLowerCase();
+                        const ingredientDimension = ['kg', 'g'].includes(ingredientUnit) ? 'weight' : (['l', 'ml'].includes(ingredientUnit) ? 'volume' : null);
+                        const quantity = Number(String(ing?.cantidad ?? '').replace(',', '.'));
+                        if (!ingredientName || ingredientDimension !== stockDimension || !Number.isFinite(quantity) || quantity <= 0) return;
+                        if (!(ingredientName === stockName || ingredientName.includes(stockName) || stockName.includes(ingredientName))) return;
+                        const basePerServing = (ingredientUnit === 'kg' || ingredientUnit === 'l') ? quantity * 1000 : quantity;
+                        perServingAmounts.push(basePerServing);
+                    });
+                });
+
+            if (!perServingAmounts.length) return null;
+            const averagePerServing = perServingAmounts.reduce((sum, value) => sum + value, 0) / perServingAmounts.length;
+            if (!Number.isFinite(averagePerServing) || averagePerServing <= 0) return null;
+
+            const stockBase = (stockUnit === 'kg' || stockUnit === 'l') ? Number(item.cantidad) * 1000 : Number(item.cantidad);
+            const servings = Math.floor(stockBase / averagePerServing);
+            return Number.isFinite(servings) && servings > 0 ? servings : 0;
+        }
+
         function handleAddRawStock(e) {
             e.preventDefault();
             const cantStr = document.getElementById('rawQty').value.toString().replace(',', '.');
@@ -3081,6 +3122,8 @@
 
             rawStock.forEach(item => {
                 const isFresh = String(item.conservacion || "").includes("Refrigerado");
+                const calculatedServings = getRawStockServings(item);
+                const servingsLabel = calculatedServings !== null ? `≈ ${calculatedServings} raciones según el recetario` : '';
                 const badgeColor = isFresh ? "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800" : "bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800";
 
                 const card = document.createElement('div');
@@ -3094,6 +3137,7 @@
                         <div class="text-[11px] text-gray-500 dark:text-gray-400">
                             <span class="font-bold text-indigo-700 dark:text-indigo-400">${escapeHtml(item.cantidad)} ${escapeHtml(item.unidad)}</span> • ${escapeHtml(item.categoria_proveedor)}
                         </div>
+                        ${servingsLabel ? `<div class="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5">${escapeHtml(servingsLabel)}</div>` : ''}
                     </div>
                     <div class="flex items-center gap-1">
                         <button onclick="changeRawQty(decodeURIComponent('${escapeJsArg(item.id)}'), -1)" class="w-7 h-7 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700">-</button>
@@ -3132,31 +3176,122 @@
             return value;
         }
 
-        function getDishPerServingQuantity(dishName, preparedUnit) {
-            const dish = dishes.find(d => d.nombre.toLowerCase() === String(dishName || '').toLowerCase());
-            if (!dish || !Array.isArray(dish.ingredientes) || dish.ingredientes.length === 0) return null;
+        function getPreparedDishMainIngredientAmount(dish, dimension) {
+            if (!dish || !Array.isArray(dish.ingredientes)) return null;
+            const candidates = dish.ingredientes.filter(ing => {
+                const category = String(ing?.categoria_proveedor || '').trim();
+                const unitDimension = getPrepUnitDimension(ing?.unidad);
+                const quantity = Number(String(ing?.cantidad ?? '').replace(',', '.'));
+                return ['Carne', 'Pescado'].includes(category) &&
+                    unitDimension === dimension &&
+                    Number.isFinite(quantity) && quantity > 0;
+            });
+            if (!candidates.length) return null;
 
-            const dimension = getPrepUnitDimension(preparedUnit);
-            if (!dimension) return null;
+            // En segundos, el primer ingrediente de Carne/Pescado con cantidad es
+            // la referencia del producto proteico principal y, por tanto, la base
+            // para convertir kg/L de plato elaborado en raciones.
+            const ing = candidates[0];
+            return normalizePrepQuantity(ing.cantidad, ing.unidad);
+        }
 
-            let total = 0;
-            let found = false;
-            for (const ing of dish.ingredientes) {
-                if (getPrepUnitDimension(ing.unidad) !== dimension) continue;
-                found = true;
-                total += normalizePrepQuantity(ing.cantidad, ing.unidad);
+        function inferProteinFamilyFromName(name) {
+            const value = normalizeFoodKey(name);
+            const aliases = [
+                [['cerdo', 'lomo', 'magro', 'longaniza', 'chorizo', 'costilla', 'secreto'], 'cerdo'],
+                [['pollo', 'pechuga', 'jamoncito', 'jamoncitos'], 'pollo'],
+                [['pavo'], 'pavo'],
+                [['ternera', 'ternera'], 'ternera'],
+                [['cordero', 'cordero'], 'cordero'],
+                [['conejo'], 'conejo'],
+                [['merluza'], 'merluza'],
+                [['bacalao'], 'bacalao'],
+                [['salmón', 'salmon'], 'salmon'],
+                [['atún', 'atun'], 'atun'],
+                [['caballa'], 'caballa'],
+                [['sardina'], 'sardina'],
+                [['dorada'], 'dorada'],
+                [['lubina'], 'lubina']
+            ];
+            for (const [terms, family] of aliases) {
+                if (terms.some(term => value.includes(normalizeFoodKey(term)))) return family;
             }
-            return found && total > 0 ? total : null;
+            return '';
+        }
+
+        function getDishProteinReferenceKey(dish) {
+            if (!dish) return '';
+            if (dish.proteina_segundo === 'Carne') return String(dish.animal_carne || '').replace(/^carne_/, '').toLowerCase();
+            if (dish.proteina_segundo === 'Pescado') return normalizeFoodKey(dish.especie_pescado || '');
+            return '';
+        }
+
+        function getPreparedServingsReference(item, preparedUnit) {
+            const dimension = getPrepUnitDimension(preparedUnit);
+            if (!dimension) return { amount: null, mode: 'none' };
+            const targetName = normalizeFoodKey(item?.nombre);
+            if (!targetName) return { amount: null, mode: 'none' };
+
+            const normalizedDishes = dishes.map(normalizeDishData);
+            const exact = normalizedDishes.find(d => normalizeFoodKey(d?.nombre) === targetName);
+            const exactAmount = getPreparedDishMainIngredientAmount(exact, dimension);
+            if (exactAmount !== null) return { amount: exactAmount, mode: 'receta' };
+
+            // Si no existe una receta guía exacta, intentamos encontrar platos del
+            // mismo animal/especie. Por ejemplo, "Guiso de cerdo" puede apoyarse
+            // en cualquier segundo de cerdo del recetario.
+            const inferred = inferProteinFamilyFromName(item.nombre);
+            const similar = normalizedDishes.filter(d => {
+                if (d?.categoria !== 'Segundo' || !['Carne', 'Pescado'].includes(d?.proteina_segundo)) return false;
+                const key = getDishProteinReferenceKey(d);
+                if (!inferred) return false;
+                return key === inferred || normalizeFoodKey(key).includes(normalizeFoodKey(inferred));
+            });
+            const similarAmounts = similar
+                .map(d => getPreparedDishMainIngredientAmount(d, dimension))
+                .filter(v => Number.isFinite(v) && v > 0);
+            if (similarAmounts.length) {
+                const average = similarAmounts.reduce((sum, value) => sum + value, 0) / similarAmounts.length;
+                return { amount: average, mode: 'similar' };
+            }
+
+            // Último recurso: media de todos los segundos con proteína principal
+            // cuantificada. Es una estimación deliberadamente aproximada cuando
+            // no existe una receta comparable en el recetario.
+            const genericAmounts = normalizedDishes
+                .filter(d => d?.categoria === 'Segundo' && ['Carne', 'Pescado'].includes(d?.proteina_segundo))
+                .map(d => getPreparedDishMainIngredientAmount(d, dimension))
+                .filter(v => Number.isFinite(v) && v > 0);
+            if (genericAmounts.length) {
+                const average = genericAmounts.reduce((sum, value) => sum + value, 0) / genericAmounts.length;
+                return { amount: average, mode: 'aproximado' };
+            }
+            return { amount: null, mode: 'none' };
+        }
+
+        function getDishPerServingQuantity(dishName, preparedUnit) {
+            const reference = getPreparedServingsReference({ nombre: dishName }, preparedUnit);
+            return reference.amount;
         }
 
         function getPreparedServings(item) {
             if (item.cantidadTotal !== undefined && item.unidad) {
-                const perServing = getDishPerServingQuantity(item.nombre, item.unidad);
-                return perServing !== null
-                    ? Math.floor(normalizePrepQuantity(item.cantidadTotal, item.unidad) / perServing)
+                const reference = getPreparedServingsReference(item, item.unidad);
+                return reference.amount !== null
+                    ? Math.floor(normalizePrepQuantity(item.cantidadTotal, item.unidad) / reference.amount)
                     : null;
             }
             return Number.isFinite(Number(item.raciones)) ? Number(item.raciones) : null;
+        }
+
+        function getPreparedServingsLabel(item) {
+            if (item?.cantidadTotal === undefined || !item?.unidad) return '';
+            const reference = getPreparedServingsReference(item, item.unidad);
+            const servings = getPreparedServings(item);
+            if (servings === null) return 'Raciones: sin referencia suficiente';
+            if (reference.mode === 'receta') return `≈ ${servings} raciones según el recetario`;
+            if (reference.mode === 'similar') return `≈ ${servings} raciones según platos similares`;
+            return `≈ ${servings} raciones aprox. según el recetario`;
         }
 
         function handleAddPrepStock(e) {
@@ -3189,7 +3324,7 @@
                 const badgeColor = isAssigned ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800" : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700";
                 const calculatedServings = getPreparedServings(item);
                 const quantityLabel = item.cantidadTotal !== undefined ? `${item.cantidadTotal} ${item.unidad}` : `${item.raciones} rac.`;
-                const servingsLabel = calculatedServings !== null ? `≈ ${calculatedServings} raciones` : (item.cantidadTotal !== undefined ? 'Raciones: se calculan con la receta' : '');
+                const servingsLabel = getPreparedServingsLabel(item) || (calculatedServings !== null ? `≈ ${calculatedServings} raciones` : '');
 
                 const card = document.createElement('div');
                 card.className = "bg-white/80 p-3.5 rounded-2xl flex justify-between items-center transition-all";
@@ -3234,7 +3369,7 @@
         // --- 6. MOTOR DE GENERACIÓN Y EXPORTACIÓN LIMPIA ---
         // --- 6. MOTOR DE MENÚ: REGLAS PROFESIONALES + FALLBACK DETERMINISTA ---
 
-        const ENGINE_VERSION = "menu-rules-v10-constraint-retry";
+        const ENGINE_VERSION = "menu-rules-v11-stock-prepared-guiso-rations";
         const FIRST_SLOT_LABELS = {
             vegetable: "1º Verdura",
             spoon: "1º Cuchara",
@@ -3659,11 +3794,22 @@
             return score + Math.random();
         }
 
+        function isDishActiveForGenerator(dish) {
+            if (!dish) return false;
+            // Una receta marcada como "Plato elaborado" NO entra en el generador
+            // solo por existir en el recetario. Tiene que estar dada de alta
+            // actualmente en STOCK/PREV.
+            if (!dish.plato_elaborado) return true;
+            const key = normalizeFoodKey(dish.nombre);
+            return !!key && preparedStock.some(item => normalizeFoodKey(item?.nombre) === key);
+        }
+
         function getUniqueNormalizedDishes() {
             const seen = new Set();
             return dishes
                 .map(normalizeDishData)
                 .filter(d => d && d.id !== undefined && d.id !== null && d.id !== "")
+                .filter(isDishActiveForGenerator)
                 .filter(d => {
                     const id = String(d.id);
                     if (seen.has(id)) return false;
@@ -3856,6 +4002,13 @@
                     // aquí no dejamos que un criterio blando (ni la semana anterior, ni
                     // la puntuación, ni el orden de candidatos) lo sustituya.
                     if (isStructuralMatch(candidate, spec)) {
+                        const isGuisoDay = GUISO_DAYS.has(dayIndex);
+                        const isMeatSecond = spec.cat === "Segundo" && spec.protein === "Carne";
+                        const alreadyHasGuiso = chosenTechniques.includes("tecnica_guiso");
+                        const alreadyHasMeat = chosenTechniques.length > 0;
+                        const wouldBreakMandatoryGuiso = isMeatSecond && isGuisoDay && !alreadyHasGuiso && alreadyHasMeat && candidate.tecnica_cocina !== "tecnica_guiso";
+                        if (wouldBreakMandatoryGuiso) continue;
+
                         lockedDish = candidate;
                         assignedList.splice(assignedIndex, 1);
                         break;
