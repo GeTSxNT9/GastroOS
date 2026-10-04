@@ -1223,13 +1223,13 @@ body > nav, nav.fixed {
     min-height:42px !important;
 }
 
-/* 5. BOTTOM NAV — zona de respiración superior */
+/* 5. BOTTOM NAV — menos hueco superior, manteniendo la zona segura */
 body > nav, nav.fixed {
-    height:92px !important;
-    padding-top:16px !important;
+    height:82px !important;
+    padding-top:8px !important;
     padding-bottom:4px !important;
 }
-#main-container { padding-bottom:118px !important; }
+#main-container { padding-bottom:108px !important; }
 
 @media (max-width:480px) {
     #view-banco > div:first-child,
@@ -1277,9 +1277,13 @@ body > nav, nav.fixed {
 }
 
 /* El panel solo se muestra al activar edición múltiple. */
-#bulkToolbar.hidden { display: none !important; }
+#bulkToolbar.hidden {
+    display: none !important;
+}
 #bulkToolbar {
     display: block;
+    width: 100% !important;
+    max-width: none !important;
     margin: 0 0 12px 0 !important;
     padding: 12px !important;
     border-radius: 14px !important;
@@ -1348,6 +1352,16 @@ body > nav, nav.fixed {
     #bulkToolbar .bulk-actions-row {
         grid-template-columns: 1fr !important;
     }
+}
+/* El panel de edición múltiple ocupa todo el ancho y permanece oculto hasta activarlo. */
+#view-banco > div:nth-child(2)#bulkToolbar {
+    width: 100% !important;
+    max-width: none !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+}
+#view-banco > div:nth-child(2)#bulkToolbar.hidden {
+    display: none !important;
 }
 </style>
 
