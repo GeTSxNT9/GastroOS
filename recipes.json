@@ -4547,5 +4547,25 @@
     "demanda": "Media",
     "alergenos": [],
     "ingredientes": []
+  },
+  {
+    "id": "1791124268075",
+    "nombre": "Menestra de verduras",
+    "categoria": "Primero",
+    "subcategoria_primero": "Verdura",
+    "subtipo_primero": "verduras_enteras",
+    "proteina_segundo": "",
+    "animal_carne": "",
+    "especie_pescado": "",
+    "especie_animal": "",
+    "tecnica_cocina": "",
+    "tecnica": "",
+    "precocinado": false,
+    "plato_elaborado": true,
+    "demanda": "Media",
+    "alergenos": [
+      "frutos_cascara"
+    ],
+    "ingredientes": []
   }
 ]
