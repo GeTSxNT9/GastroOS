@@ -4607,5 +4607,23 @@
       "gluten"
     ],
     "ingredientes": []
+  },
+  {
+    "id": "1791124578878",
+    "nombre": "Fricandó de pollo con setas",
+    "categoria": "Segundo",
+    "subcategoria_primero": "",
+    "subtipo_primero": "",
+    "proteina_segundo": "Carne",
+    "animal_carne": "carne_pollo",
+    "especie_pescado": "",
+    "especie_animal": "carne_pollo",
+    "tecnica_cocina": "tecnica_guiso",
+    "tecnica": "tecnica_guiso",
+    "precocinado": false,
+    "plato_elaborado": true,
+    "demanda": "Media",
+    "alergenos": [],
+    "ingredientes": []
   }
 ]
