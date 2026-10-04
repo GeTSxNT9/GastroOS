@@ -496,6 +496,510 @@
             #generatedMenuContainer > div { margin: 0 !important; }
         }
     </style>
+
+<style id="gastroos-ui-refactor">
+:root {
+    --accent: #007AFF;
+    --accent-soft: #F2F2F7;
+    --bg-main: #F2F2F7;
+    --bg-card: #FFFFFF;
+    --text-main: #111113;
+    --text-secondary: #6E6E73;
+    --border-soft: #E5E5EA;
+    --inactive: #8E8E93;
+    --radius-card: 16px;
+    --control-h: 40px;
+}
+html.dark {
+    --accent: #2997FF;
+    --accent-soft: #2C2C2E;
+    --bg-main: #000;
+    --bg-card: #1C1C1E;
+    --text-main: #F5F5F7;
+    --text-secondary: #A1A1A6;
+    --border-soft: rgba(255,255,255,.12);
+    --inactive: #98989D;
+}
+
+/* Global density */
+main { padding: 12px !important; }
+main > h2 { margin-bottom: 12px !important; }
+main section, #dishForm { border-radius: var(--radius-card) !important; }
+#view-banco { padding-top: 10px !important; }
+#view-banco > div:first-child { margin-bottom: 8px !important; }
+
+/* Recetario search/action row */
+#searchInput {
+    min-height: var(--control-h) !important;
+    height: var(--control-h) !important;
+    background: #fff !important;
+    border: 1px solid var(--border-soft) !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+}
+html.dark #searchInput {
+    background: #1C1C1E !important;
+    border-color: rgba(255,255,255,.12) !important;
+}
+#btnBulkEdit {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-height: 32px;
+    padding: 6px 10px !important;
+    border-radius: 9px !important;
+    background: var(--accent-soft) !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--border-soft) !important;
+    font-size: 11px !important;
+}
+#bulkSelectedCount { margin-left: 2px; }
+#bulkToolbar { margin-bottom: 10px !important; padding: 10px !important; }
+
+/* Filters: compact iOS pills */
+#filters-primeros, #filters-segundos { margin-bottom: 8px !important; }
+.filter-lvl1 {
+    min-height: 34px !important;
+    padding-block: 6px !important;
+    font-size: 11px !important;
+}
+.filter-lvl2 { padding-block: 5px !important; }
+
+/* Recipe cards: 7–8 visible on typical mobile viewport */
+#dishesList { gap: 7px !important; }
+#dishesList > div {
+    min-height: 0 !important;
+    padding: 10px 46px 10px 11px !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.025) !important;
+}
+#dishesList > div h3 {
+    font-size: 13px !important;
+    line-height: 1.22 !important;
+    margin-bottom: 4px !important;
+}
+#dishesList > div .flex.flex-wrap {
+    margin-top: 4px !important;
+    gap: 4px !important;
+}
+#dishesList > div .px-2.py-0\.5 {
+    padding: 2px 6px !important;
+    font-size: 9px !important;
+    line-height: 1.2 !important;
+}
+#dishesList .absolute {
+    top: 8px !important;
+    right: 8px !important;
+    transform: none !important;
+    flex-direction: row !important;
+    gap: 3px !important;
+}
+#dishesList .absolute button {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    color: var(--inactive) !important;
+    opacity: .9;
+}
+#dishesList .absolute button svg {
+    width: 14px !important;
+    height: 14px !important;
+}
+#dishesList .absolute button:first-child { color: var(--accent) !important; }
+#dishesList .absolute button:last-child { color: #FF3B30 !important; }
+#dishesList .absolute button:hover { background: var(--accent-soft) !important; border-radius: 6px !important; }
+
+/* Generator */
+#view-generator { padding-top: 10px !important; gap: 10px !important; }
+#subtab-menu-content { gap: 10px !important; }
+#subtab-menu-content > div:first-child {
+    padding: 9px 10px !important;
+    border-radius: 16px !important;
+    text-align: left !important;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+.gastro-generator-title {
+    display: none !important;
+}
+.gastro-generator-description {
+    display: none !important;
+}
+#btnGenerateMenu {
+    width: 100% !important;
+    min-height: 40px !important;
+    padding: 9px 12px !important;
+    font-size: 13px !important;
+    border-radius: 11px !important;
+}
+#btnSaveToHistory, #btnDownloadMenuTxt {
+    min-height: 32px !important;
+    padding: 6px 9px !important;
+    font-size: 10px !important;
+    background: #fff !important;
+    color: #3A3A3C !important;
+    border: 1px solid var(--border-soft) !important;
+    box-shadow: none !important;
+}
+html.dark #btnSaveToHistory, html.dark #btnDownloadMenuTxt {
+    background: #2C2C2E !important;
+    color: #F5F5F7 !important;
+}
+#dayTabsContainer {
+    gap: 6px !important;
+    padding: 1px 2px 5px !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+}
+.generator-day-tab {
+    flex: 0 0 auto !important;
+    min-width: max-content !important;
+    min-height: 34px !important;
+    padding: 7px 13px !important;
+    scroll-snap-align: start;
+}
+#generatedMenuContainer { gap: 8px !important; }
+.gastro-slot {
+    min-height: 54px !important;
+    padding: 9px 10px !important;
+}
+.gastro-slot-action {
+    width: 24px !important;
+    height: 24px !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--inactive) !important;
+}
+.gastro-slot-action:hover { background: var(--accent-soft) !important; color: var(--accent) !important; }
+.gastro-section-label { font-size: 9px !important; }
+
+/* Dish form: compact controls */
+#dishForm { padding: 12px !important; }
+#dishForm > div { margin-top: 0 !important; }
+#dishForm .grid { gap: 8px !important; }
+#dishForm input:not([type="checkbox"]), #dishForm select, #dishForm textarea {
+    min-height: 38px !important;
+    padding-block: 8px !important;
+}
+#dishForm label.block.text-xs { margin-bottom: 3px !important; }
+
+/* iOS switches: existing checkbox IDs/hooks remain untouched */
+#dishPrecooked, #dishPrepared {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 1px !important;
+    height: 1px !important;
+}
+#dishPrecookedContainer > label,
+#dishPrecooked + label,
+#dishPrepared + label {
+    cursor: pointer;
+}
+#dishPrecookedContainer,
+#dishPrecooked + label,
+#dishPrepared + label {
+    /* no-op compatibility hook */
+}
+#dishPrecooked ~ label::after,
+#dishPrepared ~ label::after {
+    content: "";
+    display: inline-block;
+    width: 44px;
+    height: 26px;
+    border-radius: 999px;
+    background: #D1D1D6;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
+    vertical-align: middle;
+    margin-left: 10px;
+    transition: .2s ease;
+}
+#dishPrecooked:checked ~ label::after,
+#dishPrepared:checked ~ label::after {
+    background: var(--accent);
+}
+#dishPrecooked + label::before,
+#dishPrepared + label::before {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.18);
+    transform: translateX(23px);
+    transition: .2s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+#dishPrecooked:checked + label::before,
+#dishPrepared:checked + label::before { transform: translateX(43px); }
+#dishPrecooked + label, #dishPrepared + label { position: relative; }
+
+/* The actual form has checkbox followed by label in each row. */
+#dishForm > div.grid.grid-cols-1 > div {
+    min-height: 44px !important;
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    background: var(--accent-soft) !important;
+    border: 1px solid var(--border-soft) !important;
+}
+#dishForm > div.grid.grid-cols-1 > div:nth-child(2) {
+    background: var(--accent-soft) !important;
+}
+
+/* Allergens become compact chips while preserving checkbox names/values. */
+#allergensContainer {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+}
+#allergensContainer > label {
+    position: relative;
+    display: inline-flex !important;
+    flex: 0 0 auto;
+    align-items: center;
+    padding: 6px 10px !important;
+    min-height: 30px;
+    border-radius: 999px !important;
+    background: #F2F2F7 !important;
+    border: 1px solid var(--border-soft) !important;
+    color: #3A3A3C !important;
+    font-size: 11px !important;
+    line-height: 1 !important;
+}
+#allergensContainer > label input {
+    position: absolute !important;
+    opacity: 0 !important;
+    pointer-events: none;
+}
+#allergensContainer > label:has(input:checked) {
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: #fff !important;
+}
+html.dark #allergensContainer > label {
+    background: #2C2C2E !important;
+    color: #F5F5F7 !important;
+}
+html.dark #allergensContainer > label:has(input:checked) {
+    background: var(--accent) !important;
+    color: #fff !important;
+}
+
+/* Stock / forecast */
+#view-stock { gap: 10px !important; }
+#view-stock > section { padding: 11px !important; }
+#view-stock > section:first-child > div.grid {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) auto !important;
+    gap: 8px !important;
+    align-items: center !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child {
+    min-width: 0;
+}
+#inputComensales {
+    height: 38px !important;
+    min-height: 38px !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    height: 38px !important;
+    padding: 8px 10px !important;
+    margin: 0 !important;
+    border-radius: 11px !important;
+    gap: 8px;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) span { font-size: 10px !important; }
+#view-stock > section:first-child > div.grid > div:nth-child(2) input { width: 18px !important; height: 18px !important; }
+#view-stock > section:first-child > div.grid > div:nth-child(3) {
+    grid-column: 1 / -1;
+    display: flex !important;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    text-align: left !important;
+    padding: 8px 11px !important;
+    min-height: 42px;
+    border-radius: 11px !important;
+}
+#totalRacionesDisplay {
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+    color: #fff !important;
+    white-space: nowrap;
+}
+#totalRacionesSubtext {
+    font-size: 10px !important;
+    color: #D1D1D6 !important;
+}
+#rawStockForm, #prepStockForm {
+    display: grid !important;
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+    gap: 7px !important;
+}
+#rawStockForm > div:first-child,
+#prepStockForm > div:first-child {
+    grid-column: 1 / -1;
+}
+#rawStockForm > div:nth-child(2),
+#rawStockForm > div:nth-child(3),
+#prepStockForm > div:nth-child(2),
+#prepStockForm > div:nth-child(3) {
+    display: contents !important;
+}
+#rawStockForm > div:nth-child(2) > *,
+#rawStockForm > div:nth-child(3) > *,
+#prepStockForm > div:nth-child(2) > *,
+#prepStockForm > div:nth-child(3) > * {
+    min-width: 0;
+}
+#rawStockForm > button, #prepStockForm > button {
+    grid-column: 1 / -1;
+    margin-top: 1px;
+}
+
+/* Settings / diagnostics */
+#recipeDiagnostics {
+    grid-template-columns: repeat(4,minmax(0,1fr)) !important;
+    gap: 6px !important;
+}
+#recipeDiagnostics > div {
+    padding: 8px !important;
+    min-width: 0;
+    border-radius: 11px !important;
+}
+#recipeDiagnostics > div .text-lg {
+    font-size: 16px !important;
+}
+.gastro-settings-details {
+    overflow: hidden;
+}
+.gastro-settings-summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 54px;
+    padding: 11px 13px;
+    cursor: pointer;
+}
+.gastro-settings-summary::-webkit-details-marker { display: none; }
+.gastro-chevron {
+    color: var(--inactive);
+    font-size: 18px;
+    transition: transform .2s ease;
+}
+.gastro-settings-details[open] .gastro-chevron { transform: rotate(180deg); }
+.gastro-settings-details-body {
+    padding: 0 13px 13px;
+    border-top: 1px solid var(--border-soft);
+}
+
+/* Bottom navigation */
+body > nav, nav.fixed {
+    height: 70px !important;
+    padding-top: 5px !important;
+}
+.nav-btn {
+    position: relative;
+    color: var(--inactive) !important;
+    min-height: 56px;
+}
+.nav-btn svg { color: currentColor !important; }
+.nav-btn span { color: currentColor !important; }
+.nav-btn.active,
+.nav-btn.text-indigo-600,
+.nav-btn.text-indigo-400 {
+    color: var(--accent) !important;
+}
+.nav-btn.active::before,
+.nav-btn.text-indigo-600::before,
+.nav-btn.text-indigo-400::before {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translateX(-50%);
+}
+.nav-btn:not(.active):not(.text-indigo-600):not(.text-indigo-400) {
+    color: var(--inactive) !important;
+}
+
+/* Small screens */
+@media (max-width: 390px) {
+    main { padding-inline: 9px !important; }
+    #dishesList > div { padding-right: 42px !important; }
+    #recipeDiagnostics { gap: 4px !important; }
+    #recipeDiagnostics > div { padding: 7px 5px !important; }
+    #recipeDiagnostics > div .text-lg { font-size: 14px !important; }
+    #totalRacionesDisplay { font-size: 14px !important; }
+}
+@media (min-width: 768px) {
+    main { padding: 16px !important; }
+    #dishesList { gap: 10px !important; }
+    #dishesList > div { padding: 11px 48px 11px 12px !important; }
+}
+</style>
+
+
+<style id="gastroos-switch-fix">
+.gastro-toggle-row {
+    position: relative !important;
+    min-height: 44px !important;
+}
+.gastro-toggle-row > input[type="checkbox"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    width: 44px !important;
+    height: 26px !important;
+    flex: 0 0 44px !important;
+    margin: 0 !important;
+    border-radius: 999px !important;
+    background: #D1D1D6 !important;
+    border: 0 !important;
+    position: relative !important;
+    opacity: 1 !important;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.05) !important;
+    cursor: pointer !important;
+}
+.gastro-toggle-row > input[type="checkbox"]::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    transition: transform .2s ease;
+}
+.gastro-toggle-row > input[type="checkbox"]:checked {
+    background: var(--accent) !important;
+}
+.gastro-toggle-row > input[type="checkbox"]:checked::after {
+    transform: translateX(18px);
+}
+.gastro-toggle-row > label {
+    order: -1;
+}
+.gastro-toggle-row > input + label::after,
+.gastro-toggle-row > input + label::before {
+    display: none !important;
+}
+</style>
+
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
 
@@ -679,12 +1183,12 @@
                     </select>
                 </div>
 
-                <div class="grid grid-cols-1 gap-2 mt-2">
-                    <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900">
+                <div class="gastro-toggle-group grid grid-cols-1 gap-2 mt-2">
+                    <div class="gastro-toggle-row flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900">
                         <label for="dishPrecooked" class="text-sm font-bold text-indigo-900 dark:text-indigo-300">¿Plato precocinado?</label>
                         <input type="checkbox" id="dishPrecooked" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     </div>
-                    <div class="flex items-center justify-between bg-purple-50 dark:bg-purple-950/40 p-3 rounded-lg border border-purple-100 dark:border-purple-900">
+                    <div class="gastro-toggle-row flex items-center justify-between bg-purple-50 dark:bg-purple-950/40 p-3 rounded-lg border border-purple-100 dark:border-purple-900">
                         <label for="dishPrepared" class="text-sm font-bold text-purple-900 dark:text-purple-300">¿Plato elaborado?</label>
                         <input type="checkbox" id="dishPrepared" class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
                     </div>
@@ -873,18 +1377,18 @@
 
             <div id="subtab-menu-content" class="space-y-4">
                 <div class="bg-indigo-900 dark:bg-indigo-950 text-white p-4 rounded-xl shadow-lg border border-indigo-800 dark:border-indigo-900 text-center">
-                    <h2 class="text-lg font-bold mb-1">Motor de Planificación</h2>
-                    <p class="text-[11px] text-indigo-200 mb-3">Aplica reglas, control de especies, aprovechamiento de stock y proporciones por demanda.</p>
+                    <h2 class="gastro-generator-title">Motor de Planificación</h2>
+                    <p class="gastro-generator-description text-[11px] text-indigo-200 mb-3">Aplica reglas, control de especies, aprovechamiento de stock y proporciones por demanda.</p>
                     <div class="flex flex-col gap-2">
                         <button id="btnGenerateMenu" class="w-full bg-amber-400 hover:bg-amber-500 text-indigo-950 font-black py-3 px-4 rounded-xl text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
                             <span class="text-base">🎲</span> GENERAR MENÚ
                         </button>
                         <div class="flex gap-2">
                             <button id="btnSaveToHistory" class="flex-1 bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1 border border-indigo-600 shadow-sm">
-                                <span>💾</span> Guardar Historial
+                                <span>💾</span> Historial
                             </button>
                             <button id="btnDownloadMenuTxt" class="flex-1 bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1 border border-indigo-600 shadow-sm">
-                                <span>📋</span> Exportar (.txt)
+                                <span>📋</span> Exportar .txt
                             </button>
                         </div>
                     </div>
@@ -927,45 +1431,50 @@
                 </div>
                 <div id="historyListContainer" class="space-y-2"></div>
             </section>
-            <section class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-4">
-                <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-gray-800 dark:text-gray-100" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.69-3.88-1.54-3.88-1.54-.53-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.74.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.47.11-3.06 0 0 .96-.31 3.15 1.18A10.9 10.9 0 0 1 12 6.84c.97 0 1.94.13 2.85.38 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.77.11 3.06.73.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.67.41.36.78 1.08.78 2.18 0 1.58-.01 2.85-.01 3.24 0 .31.21.67.8.56A11.52 11.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"></path></svg>
-                    <div>
-                        <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">Conexión con GitHub</h3>
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Configura el repositorio donde se actualizará automáticamente el recetario.</p>
+            <details id="githubSettingsDetails" class="gastro-settings-details bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
+                <summary class="gastro-settings-summary">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <svg class="w-5 h-5 text-gray-800 dark:text-gray-100 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.69-3.88-1.54-3.88-1.54-.53-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.74.4-1.25.73-1.54-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.47.11-3.06 0 0 .96-.31 3.15 1.18A10.9 10.9 0 0 1 12 6.84c.97 0 1.94.13 2.85.38 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.77.11 3.06.73.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.39-5.25 5.67.41.36.78 1.08.78 2.18 0 .31-.21.67-.8.56A11.52 11.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"></path></svg>
+                        <div class="min-w-0">
+                            <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">Conexión con GitHub</h3>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">Repositorio del recetario y sincronización.</p>
+                        </div>
+                    </div>
+                    <span class="gastro-chevron" aria-hidden="true">⌄</span>
+                </summary>
+                <div class="gastro-settings-details-body">
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Token de acceso personal de GitHub</label>
+                            <input type="password" id="githubToken" autocomplete="new-password" placeholder="Introduce un token nuevo o déjalo vacío para conservar el guardado" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Usuario del repositorio</label>
+                                <input type="text" id="githubOwner" autocomplete="off" placeholder="usuario" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre del repositorio</label>
+                                <input type="text" id="githubRepo" autocomplete="off" placeholder="GastroOS" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Ruta del archivo del recetario</label>
+                            <input type="text" id="githubPath" autocomplete="off" placeholder="recipes.json" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" id="btnSaveGithubSettings" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold text-sm shadow-md">Guardar conexión</button>
+                            <button type="button" id="btnRefreshGitHub" class="w-full border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 py-2.5 rounded-lg font-bold text-sm">Actualizar ↻</button>
+                        </div>
+                        <p id="githubSettingsStatus" class="text-[11px] text-gray-500 dark:text-gray-400"></p>
+                        <div id="githubSyncPanel" class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-3">
+                            <p class="text-[11px] font-bold text-gray-700 dark:text-gray-200 mb-1">Estado de sincronización</p>
+                            <p id="githubSyncStatus" aria-live="polite" class="text-xs text-gray-600 dark:text-gray-300">Todavía no se ha comprobado la sincronización.</p>
+                        </div>
+                        <p class="text-[10px] leading-relaxed text-amber-700 dark:text-amber-300">Seguridad: esta versión HTML guarda el token en el almacenamiento local de este navegador. Usa un token de acceso personal de granularidad fina, limitado a este repositorio y con permiso de lectura y escritura de Contents. No compartas este archivo con el token incluido ni uses un token con acceso a otros repositorios.</p>
                     </div>
                 </div>
-                <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Token de acceso personal de GitHub</label>
-                        <input type="password" id="githubToken" autocomplete="new-password" placeholder="Introduce un token nuevo o déjalo vacío para conservar el guardado" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Usuario del repositorio</label>
-                        <input type="text" id="githubOwner" autocomplete="off" placeholder="usuario" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre del repositorio</label>
-                        <input type="text" id="githubRepo" autocomplete="off" placeholder="GastroOS" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Ruta del archivo del recetario</label>
-                        <input type="text" id="githubPath" autocomplete="off" placeholder="recipes.json" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <button type="button" id="btnSaveGithubSettings" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-bold text-sm shadow-md">
-                        Guardar conexión con GitHub
-                    </button>
-                    <button type="button" id="btnRefreshGitHub" class="w-full border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 py-2.5 rounded-lg font-bold text-sm">
-                        Actualizar recetas desde GitHub ↻
-                    </button>
-                    <p id="githubSettingsStatus" class="text-[11px] text-gray-500 dark:text-gray-400"></p>
-                    <div id="githubSyncPanel" class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-3">
-                        <p class="text-[11px] font-bold text-gray-700 dark:text-gray-200 mb-1">Estado de sincronización</p>
-                        <p id="githubSyncStatus" aria-live="polite" class="text-xs text-gray-600 dark:text-gray-300">Todavía no se ha comprobado la sincronización.</p>
-                    </div>
-                    <p class="text-[10px] leading-relaxed text-amber-700 dark:text-amber-300">Seguridad: esta versión HTML guarda el token en el almacenamiento local de este navegador. Usa un token de acceso personal de granularidad fina, limitado a este repositorio y con permiso de lectura y escritura de Contents. No compartas este archivo con el token incluido ni uses un token con acceso a otros repositorios.</p>
-                </div>
-            </section>
+            </details>
 
             <section class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-3">
                 <div class="flex justify-between items-center">
@@ -1763,8 +2272,8 @@
                     <div class="${bulkEditMode ? 'pl-7' : ''} pr-12">
                         <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm leading-tight mb-1.5">${escapeHtml(d.nombre)}</h3>
                         <div class="flex flex-wrap gap-1.5 mt-2 items-center">
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(d.categoria)}</span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300">${escapeHtml(tagType)}</span>
+                            ${activeFilterLevel1 === 'all' ? `<span class="gastro-category-badge px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(d.categoria)}</span>` : ''}
+                            <span class="gastro-technical-badge px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-300">${escapeHtml(tagType)}</span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${demObj.class}">${demObj.text}</span>
                             ${missingBadge}${precookedBadge}${preparedDishBadge}
                         </div>
