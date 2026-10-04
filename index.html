@@ -1367,6 +1367,37 @@ body > nav, nav.fixed {
 }
 </style>
 
+
+<style id="forecast-and-dish-option-fixes">
+/* PREVISIÓN DE COMENSALES — separar ligeramente los textos y controles */
+#view-stock > section:first-child > div:first-child {
+    margin-bottom: 14px !important;
+    align-items: flex-start !important;
+}
+#view-stock > section:first-child > div:first-child h2 {
+    line-height: 1.25 !important;
+}
+#view-stock > section:first-child > div.grid {
+    gap: 12px !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child label {
+    margin-bottom: 6px !important;
+    line-height: 1.25 !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    line-height: 1.35 !important;
+}
+
+/* AÑADIR PLATO — toda la tarjeta de estado es clicable */
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > label {
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent;
+}
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > label span {
+    cursor: pointer !important;
+}
+</style>
+
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
 
@@ -1550,14 +1581,14 @@ body > nav, nav.fixed {
                 </div>
 
                 <div class="grid grid-cols-1 gap-2 mt-2">
-                    <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900">
-                        <label for="dishPrecooked" class="text-sm font-bold text-indigo-900 dark:text-indigo-300">¿Plato precocinado?</label>
+                    <label class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900 cursor-pointer">
+                        <span class="text-sm font-bold text-indigo-900 dark:text-indigo-300">¿Plato precocinado?</span>
                         <input type="checkbox" id="dishPrecooked" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
-                    </div>
-                    <div class="flex items-center justify-between bg-purple-50 dark:bg-purple-950/40 p-3 rounded-lg border border-purple-100 dark:border-purple-900">
-                        <label for="dishPrepared" class="text-sm font-bold text-purple-900 dark:text-purple-300">¿Plato elaborado?</label>
+                    </label>
+                    <label class="flex items-center justify-between bg-purple-50 dark:bg-purple-950/40 p-3 rounded-lg border border-purple-100 dark:border-purple-900 cursor-pointer">
+                        <span class="text-sm font-bold text-purple-900 dark:text-purple-300">¿Plato elaborado?</span>
                         <input type="checkbox" id="dishPrepared" class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
-                    </div>
+                    </label>
                 </div>
 
                 <div class="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4">
