@@ -1073,6 +1073,178 @@ body > nav, nav.fixed {
     #main-container { padding-bottom:116px !important; }
 }
 </style>
+
+<style id="gastroos-ui-v4-final">
+/* =========================================================
+   GASTROOS — UI V4 FINAL / PRESENTATION ONLY
+   No modifica IDs, listeners, handlers ni lógica de negocio.
+   ========================================================= */
+
+/* 1. RECETARIO — buscador + edición múltiple en una sola fila 50/50 */
+#view-banco > div:first-child,
+#view-banco > div:nth-child(2) {
+    display:inline-flex !important;
+    vertical-align:top !important;
+    box-sizing:border-box !important;
+    width:calc(50% - 5px) !important;
+    margin-bottom:12px !important;
+}
+#view-banco > div:first-child { margin-right:10px !important; }
+#view-banco > div:first-child input { width:100% !important; }
+#view-banco > div:nth-child(2) {
+    min-height:40px !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:8px !important;
+    position:relative !important;
+}
+#btnBulkEdit {
+    order:2 !important;
+    flex:0 0 auto !important;
+    width:auto !important;
+    min-height:40px !important;
+    margin-left:auto !important;
+    padding:8px 12px !important;
+    white-space:nowrap !important;
+}
+#bulkSelectedCount {
+    order:1 !important;
+    position:static !important;
+    margin:0 auto 0 0 !important;
+    line-height:1.2 !important;
+}
+#bulkSelectedCount.hidden { display:none !important; }
+
+/* 1b. Tarjetas — acciones cuadradas, algo mayores y centradas verticalmente */
+#dishesList > div { padding-top:10px !important; padding-bottom:10px !important; }
+#dishesList > div > .absolute {
+    top:50% !important;
+    right:10px !important;
+    transform:translateY(-50%) !important;
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    gap:6px !important;
+}
+#dishesList > div > .absolute button {
+    width:34px !important;
+    height:34px !important;
+    min-width:34px !important;
+    min-height:34px !important;
+    padding:0 !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border-radius:9px !important;
+}
+#dishesList > div > .absolute button svg {
+    width:17px !important;
+    height:17px !important;
+}
+#dishesList > div > div.pr-12 { padding-right:82px !important; }
+
+/* 2. FORMULARIO — separación de los campos superiores */
+#dishForm > div { margin-bottom:16px !important; }
+#dishForm > div:has(#dishName),
+#dishForm > div:has(#dishCategory) { margin-bottom:16px !important; }
+#dishForm > div:has(> #dishDemand),
+#dishForm > div:has(#dishDemand) { margin-bottom:16px !important; }
+
+/* Mantener bloques originales Precocinado / Elaborado */
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 {
+    margin-top:0 !important;
+    margin-bottom:16px !important;
+    gap:10px !important;
+}
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div {
+    margin-bottom:0 !important;
+}
+
+/* Alérgenos: aire arriba y abajo */
+#dishForm > div:has(#allergensContainer) {
+    margin-top:12px !important;
+    margin-bottom:30px !important;
+}
+#dishForm > div:has(#allergensContainer) > div:first-child {
+    margin-bottom:10px !important;
+}
+#allergensContainer {
+    margin-top:10px !important;
+    margin-bottom:30px !important;
+}
+
+/* 3. STOCK — previsión perfectamente alineada */
+#view-stock > section:first-child > div.grid {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    align-items:end !important;
+    gap:10px !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(1),
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    height:38px !important;
+    align-self:end !important;
+    box-sizing:border-box !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(1) label {
+    display:block !important;
+    height:14px !important;
+    line-height:14px !important;
+    margin-bottom:4px !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(1) input {
+    height:38px !important;
+    box-sizing:border-box !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    padding:0 12px !important;
+}
+
+/* Materia prima / elaborados: grid compacto */
+#rawStockForm, #prepStockForm { gap:10px !important; }
+#rawStockForm > div, #prepStockForm > div { min-width:0 !important; }
+
+/* 4. GITHUB — contenido interior más respirado */
+#githubSettingsDetails .gastro-settings-details-body {
+    padding:18px 20px 20px !important;
+}
+#githubSettingsDetails .gastro-settings-details-body > .space-y-3 {
+    gap:16px !important;
+}
+#githubSettingsDetails .gastro-settings-details-body > .space-y-3 > * {
+    margin:0 !important;
+}
+#githubSettingsDetails .gastro-settings-details-body input,
+#githubSettingsDetails .gastro-settings-details-body button {
+    min-height:42px !important;
+}
+
+/* 5. BOTTOM NAV — zona de respiración superior */
+body > nav, nav.fixed {
+    height:92px !important;
+    padding-top:16px !important;
+    padding-bottom:4px !important;
+}
+#main-container { padding-bottom:118px !important; }
+
+@media (max-width:480px) {
+    #view-banco > div:first-child,
+    #view-banco > div:nth-child(2) {
+        width:calc(50% - 4px) !important;
+    }
+    #view-banco > div:first-child { margin-right:8px !important; }
+    #btnBulkEdit { padding-inline:8px !important; font-size:10px !important; }
+    #bulkSelectedCount { font-size:10px !important; }
+    #dishesList > div > .absolute { right:8px !important; gap:5px !important; }
+    #dishesList > div > .absolute button { width:32px !important; height:32px !important; min-width:32px !important; min-height:32px !important; }
+    #dishesList > div > div.pr-12 { padding-right:76px !important; }
+}
+</style>
+
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
 
@@ -1379,7 +1551,7 @@ body > nav, nav.fixed {
                 <form id="rawStockForm" class="bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3 mb-4">
                     <div>
                         <select id="rawName" required class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-                            <option value="">Seleccionar ingrediente principal...</option>
+                            <option value="">Seleccionar...</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -1416,7 +1588,7 @@ body > nav, nav.fixed {
                 <form id="prepStockForm" class="bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3 mb-4">
                     <div>
                         <select id="prepName" required class="w-full p-2 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-                            <option value="">Seleccionar plato elaborado...</option>
+                            <option value="">Seleccionar...</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -3468,7 +3640,7 @@ body > nav, nav.fixed {
             if (!select) return;
             const ingredients = getSecondProteinIngredients();
             const current = String(selectedValue || select.value || "");
-            select.innerHTML = '<option value="">Seleccionar ingrediente principal...</option>';
+            select.innerHTML = '<option value="">Seleccionar...</option>';
             ingredients.forEach(name => {
                 const option = document.createElement("option");
                 option.value = name;
@@ -3577,7 +3749,7 @@ body > nav, nav.fixed {
 
             const recipes = getPreparedDishRecipes();
             const currentName = String(selectedValue || nameSelect.value || "");
-            nameSelect.innerHTML = '<option value="">Seleccionar plato elaborado...</option>';
+            nameSelect.innerHTML = '<option value="">Seleccionar...</option>';
             recipes.forEach(dish => {
                 const option = document.createElement("option");
                 option.value = dish.nombre;
@@ -3895,7 +4067,7 @@ body > nav, nav.fixed {
             const container = document.getElementById('prepStockList');
             container.innerHTML = '';
             if (preparedStock.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-400 dark:text-gray-500 text-xs py-2">Sin platos elaborados registrados.</p>';
+                container.innerHTML = '<p class="text-center text-gray-400 dark:text-gray-500 text-xs py-2">Sin platos elaborados en stock.</p>';
                 return;
             }
 
