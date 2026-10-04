@@ -901,6 +901,178 @@ body > nav, nav.fixed {
 
 
 
+
+<style id="gastroos-ui-final-corrections">
+/* RECETARIO — edición múltiple: contador a la izquierda, acción a la derecha */
+#view-banco > div:nth-child(2) {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    width:100% !important;
+    min-height:32px !important;
+}
+#btnBulkEdit {
+    order:2 !important;
+    margin-left:auto !important;
+}
+#bulkSelectedCount {
+    position:static !important;
+    order:1 !important;
+    margin-left:0 !important;
+    margin-right:auto !important;
+    white-space:nowrap !important;
+}
+#bulkSelectedCount.hidden { display:none !important; }
+
+/* RECETARIO — tarjetas más compactas y acciones discretas horizontales */
+#dishesList > div {
+    padding-top:10px !important;
+    padding-bottom:10px !important;
+}
+#dishesList .absolute {
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    gap:2px !important;
+}
+#dishesList .absolute button {
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:22px !important;
+    height:22px !important;
+    min-width:22px !important;
+    padding:0 !important;
+}
+
+/* FORMULARIO — separación vertical real entre demanda y bloques de estado */
+#dishDemand { margin-bottom:0 !important; }
+#dishDemand + * { margin-top:0 !important; }
+#dishForm > div:has(> #dishDemand) { margin-bottom:16px !important; }
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 {
+    margin-top:0 !important;
+    margin-bottom:16px !important;
+    gap:10px !important;
+}
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div {
+    margin:0 !important;
+}
+
+/* PRECOCINADO / ELABORADO — conservar tarjetas, colores, checkbox y clics originales */
+#dishPrecooked, #dishPrepared {
+    appearance:auto !important;
+    -webkit-appearance:auto !important;
+    position:static !important;
+    opacity:1 !important;
+    pointer-events:auto !important;
+    width:1.25rem !important;
+    height:1.25rem !important;
+    flex-shrink:0 !important;
+    accent-color:initial !important;
+}
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:first-child {
+    background-color:rgb(238 242 255) !important;
+    border-color:rgb(224 231 255) !important;
+    padding:12px !important;
+    border-radius:0.5rem !important;
+}
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:last-child {
+    background-color:rgb(250 245 255) !important;
+    border-color:rgb(243 232 255) !important;
+    padding:12px !important;
+    border-radius:0.5rem !important;
+}
+html.dark #dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:first-child {
+    background-color:rgb(30 27 75 / .5) !important;
+    border-color:rgb(49 46 129) !important;
+}
+html.dark #dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:last-child {
+    background-color:rgb(59 7 100 / .4) !important;
+    border-color:rgb(88 28 135) !important;
+}
+
+/* ALÉRGENOS — más aire arriba y antes de Ingredientes */
+#dishForm > div:has(#allergensContainer) {
+    margin-top:12px !important;
+    margin-bottom:30px !important;
+    padding-top:16px !important;
+}
+#dishForm > div:has(#allergensContainer) > div:first-child {
+    margin-bottom:10px !important;
+}
+#allergensContainer {
+    margin-top:10px !important;
+    margin-bottom:30px !important;
+}
+
+/* STOCK / PREVISIÓN — ambos controles comparten exactamente la misma altura y eje */
+#view-stock > section:first-child > div.grid {
+    align-items:stretch !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child,
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    height:38px !important;
+    min-height:38px !important;
+    align-self:stretch !important;
+    margin:0 !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child {
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:flex-end !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child label {
+    margin-bottom:2px !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+}
+
+/* MATERIA PRIMA — grid compacto y limpio */
+#rawStockForm, #prepStockForm {
+    align-items:end !important;
+    gap:8px !important;
+}
+#rawStockForm input, #rawStockForm select,
+#prepStockForm input, #prepStockForm select {
+    min-width:0 !important;
+}
+
+/* GITHUB — contenido del desplegable más respirado */
+#gastroos-ui-final-corrections {}
+#githubSettingsDetails { margin-bottom:16px !important; }
+#githubSettingsDetails .gastro-settings-details-body {
+    padding:16px 20px 20px !important;
+}
+#githubSettingsDetails .gastro-settings-details-body > .space-y-3 {
+    display:flex !important;
+    flex-direction:column !important;
+    gap:14px !important;
+}
+#githubSettingsDetails .gastro-settings-details-body > .space-y-3 > * {
+    margin:0 !important;
+}
+#githubSettingsDetails .gastro-settings-details-body input,
+#githubSettingsDetails .gastro-settings-details-body button {
+    min-height:40px !important;
+}
+
+/* NAVEGACIÓN INFERIOR — separación superior y zona segura */
+body > nav, nav.fixed {
+    height:88px !important;
+    padding-top:16px !important;
+    padding-bottom:env(safe-area-inset-bottom) !important;
+}
+#main-container {
+    padding-bottom:112px !important;
+}
+@media (min-width:768px) {
+    #main-container { padding-bottom:116px !important; }
+}
+</style>
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
 
