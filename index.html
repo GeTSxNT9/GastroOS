@@ -1104,12 +1104,6 @@
             "Baja": { text: "🔴 Baja", class: "bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800" }
         };
 
-        const getDemandWeight = (d) => {
-            if (d === 'Alta') return 3;
-            if (d === 'Baja') return 1;
-            return 2;
-        };
-
         // Porcentaje aproximado de las raciones previstas que se calcula para cada plato
         // en función de su demanda: Alta 70%, Media 50%, Baja 30%.
         const DEMAND_PORTION_FACTOR = {
@@ -3638,7 +3632,14 @@
         }
 
         function candidateScore(dish, spec, dayIndex, previousMenu = null, slotIndex = 0, menuDays = {}, chosenTechniques = []) {
-            let score = getDemandWeight(dish.demanda) * 10;
+            // "demanda" solo se utiliza para calcular cantidades de producción.
+            // Nunca interviene en la prioridad de generación del menú.
+            let score = 0;
+            // Un plato elaborado en stock pero sin día fijo puede entrar en la
+            // generación normal. Le damos una ligera ventaja para aprovechar el
+            // stock disponible, pero NO lo fijamos a ningún día.
+            if (preparedStock.some(item => normalizeFoodKey(item?.nombre) === normalizeFoodKey(dish?.nombre) &&
+                (!item.asignacion || item.asignacion === 'Sin asignar'))) score += 2;
             if (usesFreshStock(dish)) score += dayIndex < 2 ? 3 : 0;
             if (spec.cat === "Segundo" && spec.protein === "Pescado" && dayIndex === 0) score += 1;
 
@@ -3735,17 +3736,26 @@
                 }
 
                 if (candidates.length) {
-                    // Fisher-Yates antes del scoring: si varios platos tienen la misma
-                    // puntuación, el orden original de `dishes` deja de actuar como
-                    // desempate determinista. Las restricciones duras ya han sido
-                    // aplicadas antes de esta mezcla y no se relajan aquí.
+                    // Fisher-Yates elimina por completo el orden de inserción/alfabético.
+                    // En un pool de guisos compatibles no existe ninguna prioridad por demanda:
+                    // todos los candidatos tienen la misma probabilidad de ser elegidos.
                     shuffleInPlace(candidates);
-                    candidates.sort((a, b) =>
-                        candidateScore(b, spec, dayIndex, previousMenu, slotIndex, menuDays, chosenTechniques) -
-                        candidateScore(a, spec, dayIndex, previousMenu, slotIndex, menuDays, chosenTechniques)
-                    );
+
+                    const isMeatGuisoPool =
+                        spec.cat === "Segundo" &&
+                        spec.protein === "Carne" &&
+                        GUISO_DAYS.has(dayIndex) &&
+                        candidates.every(d => d.tecnica_cocina === "tecnica_guiso");
+
+                    const selectedDish = isMeatGuisoPool
+                        ? candidates[0]
+                        : (candidates.sort((a, b) =>
+                            candidateScore(b, spec, dayIndex, previousMenu, slotIndex, menuDays, chosenTechniques) -
+                            candidateScore(a, spec, dayIndex, previousMenu, slotIndex, menuDays, chosenTechniques)
+                        )[0]);
+
                     return {
-                        dish: candidates[0],
+                        dish: selectedDish,
                         relaxed: false,
                         relaxationLevel: 0,
                         warning: ""
@@ -3775,6 +3785,15 @@
                 }
             });
             return prepMap;
+        }
+
+        function isPreparedStockDish(dish) {
+            const key = normalizeFoodKey(dish?.nombre);
+            if (!key) return false;
+            return preparedStock.some(item => {
+                if (!item || !String(item.asignacion || '').trim() || item.asignacion === 'Sin asignar') return false;
+                return normalizeFoodKey(item.nombre) === key;
+            }) || preparedStock.some(item => normalizeFoodKey(item?.nombre) === key);
         }
 
         function getPreparedCandidate(prep, spec, dayName, slotIndex) {
@@ -3830,13 +3849,13 @@
                 for (let assignedIndex = 0; assignedIndex < assignedList.length; assignedIndex++) {
                     const prep = assignedList[assignedIndex];
                     const candidate = getPreparedCandidate(prep, spec, dayName, index);
-                    if (
-                        isStructuralMatch(candidate, spec) &&
-                        !usedDishIdsThisWeek.has(String(candidate.id)) &&
-                        !violatesDayFirstRule(candidate, spec, menuDays, dayIndex, chosenFirsts, usedVegetableKeys, previousMenu, index) &&
-                        !violatesDaySecondRule(candidate, spec, menuDays, dayIndex, chosenAnimals, chosenTechniques, chosenSecondFamilies) &&
-                        !violatesFutureGuisoProtection(candidate, dayIndex, menuDays, usedDishIdsThisWeek)
-                    ) {
+                    // Una asignación explícita de STOCK manda sobre la selección aleatoria:
+                    // si el plato sigue dado de alta en PLATOS ELABORADOS y está asignado
+                    // a este día/categoría, debe ocupar este hueco siempre. Las reglas
+                    // globales ya se validan al construir el menú y en validateWeeklyMenu;
+                    // aquí no dejamos que un criterio blando (ni la semana anterior, ni
+                    // la puntuación, ni el orden de candidatos) lo sustituya.
+                    if (isStructuralMatch(candidate, spec)) {
                         lockedDish = candidate;
                         assignedList.splice(assignedIndex, 1);
                         break;
@@ -3887,7 +3906,7 @@
                     relaxed: result.relaxed,
                     relaxationLevel: result.relaxationLevel,
                     warning: result.warning,
-                    isPreparedStock: !!lockedDish
+                    isPreparedStock: !!lockedDish || isPreparedStockDish(dish)
                 });
             }
 
