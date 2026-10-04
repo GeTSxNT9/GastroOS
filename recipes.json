@@ -4564,7 +4564,9 @@
     "plato_elaborado": true,
     "demanda": "Media",
     "alergenos": [
-      "frutos_cascara"
+      "gluten",
+      "frutos_cascara",
+      "sulfitos"
     ],
     "ingredientes": []
   }
