@@ -1245,6 +1245,76 @@ body > nav, nav.fixed {
 }
 </style>
 
+<style id="recetario-search-row-fix">
+/* RECETARIO — buscador y edición múltiple obligatoriamente en la misma fila */
+.recetario-search-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin-bottom: 12px !important;
+    box-sizing: border-box !important;
+}
+
+.recetario-search-actions #searchInput {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+.recetario-search-actions #btnBulkEdit {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+</style>
+
+<style id="recetario-search-row-final-override">
+/* Anula los estilos anteriores del V4 que separaban los controles en dos columnas. */
+#view-banco > div:first-child.recetario-search-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin: 0 0 12px 0 !important;
+    box-sizing: border-box !important;
+}
+
+#view-banco > div:first-child.recetario-search-actions #searchInput {
+    flex: 1 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+}
+
+#view-banco > div:first-child.recetario-search-actions #btnBulkEdit {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+
+#view-banco > div:first-child.recetario-search-actions #bulkSelectedCount {
+    order: 1 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+
+#view-banco > div:first-child.recetario-search-actions #btnBulkEdit {
+    order: 2 !important;
+}
+
+#view-banco > div:nth-child(2) {
+    width: auto !important;
+}
+</style>
+
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
 
@@ -1268,11 +1338,8 @@ body > nav, nav.fixed {
         
         <!-- VISTA 1: BANCO DE PLATOS -->
         <main id="view-banco" class="p-4 block">
-            <div class="mb-4">
+            <div class="recetario-search-actions">
                 <input type="text" id="searchInput" placeholder="Buscar plato..." class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-            </div>
-
-            <div class="flex items-center gap-2 mb-3">
                 <button type="button" id="btnBulkEdit" class="flex-1 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-2 rounded-lg text-xs font-bold">Edición múltiple ✓</button>
                 <span id="bulkSelectedCount" class="hidden text-[11px] font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">0 seleccionadas</span>
             </div>
