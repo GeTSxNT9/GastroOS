@@ -4457,5 +4457,23 @@
         "categoria_proveedor": "Secos"
       }
     ]
+  },
+  {
+    "id": "1791119421979",
+    "nombre": "Ragout de cerdo al curry",
+    "categoria": "Segundo",
+    "subcategoria_primero": "",
+    "subtipo_primero": "",
+    "proteina_segundo": "Carne",
+    "animal_carne": "carne_cerdo",
+    "especie_pescado": "",
+    "especie_animal": "carne_cerdo",
+    "tecnica_cocina": "tecnica_guiso",
+    "tecnica": "tecnica_guiso",
+    "precocinado": false,
+    "plato_elaborado": true,
+    "demanda": "Media",
+    "alergenos": [],
+    "ingredientes": []
   }
 ]
