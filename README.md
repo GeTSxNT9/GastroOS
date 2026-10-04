@@ -80,18 +80,22 @@ Supports repository configuration, recipe upload/download, and synchronization s
 
 ⸻
 
-🧩 Architecture
+## 🧩 Architecture
 
 GastroOS is intentionally lightweight and can run entirely as a static application.
 
-Component	Role
-index.html	Application UI and core logic
-recipes.json	Initial recipe collection
-manifest.json	PWA configuration
-sw.js	Service Worker and offline caching
-localStorage	Local persistence and backups
-GitHub API	Optional recipe synchronization
-
+```text
+GastroOS/
+├── index.html
+├── recipes.json
+├── manifest.json
+├── sw.js
+├── favicon-32.png
+├── apple-touch-icon.png
+├── icon-192.png
+├── icon-512.png
+└── README.md
+```
 Stack: HTML5 · CSS · JavaScript · PWA · Web Storage · GitHub API
 
 ⸻
