@@ -4433,6 +4433,12 @@
         "cantidad": "",
         "unidad": "g",
         "categoria_proveedor": "Congelados"
+      },
+      {
+        "nombre": "Tomate frito",
+        "cantidad": 50,
+        "unidad": "g",
+        "categoria_proveedor": "Secos"
       }
     ]
   }
