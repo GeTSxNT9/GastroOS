@@ -4475,5 +4475,23 @@
     "demanda": "Media",
     "alergenos": [],
     "ingredientes": []
+  },
+  {
+    "id": "1791119447076",
+    "nombre": "Pavo estofado con ciruelas",
+    "categoria": "Segundo",
+    "subcategoria_primero": "",
+    "subtipo_primero": "",
+    "proteina_segundo": "Carne",
+    "animal_carne": "carne_pavo",
+    "especie_pescado": "",
+    "especie_animal": "carne_pavo",
+    "tecnica_cocina": "tecnica_guiso",
+    "tecnica": "tecnica_guiso",
+    "precocinado": false,
+    "plato_elaborado": true,
+    "demanda": "Media",
+    "alergenos": [],
+    "ingredientes": []
   }
 ]
