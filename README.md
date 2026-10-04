@@ -82,22 +82,17 @@ Supports repository configuration, recipe upload/download, and synchronization s
 
 🧩 Architecture
 
-GastroOS/
-├── index.html
-├── recipes.json
-├── manifest.json
-├── sw.js
-├── favicon-32.png
-├── apple-touch-icon.png
-├── icon-192.png
-├── icon-512.png
-└── README.md
+GastroOS is intentionally lightweight and can run entirely as a static application.
 
-File	Purpose
+Component	Role
 index.html	Application UI and core logic
 recipes.json	Initial recipe collection
 manifest.json	PWA configuration
-sw.js	Offline caching
+sw.js	Service Worker and offline caching
+localStorage	Local persistence and backups
+GitHub API	Optional recipe synchronization
+
+Stack: HTML5 · CSS · JavaScript · PWA · Web Storage · GitHub API
 
 ⸻
 
