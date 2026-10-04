@@ -1245,36 +1245,8 @@ body > nav, nav.fixed {
 }
 </style>
 
-<style id="recetario-search-row-fix">
-/* RECETARIO — buscador y edición múltiple obligatoriamente en la misma fila */
-.recetario-search-actions {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 12px !important;
-    width: 100% !important;
-    margin-bottom: 12px !important;
-    box-sizing: border-box !important;
-}
-
-.recetario-search-actions #searchInput {
-    flex: 1 1 auto !important;
-    width: auto !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-}
-
-.recetario-search-actions #btnBulkEdit {
-    flex: 0 0 auto !important;
-    width: auto !important;
-    margin: 0 !important;
-    white-space: nowrap !important;
-}
-</style>
-
-<style id="recetario-search-row-final-override">
-/* Anula los estilos anteriores del V4 que separaban los controles en dos columnas. */
+<style id="recetario-layout-fixes">
+/* RECETARIO — buscador y edición múltiple en la misma fila */
 #view-banco > div:first-child.recetario-search-actions {
     display: flex !important;
     flex-direction: row !important;
@@ -1285,33 +1257,97 @@ body > nav, nav.fixed {
     margin: 0 0 12px 0 !important;
     box-sizing: border-box !important;
 }
-
 #view-banco > div:first-child.recetario-search-actions #searchInput {
     flex: 1 !important;
     width: auto !important;
     min-width: 0 !important;
     margin: 0 !important;
 }
-
+#view-banco > div:first-child.recetario-search-actions #bulkSelectedCount {
+    order: 1 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
 #view-banco > div:first-child.recetario-search-actions #btnBulkEdit {
+    order: 2 !important;
     width: auto !important;
     flex: 0 0 auto !important;
     margin: 0 !important;
     white-space: nowrap !important;
 }
 
-#view-banco > div:first-child.recetario-search-actions #bulkSelectedCount {
-    order: 1 !important;
-    margin: 0 !important;
+/* El panel solo se muestra al activar edición múltiple. */
+#bulkToolbar.hidden { display: none !important; }
+#bulkToolbar {
+    display: block;
+    margin: 0 0 12px 0 !important;
+    padding: 12px !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
+}
+#bulkToolbar > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-bottom: 10px !important;
+}
+#bulkToolbar > div:first-child button {
+    width: auto !important;
+    min-height: 34px !important;
+    padding: 6px 10px !important;
     white-space: nowrap !important;
 }
-
-#view-banco > div:first-child.recetario-search-actions #btnBulkEdit {
-    order: 2 !important;
+#bulkToolbar > div:nth-child(2) {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 10px !important;
+}
+#bulkToolbar select {
+    min-width: 0 !important;
+    min-height: 40px !important;
+    box-sizing: border-box !important;
+}
+#bulkToolbar .bulk-actions-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+}
+#bulkToolbar .bulk-actions-row button {
+    width: 100% !important;
+    min-height: 40px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-#view-banco > div:nth-child(2) {
-    width: auto !important;
+/* Casilla de selección a la izquierda, sin pisar editar/eliminar. */
+#dishesList > div > label.bulk-dish-select-label {
+    position: absolute !important;
+    top: 50% !important;
+    left: 10px !important;
+    right: auto !important;
+    transform: translateY(-50%) !important;
+    z-index: 10 !important;
+    margin: 0 !important;
+}
+#dishesList > div > label.bulk-dish-select-label input.bulk-dish-checkbox {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+}
+#dishesList > div:has(.bulk-dish-checkbox) > div.pr-12 {
+    padding-left: 38px !important;
+}
+@media (max-width: 480px) {
+    #bulkToolbar > div:nth-child(2) { grid-template-columns: 1fr !important; }
+    #bulkToolbar .bulk-actions-row {
+        grid-template-columns: 1fr !important;
+    }
 }
 </style>
 
@@ -1364,8 +1400,10 @@ body > nav, nav.fixed {
                         <option value="">Seleccionar...</option>
                     </select>
                 </div>
-                <button type="button" id="btnApplyBulkEdit" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold text-xs">Aplicar</button>
-                <button type="button" id="btnExitBulkEdit" class="w-full mt-2 text-[11px] font-semibold text-gray-500 dark:text-gray-400">Salir</button>
+                <div class="bulk-actions-row">
+                    <button type="button" id="btnApplyBulkEdit" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold text-xs">Aplicar</button>
+                    <button type="button" id="btnExitBulkEdit" class="text-[11px] font-semibold text-gray-500 dark:text-gray-400">Salir</button>
+                </div>
             </div>
 
             <!-- Filtros Nivel 1 -->
@@ -2578,7 +2616,7 @@ body > nav, nav.fixed {
 
                 const card = document.createElement('div');
                 card.className = "bg-white/80 p-4 rounded-2xl relative transition-all";
-                const bulkCheckbox = bulkEditMode ? `<label class="absolute top-3 left-3 z-10 flex items-center"><input type="checkbox" class="bulk-dish-checkbox w-4 h-4 accent-indigo-600" data-id="${escapeHtml(d.id)}" ${bulkSelectedDishIds.has(String(d.id)) ? 'checked' : ''}></label>` : '';
+                const bulkCheckbox = bulkEditMode ? `<label class="bulk-dish-select-label absolute top-3 left-3 z-10 flex items-center"><input type="checkbox" class="bulk-dish-checkbox w-4 h-4 accent-indigo-600" data-id="${escapeHtml(d.id)}" ${bulkSelectedDishIds.has(String(d.id)) ? 'checked' : ''}></label>` : '';
                 card.innerHTML = `
                     ${bulkCheckbox}
                     <div class="${bulkEditMode ? 'pl-7' : ''} pr-12">
