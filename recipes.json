@@ -4527,7 +4527,11 @@
     "precocinado": false,
     "plato_elaborado": true,
     "demanda": "Media",
-    "alergenos": [],
+    "alergenos": [
+      "gluten",
+      "frutos_cascara",
+      "sulfitos"
+    ],
     "ingredientes": []
   },
   {
