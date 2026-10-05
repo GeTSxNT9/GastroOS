@@ -212,7 +212,6 @@
         #rawStockForm button[type="submit"],
         #prepStockForm button[type="submit"],
         #btnDownloadShoppingTxt,
-        #btnExport,
         label[for="fileImport"] {
             border-radius: 999px !important;
             box-shadow: 0 4px 14px rgba(15,23,42,.08) !important;
@@ -231,6 +230,11 @@
         #btnExport { background: #0f172a !important; }
         label[for="fileImport"] { background: #eef2f7 !important; color: #334155 !important; }
         html.dark label[for="fileImport"] { background: #27272a !important; color: #f4f4f5 !important; }
+
+        .backup-action {
+            border-radius: 0.75rem !important;
+            min-height: 52px;
+        }
 
         /* Form grouping */
         #dishForm > div,
@@ -2150,19 +2154,17 @@ html.dark .text-indigo-700 {
                 <div>
                     <h3 class="font-bold text-gray-700 dark:text-gray-300 text-sm mb-2">Copia de Seguridad Integral</h3>
                     <div class="flex flex-col gap-3">
-                        <label class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-bold text-sm shadow-md flex justify-center items-center gap-2 cursor-pointer text-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <label class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-bold text-sm shadow-md flex justify-center items-center gap-2 cursor-pointer text-center backup-action">
                             Importar Datos (JSON)
                             <input type="file" id="fileImport" accept=".json" class="hidden">
                         </label>
-                        <button id="btnExport" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-bold text-sm shadow-md flex justify-center items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <button id="btnExport" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-bold text-sm shadow-md flex justify-center items-center gap-2 backup-action">
                             Exportar Todo (JSON)
                         </button>
-                        <button id="btnExportRecipes" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-lg font-bold text-sm shadow-md flex justify-center items-center gap-2">
+                        <button id="btnExportRecipes" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-lg font-bold text-sm shadow-md flex justify-center items-center gap-2 backup-action">
                             Exportar solo el recetario (JSON)
                         </button>
-                        <button id="btnDownloadAutoBackup" type="button" class="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-2.5 rounded-lg font-bold text-xs">
+                        <button id="btnDownloadAutoBackup" type="button" class="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 py-3 rounded-lg font-bold text-sm backup-action">
                             Descargar última copia automática
                         </button>
                     </div>
