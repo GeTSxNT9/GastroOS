@@ -4647,5 +4647,27 @@
     "demanda": "Baja",
     "alergenos": [],
     "ingredientes": []
+  },
+  {
+    "id": "1791186565934",
+    "nombre": "Pasta boloñesa",
+    "categoria": "Primero",
+    "subcategoria_primero": "Tenedor",
+    "subtipo_primero": "pastas",
+    "proteina_segundo": "",
+    "animal_carne": "",
+    "especie_pescado": "",
+    "especie_animal": "",
+    "tecnica_cocina": "",
+    "tecnica": "",
+    "precocinado": false,
+    "plato_elaborado": true,
+    "demanda": "Media",
+    "alergenos": [
+      "gluten",
+      "frutos_cascara",
+      "sulfitos"
+    ],
+    "ingredientes": []
   }
 ]
