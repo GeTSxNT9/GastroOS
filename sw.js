@@ -1,8 +1,10 @@
-const CACHE_NAME = 'gastroos-v2';
+const CACHE_NAME = 'gastroos-v3';
 
 const CACHE_FILES = [
   './',
   './index.html',
+  './css/gastroos.css',
+  './js/gastroos.js',
   './recipes.json',
   './manifest.json',
   './favicon-32.png',
