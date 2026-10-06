@@ -1,12 +1,15 @@
-const CACHE_NAME = 'gastroos-v3';
+const CACHE_NAME = 'gastroos-v4';
 
 const CACHE_FILES = [
   './',
   './index.html',
-  './css/gastroos.css',
-  './js/gastroos.js',
   './recipes.json',
   './manifest.json',
+  './css/gastroos.css',
+  './js/recipe-schema.js',
+  './js/menu-rules.js',
+  './js/menu-validator.js',
+  './js/gastroos.js',
   './favicon-32.png',
   './apple-touch-icon.png',
   './icon-192.png',
@@ -37,9 +40,6 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   const requestUrl = new URL(event.request.url);
-
-  // GastroOS only caches resources served by its own origin.
-  // External services such as GitHub API and CDN resources are left untouched.
   if (requestUrl.origin !== self.location.origin) return;
 
   event.respondWith(
@@ -58,9 +58,7 @@ self.addEventListener('fetch', event => {
       .catch(() => {
         return caches.match(event.request).then(cached => {
           if (cached) return cached;
-          if (event.request.mode === 'navigate') {
-            return caches.match('./index.html');
-          }
+          if (event.request.mode === 'navigate') return caches.match('./index.html');
           return Response.error();
         });
       })
