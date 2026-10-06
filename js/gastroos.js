@@ -25,158 +25,13 @@
         const defaultSettings = { comensales: 100, margenActivo: false, darkMode: false };
         const proveedorCategorias = ["Carne", "Pescado", "Lácteos", "Verduras y frutas", "Secos", "Congelados"];
         const daysList = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
-        const FIRST_SUBCATEGORIES = {
-            cuchara: ["legumbres", "guisos", "sopas_o_caldos"],
-            verdura: ["cremas", "verduras_enteras"],
-            tenedor: ["pastas", "pastas_rellenas", "arroces", "otros_hidratos"]
-        };
-        const MEAT_ANIMALS = ["carne_pollo", "carne_pavo", "carne_cerdo", "carne_ternera", "carne_conejo", "carne_cordero"];
-        const FISH_SPECIES = ["trucha", "caella", "bacalao", "merluza", "calamares", "bacaladilla", "panga", "atun", "perca", "chicharro"];
-        const FISH_LABELS = {
-            trucha: "Trucha", caella: "Caella", bacalao: "Bacalao", merluza: "Merluza",
-            calamares: "Calamares", bacaladilla: "Bacaladilla", panga: "Panga", atun: "Atún",
-            perca: "Perca", chicharro: "Chicharro"
-        };
-        const MEAT_LABELS = {
-            carne_pollo: "Pollo", carne_pavo: "Pavo", carne_cerdo: "Cerdo",
-            carne_ternera: "Ternera", carne_conejo: "Conejo", carne_cordero: "Cordero"
-        };
-        const FIRST_LABELS = {
-            legumbres: "Cuchara · Legumbres", guisos: "Cuchara · Guisos",
-            sopas_o_caldos: "Cuchara · Sopas o caldos", cremas: "Verdura · Crema",
-            verduras_enteras: "Verdura · Entera", pastas: "Pasta",
-            pastas_rellenas: "Pasta rellena", arroces: "Arroz", otros_hidratos: "Otros hidratos"
-        };
-
-        const ALLERGEN_OPTIONS = [
-            ["gluten", "Gluten"],
-            ["crustaceos", "Crustáceos"],
-            ["huevos", "Huevos"],
-            ["pescado", "Pescado"],
-            ["cacahuetes", "Cacahuetes"],
-            ["soja", "Soja"],
-            ["lacteo", "Lácteo"],
-            ["frutos_cascara", "Frutos de cáscara"],
-            ["apio", "Apio"],
-            ["mostaza", "Mostaza"],
-            ["sesamo", "Sésamo"],
-            ["sulfitos", "Sulfitos"],
-            ["altramuces", "Altramuces"],
-            ["moluscos", "Moluscos"]
-        ];
-        const ALLERGEN_LABELS = Object.fromEntries(ALLERGEN_OPTIONS);
-
-        function normalizeFirstParent(value) {
-            const raw = String(value || "").trim();
-            if (!raw) return "";
-            const v = raw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-            // Valores canónicos que utiliza el filtro visible del Recetario.
-            if (v === "cuchara" || v.includes("cuchara")) return "Cuchara";
-            if (v === "verdura" || v.includes("verdura")) return "Verdura";
-            if (v === "tenedor" || v.includes("tenedor")) return "Tenedor";
-
-            // Identificadores técnicos nuevos/anteriores.
-            if (FIRST_SUBCATEGORIES.cuchara.includes(v)) return "Cuchara";
-            if (FIRST_SUBCATEGORIES.verdura.includes(v)) return "Verdura";
-            if (FIRST_SUBCATEGORIES.tenedor.includes(v)) return "Tenedor";
-
-            // También acepta etiquetas completas como "Verdura · Entera".
-            if (v.includes("crema") || v.includes("entera")) return "Verdura";
-            if (v.includes("pasta") || v.includes("arroz") || v.includes("hidrato")) return "Tenedor";
-            if (v.includes("legumbre") || v.includes("guiso") || v.includes("sopa") || v.includes("caldo")) return "Cuchara";
-            return "";
-        }
-
-        function normalizeDishData(d) {
-            const dish = { ...d };
-            dish.demanda = dish.demanda || "Media";
-            dish.precocinado = !!dish.precocinado;
-            dish.plato_elaborado = !!dish.plato_elaborado;
-            dish.subcategoria_primero = dish.subcategoria_primero || "";
-            dish.subtipo_primero = dish.subtipo_primero || "";
-            dish.proteina_segundo = dish.proteina_segundo || "";
-            dish.animal_carne = dish.animal_carne || "";
-            dish.especie_pescado = dish.especie_pescado || "";
-            dish.tecnica_cocina = dish.tecnica_cocina || "";
-            dish.alergenos = Array.isArray(dish.alergenos)
-                ? [...new Set(dish.alergenos.map(a => String(a).trim()).filter(a => ALLERGEN_LABELS[a]))]
-                : [];
-
-            // Migración y normalización transparente de los formatos anteriores/importados.
-            if (dish.categoria === "Primero") {
-                const originalSub = dish.subcategoria_primero;
-                const technicalSub = String(dish.subtipo_primero || "").trim();
-
-                // Si llega un identificador técnico en cualquiera de los dos campos,
-                // conservamos el identificador técnico y calculamos su grupo visible.
-                if (!technicalSub && FIRST_LABELS[String(originalSub || "").toLowerCase()]) {
-                    dish.subtipo_primero = String(originalSub).toLowerCase();
-                }
-
-                const canonicalParent = normalizeFirstParent(dish.subcategoria_primero) || normalizeFirstParent(dish.subtipo_primero);
-                if (canonicalParent) dish.subcategoria_primero = canonicalParent;
-
-                if (dish.subtipo_primero && !FIRST_LABELS[dish.subtipo_primero]) {
-                    const technicalCandidate = String(dish.subtipo_primero).toLowerCase();
-                    if (FIRST_LABELS[technicalCandidate]) dish.subtipo_primero = technicalCandidate;
-                }
-            }
-            if (dish.categoria === "Segundo" && dish.proteina_segundo === "Carne") {
-                const animalMap = {
-                    pollo: "carne_pollo", pavo: "carne_pavo", cerdo: "carne_cerdo",
-                    ternera: "carne_ternera", conejo: "carne_conejo", cordero: "carne_cordero"
-                };
-                const currentAnimal = String(dish.animal_carne || "").trim().toLowerCase();
-                const oldAnimal = String(dish.especie_animal || "").trim().toLowerCase();
-                if (animalMap[currentAnimal]) dish.animal_carne = animalMap[currentAnimal];
-                else if (!dish.animal_carne) dish.animal_carne = animalMap[oldAnimal] || "";
-            }
-            if (dish.categoria === "Segundo" && dish.proteina_segundo === "Pescado") {
-                dish.especie_pescado = normalizeFishSpecies(dish.especie_pescado || dish.especie_animal);
-            }
-            if (dish.categoria === "Segundo" && (dish.proteina_segundo === "Carne" || dish.proteina_segundo === "Pescado")) {
-                // Las recetas antiguas/importadas pueden contener etiquetas visibles;
-                // el runtime trabaja siempre con la técnica canónica.
-                dish.tecnica_cocina = normalizeTechnique(dish.tecnica_cocina || dish.tecnica);
-                if (dish.tecnica_cocina) dish.tecnica = dish.tecnica_cocina;
-            }
-            if (!dish.tecnica && dish.tecnica_cocina) dish.tecnica = dish.tecnica_cocina;
-            if (!dish.especie_animal && dish.animal_carne) dish.especie_animal = dish.animal_carne;
-            return dish;
-        }
-
-        function firstParentFromTechnical(subtype) {
-            if (FIRST_SUBCATEGORIES.cuchara.includes(subtype)) return "Cuchara";
-            if (FIRST_SUBCATEGORIES.verdura.includes(subtype)) return "Verdura";
-            if (FIRST_SUBCATEGORIES.tenedor.includes(subtype)) return "Tenedor";
-            return "";
-        }
-
-        function normalizeTechnique(value) {
-            const raw = String(value || "").trim();
-            const v = raw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            if (raw === "tecnica_guiso" || v.includes("guis") || v.includes("salsa") || v.includes("estof")) return "tecnica_guiso";
-            if (raw === "tecnica_frito_rebozado" || v.includes("frit") || v.includes("reboz") || v.includes("empan") || v.includes("milanes") || v.includes("san jacobo") || v.includes("croquet")) return "tecnica_frito_rebozado";
-            if (raw === "tecnica_seco_asado" || v.includes("seco") || v.includes("asado") || v.includes("brasa") || v.includes("parrilla") || v.includes("plancha")) return "tecnica_seco_asado";
-            if (raw === "tecnica_seco") return "tecnica_seco";
-            return raw;
-        }
-
-        function normalizeFishSpecies(value) {
-            const v = String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            const match = FISH_SPECIES.find(x => v.includes(x));
-            return match || "";
-        }
-
-        function hasCompleteTechnicalTags(d) {
-            if (!d || !d.categoria) return false;
-            if (d.categoria === "Primero") return !!d.subtipo_primero;
-            if (d.proteina_segundo === "Carne") return MEAT_ANIMALS.includes(d.animal_carne) && ["tecnica_guiso", "tecnica_seco_asado", "tecnica_frito_rebozado"].includes(d.tecnica_cocina);
-            if (d.proteina_segundo === "Pescado") return !!d.especie_pescado;
-            return false;
-        }
-
+        // Esquema canónico de recetas y compatibilidad con datos antiguos/importados.
+        const {
+            FIRST_SUBCATEGORIES, MEAT_ANIMALS, FISH_SPECIES, FISH_LABELS, MEAT_LABELS,
+            FIRST_LABELS, ALLERGEN_OPTIONS, ALLERGEN_LABELS, normalizeFirstParent,
+            normalizeDishData, firstParentFromTechnical, normalizeTechnique,
+            normalizeFishSpecies, hasCompleteTechnicalTags
+        } = window.GastroOSRecipeSchema;
 
         let dishes = [];
         let settings = { ...defaultSettings };
@@ -2270,45 +2125,12 @@
         // --- 6. MOTOR DE GENERACIÓN Y EXPORTACIÓN LIMPIA ---
         // --- 6. MOTOR DE MENÚ: REGLAS PROFESIONALES + FALLBACK DETERMINISTA ---
 
-        const ENGINE_VERSION = "menu-rules-v11-stock-prepared-guiso-rations";
-        const FIRST_SLOT_LABELS = {
-            vegetable: "1º Verdura",
-            spoon: "1º Cuchara",
-            starch: "1º Tenedor / Hidratos"
-        };
-        const MEAT_TECHNIQUES = ["tecnica_guiso", "tecnica_seco_asado", "tecnica_frito_rebozado"];
-        const MIN_WEEKLY_GUISOS = 3;
-        const MAX_WEEKLY_GUISOS = 3;
-        const GUISO_DAYS = new Set([0, 2, 4]); // Lunes, Miércoles y Viernes
-        const CONSECUTIVE_FIRST_SUBTYPES = new Set([
-            "legumbres", "guisos", "sopas_o_caldos", "cremas",
-            "arroces", "otros_hidratos",
-            "pastas", "pastas_rellenas"
-        ]);
-        const LIQUID_FIRST_SUBTYPES = new Set(["cremas", "sopas_o_caldos"]);
-        // Familias de presentación que no queremos duplicar dentro del mismo día,
-        // aunque una receta sea de carne y la otra de pescado.
-        const SECOND_PREPARATION_FAMILIES = [
-            ["albondigas", /\balbondigas\b/],
-            ["croquetas", /\bcroquetas\b/],
-            ["hamburguesas", /\bhamburgues(?:a|as)\b/],
-            ["brochetas", /\bbrochetas?\b/],
-            ["nuggets", /\bnuggets?\b/],
-            ["fingers", /\bfingers?\b/]
-        ];
-        const VEGETABLE_ALIASES = {
-            "judias verdes": "judias verdes", "judia verde": "judias verdes",
-            "habichuela": "judias verdes", "habichuelas": "judias verdes",
-            "calabacin": "calabacin", "calabacín": "calabacin",
-            "berenjena": "berenjena", "espinaca": "espinacas", "espinacas": "espinacas",
-            "acelga": "acelgas", "acelgas": "acelgas", "brocoli": "brocoli", "brócoli": "brocoli",
-            "coliflor": "coliflor", "zanahoria": "zanahoria", "puerro": "puerro",
-            "pimiento": "pimiento", "pimientos": "pimiento", "tomate": "tomate",
-            "calabaza": "calabaza", "cebolla": "cebolla", "patata": "patata",
-            "patatas": "patata", "alcachofa": "alcachofa", "alcachofas": "alcachofa",
-            "guisante": "guisantes", "guisantes": "guisantes", "judion": "judias",
-            "judiones": "judias", "champiñon": "champiñones", "champiñones": "champiñones", "seta": "champiñones", "setas": "champiñones", "col": "col", "repollo": "col", "repollo": "col"
-        };
+        const {
+            ENGINE_VERSION, FIRST_SLOT_LABELS, MEAT_TECHNIQUES, MIN_WEEKLY_GUISOS, MAX_WEEKLY_GUISOS, GUISO_DAYS,
+            CONSECUTIVE_FIRST_SUBTYPES, LIQUID_FIRST_SUBTYPES, SECOND_PREPARATION_FAMILIES, VEGETABLE_ALIASES,
+            VEGETABLE_DISH_OVERRIDES, normalizeFoodKey, canonicalVegetable, getSecondPreparationFamily,
+            conflictsWithSecondPreparationFamily, conflictsWithSecondSpecies, getPrimaryVegetableKey
+        } = window.GastroOSMenuRules;
 
         function getDayDishList(menuDays, dayIndex, cat, protein) {
             if (dayIndex < 0) return [];
@@ -2351,132 +2173,6 @@
                 return total + getDayDishList(menuDays, index, "Primero")
                     .filter(d => d?.subtipo_primero === subtype).length;
             }, 0);
-        }
-
-        function getSecondPreparationFamily(dish) {
-            const name = normalizeFoodKey(dish?.nombre || "");
-            if (!name) return "";
-            const match = SECOND_PREPARATION_FAMILIES.find(([, pattern]) => pattern.test(name));
-            return match ? match[0] : "";
-        }
-
-        function conflictsWithSecondPreparationFamily(dish, chosenSecondFamilies) {
-            const family = getSecondPreparationFamily(dish);
-            return !!family && chosenSecondFamilies.includes(family);
-        }
-
-        function conflictsWithSecondSpecies(dishAnimal, chosenAnimals) {
-            return !!dishAnimal && chosenAnimals.includes(dishAnimal);
-        }
-
-        // Protege los guisos de los días futuros. En concreto, cuando estamos
-        // generando jueves, no permitimos gastar el último animal que todavía
-        // puede servir para un guiso del viernes. Así la regla de "3 días" no
-        // termina dejando al viernes sin su guiso obligatorio.
-        function violatesFutureGuisoProtection(dish, dayIndex, menuDays, usedDishIdsThisWeek = new Set()) {
-            if (dayIndex !== 3 || !dish?.animal_carne) return false; // solo jueves -> viernes
-
-            const fridayGuisos = getUniqueNormalizedDishes()
-                .filter(candidate => candidate.categoria === "Segundo" &&
-                    candidate.proteina_segundo === "Carne" &&
-                    candidate.tecnica_cocina === "tecnica_guiso")
-                .filter(candidate => !usedDishIdsThisWeek.has(String(candidate.id)));
-
-            if (!fridayGuisos.length) return false;
-
-            // Un guiso del viernes sigue siendo viable si el animal del guiso
-            // no coincide a la vez con miércoles y con el animal que estamos
-            // considerando para jueves. Repetir miércoles + viernes sí está
-            // permitido; lo prohibido es formar la misma especie tres días seguidos.
-            const viableAnimals = new Set();
-            fridayGuisos.forEach(candidate => {
-                const animal = candidate.animal_carne;
-                if (!animal) return;
-                if (!(animalAppearedOnDay(menuDays, 2, animal) && animal === dish.animal_carne)) {
-                    viableAnimals.add(animal);
-                }
-            });
-
-            // Si el jueves consume el último animal viable, el viernes queda
-            // sin ningún guiso compatible con la regla de 3 días.
-            return viableAnimals.size === 1 && viableAnimals.has(dish.animal_carne);
-        }
-
-        function countWeeklyTechnique(menuDays, technique) {
-            return daysList.reduce((total, dayName) =>
-                total + (menuDays?.[dayName] || [])
-                    .filter(s => s.cat === "Segundo" && s.dish?.tecnica_cocina === technique).length, 0);
-        }
-
-        function getWeeklyTechniqueCount(menuDays, technique, chosenTechniques = []) {
-            return countWeeklyTechnique(menuDays, technique) +
-                chosenTechniques.filter(t => t === technique).length;
-        }
-
-        function normalizeFoodKey(value) {
-            return String(value || "")
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .replace(/[^a-z0-9]+/g, " ")
-                .trim();
-        }
-
-        function canonicalVegetable(value) {
-            const normalized = normalizeFoodKey(value);
-            if (!normalized) return "";
-            const direct = VEGETABLE_ALIASES[normalized];
-            if (direct) return normalizeFoodKey(direct);
-            const keys = Object.keys(VEGETABLE_ALIASES).sort((a, b) => b.length - a.length);
-            const match = keys.find(k => normalized.includes(normalizeFoodKey(k)));
-            return match ? normalizeFoodKey(VEGETABLE_ALIASES[match]) : normalized;
-        }
-
-        const VEGETABLE_DISH_OVERRIDES = {
-            "crema de verduras variadas": "verduras variadas",
-            "crema de champinones y patata": "champinones",
-            "menestra de verduras": "menestra",
-            "vichyssoise": "puerro"
-        };
-
-        function getPrimaryVegetableKey(dish) {
-            if (!dish || dish.categoria !== "Primero" || dish.subcategoria_primero !== "Verdura") return "";
-
-            const dishName = normalizeFoodKey(dish.nombre);
-            const override = VEGETABLE_DISH_OVERRIDES[dishName];
-            if (override) return canonicalVegetable(override);
-            const vegetableNames = Object.keys(VEGETABLE_ALIASES)
-                .map(normalizeFoodKey)
-                .filter(Boolean)
-                .sort((a, b) => b.length - a.length);
-
-            // Primero intentamos identificar la verdura principal por el propio nombre
-            // del plato. Esto evita que ingredientes auxiliares como cebolla o puerro
-            // bloqueen todas las cremas/verduras que los utilizan como base.
-            const nameMatch = vegetableNames.find(name => {
-                const re = new RegExp(`(^|\\s)${name.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}(?=\\s|$)`, "i");
-                return re.test(dishName);
-            });
-            if (nameMatch) return canonicalVegetable(nameMatch);
-
-            const ingredients = Array.isArray(dish.ingredientes) ? dish.ingredientes : [];
-            const vegetableIngredients = ingredients.filter(ing => {
-                const category = String(ing?.categoria_proveedor || "").toLowerCase();
-                return category.includes("verduras") || category.includes("frutas");
-            });
-
-            // Si el nombre no identifica una verdura concreta, usamos el ingrediente
-            // vegetal con mayor cantidad conocida, no simplemente el primero de la lista.
-            vegetableIngredients.sort((a, b) => {
-                const qa = Number(String(a?.cantidad ?? "").replace(",", "."));
-                const qb = Number(String(b?.cantidad ?? "").replace(",", "."));
-                return (Number.isFinite(qb) ? qb : -1) - (Number.isFinite(qa) ? qa : -1);
-            });
-            if (vegetableIngredients[0]?.nombre) {
-                return canonicalVegetable(vegetableIngredients[0].nombre);
-            }
-
-            return canonicalVegetable(String(dish.nombre || "").split(/[,/()-]/)[0]);
         }
 
         function getWeeklyUsedVegetableKeys(menuDays, exceptDayName = "") {
@@ -3128,153 +2824,20 @@
         }
 
         function validateWeeklyMenu(menu) {
-            const errors = [];
-            const days = daysList.filter(day => menu?.days?.[day]);
-            if (days.length !== daysList.length) {
-                daysList.filter(day => !menu?.days?.[day]).forEach(day => errors.push(`${day}: falta el día completo.`));
-            }
-            const expectedLabels = [
-                "1º Verdura",
-                "1º Cuchara",
-                "1º Tenedor / Hidratos",
-                "2º Carne (Opción 1)",
-                "2º Carne (Opción 2)",
-                "2º Pescado"
-            ];
-            const usedIds = new Set();
-            const vegetableKeys = new Set();
-            let weeklyGuisos = 0;
-            let weeklyFritos = 0;
-            const fishSpecies = new Set();
-
-            days.forEach((dayName, dayIndex) => {
-                const slots = menu.days[dayName] || [];
-                if (slots.length !== 6) {
-                    errors.push(`${dayName}: deben existir exactamente 6 opciones.`);
-                    return;
-                }
-
-                slots.forEach((slot, index) => {
-                    if (slot.slotLabel !== expectedLabels[index]) {
-                        errors.push(`${dayName}: slot ${index + 1} no respeta la estructura fija.`);
-                    }
-                    const id = slot.dish?.id;
-                    if (id && id !== "none") {
-                        const normalizedId = String(id);
-                        if (usedIds.has(normalizedId)) errors.push(`${dayName}: el plato "${slot.dish?.nombre || ""}" se repite en la semana.`);
-                        usedIds.add(normalizedId);
-                    }
-                });
-
-                const verdura = slots[0]?.dish;
-                const cuchara = slots[1]?.dish;
-                const tenedor = slots[2]?.dish;
-                if (verdura?.subcategoria_primero !== "Verdura") errors.push(`${dayName}: sin opción compatible de verdura.`);
-                if (cuchara?.subcategoria_primero !== "Cuchara") errors.push(`${dayName}: sin opción compatible de cuchara.`);
-                if (tenedor?.subcategoria_primero !== "Tenedor") errors.push(`${dayName}: sin opción compatible de tenedor.`);
-
-                const firsts = [verdura, cuchara, tenedor].filter(Boolean);
-                if (firsts.filter(d => LIQUID_FIRST_SUBTYPES.has(d?.subtipo_primero)).length > 1) {
-                    errors.push(`${dayName}: no se pueden combinar crema de verduras y sopas o caldos en los primeros.`);
-                }
-                if (verdura?.subtipo_primero === "cremas" && ["guisos", "legumbres"].includes(cuchara?.subtipo_primero)) {
-                    const goodStarch = ["arroces", "pastas", "pastas_rellenas"].includes(tenedor?.subtipo_primero);
-                    if (!goodStarch) errors.push(`${dayName}: hay una crema y un plato de cuchara, debe ser un hidrato tipo arroz o pasta.`);
-                }
-
-                const vegetableKey = getPrimaryVegetableKey(verdura);
-                if (vegetableKey) {
-                    if (vegetableKeys.has(vegetableKey)) errors.push(`${dayName}: se repite la verdura principal durante la semana.`);
-                    vegetableKeys.add(vegetableKey);
-                }
-
-                const meats = slots.slice(3, 5).map(s => s.dish).filter(Boolean);
-                if (meats.length !== 2) errors.push(`${dayName}: deben existir 2 carnes.`);
-                const meatAnimals = meats.map(m => m?.animal_carne).filter(Boolean);
-                if (new Set(meatAnimals).size !== meatAnimals.length) errors.push(`${dayName}: las dos carnes usan el mismo animal.`);
-                if (meats.some(m => m?.proteina_segundo !== "Carne")) errors.push(`${dayName}: una opción de carne no está marcada como Carne.`);
-
-                const dayGuisos = meats.filter(m => m?.tecnica_cocina === "tecnica_guiso").length;
-                const dayFritos = meats.filter(m => m?.tecnica_cocina === "tecnica_frito_rebozado").length;
-                if (dayGuisos > 1) errors.push(`${dayName}: hay dos carnes guisadas.`);
-                if (dayFritos > 1) errors.push(`${dayName}: hay dos fritos o rebozados.`);
-                weeklyGuisos += dayGuisos;
-                weeklyFritos += dayFritos;
-
-                const fish = slots[5]?.dish;
-                if (fish?.proteina_segundo !== "Pescado") errors.push(`${dayName}: falta el pescado obligatorio.`);
-                if (fish && !fish.especie_pescado) errors.push(`${dayName}: el pescado no tiene especie exacta.`);
-                if (fish?.especie_pescado) {
-                    const fishKey = String(fish.especie_pescado).toLowerCase();
-                    if (fishSpecies.has(fishKey)) errors.push(`${dayName}: la especie de pescado se repite en la semana.`);
-                    fishSpecies.add(fishKey);
-                }
-
-                const secondFamilies = slots.slice(3, 6).map(s => getSecondPreparationFamily(s.dish)).filter(Boolean);
-                if (new Set(secondFamilies).size !== secondFamilies.length) {
-                    errors.push(`${dayName}: no se puede repetir la misma forma de preparación en los segundos.`);
-                }
-
-                if (dayIndex > 0) {
-                    const prev = menu.days[days[dayIndex - 1]] || [];
-                    const prevFirsts = prev.slice(0, 3).map(s => s.dish).filter(Boolean);
-                    const currentFirsts = [verdura, cuchara, tenedor].filter(Boolean);
-                    currentFirsts.forEach(first => {
-                        const subtype = first?.subtipo_primero;
-                        if (CONSECUTIVE_FIRST_SUBTYPES.has(subtype) &&
-                            prevFirsts.some(d => d?.subtipo_primero === subtype)) {
-                            errors.push(`${dayName}: ${FIRST_LABELS[subtype] || subtype} repetido en días consecutivos.`);
-                        }
-                    });
-
-                    const previousDayFritos = prev.slice(3, 5).some(s => s.dish?.tecnica_cocina === "tecnica_frito_rebozado");
-                    if (dayFritos > 0 && previousDayFritos) {
-                        errors.push(`${dayName}: no puede haber frito en días consecutivos.`);
-                    }
-                }
-
-                if (dayIndex >= 2) {
-                    const previousTwoAnimals = [
-                        ...(menu.days[days[dayIndex - 1]] || []).slice(3, 5).map(s => s.dish?.animal_carne),
-                        ...(menu.days[days[dayIndex - 2]] || []).slice(3, 5).map(s => s.dish?.animal_carne)
-                    ].filter(Boolean);
-
-                    meats.forEach(m => {
-                        if (m?.animal_carne && previousTwoAnimals.filter(a => a === m.animal_carne).length >= 2) {
-                            errors.push(`${dayName}: ${MEAT_LABELS[m.animal_carne] || m.animal_carne} aparece 3 días consecutivos.`);
-                        }
-                    });
-                }
+            return window.GastroOSMenuValidator.validateWeeklyMenu(menu, {
+                daysList,
+                GUISO_DAYS,
+                LIQUID_FIRST_SUBTYPES,
+                CONSECUTIVE_FIRST_SUBTYPES,
+                FIRST_LABELS,
+                MEAT_LABELS,
+                getPrimaryVegetableKey,
+                getSecondPreparationFamily,
+                getWeeklyFirstSubtypeCount,
+                getPreviousWeekHistoryMenu,
+                getPreviousWeekPatternSignatures,
+                dayPatternSignature
             });
-
-            if (weeklyFritos > 2) errors.push(`Semana: hay ${weeklyFritos} fritos o rebozados; el máximo es 2.`);
-            const weeklyCreams = getWeeklyFirstSubtypeCount(menu.days, "cremas");
-            if (weeklyCreams > 2) errors.push(`Semana: hay ${weeklyCreams} días de crema; el máximo es 2.`);
-            if (weeklyGuisos !== 3) errors.push(`Semana: debe haber exactamente 3 guisos; hay ${weeklyGuisos}.`);
-
-            days.forEach((dayName, dayIndex) => {
-                const meats = (menu.days[dayName] || []).slice(3, 5).map(s => s.dish).filter(Boolean);
-                const dayGuisos = meats.filter(m => m?.tecnica_cocina === "tecnica_guiso").length;
-                const required = GUISO_DAYS.has(dayIndex);
-                if (required && dayGuisos !== 1) errors.push(`${dayName}: debe haber exactamente 1 guiso.`);
-                if (!required && dayGuisos !== 0) errors.push(`${dayName}: no debe haber guiso.`);
-            });
-
-            const previousWeekHistoryMenu = getPreviousWeekHistoryMenu();
-            if (previousWeekHistoryMenu?.days && menu?.generatedAt) {
-                const previousSerialized = JSON.stringify(daysList.map(day => (previousWeekHistoryMenu.days[day] || []).map(slot => slot?.dish?.id || "none")));
-                const currentSerialized = JSON.stringify(daysList.map(day => (menu.days[day] || []).map(slot => slot?.dish?.id || "none")));
-                if (previousSerialized === currentSerialized) errors.push('Semana: el menú completo coincide exactamente con la semana anterior.');
-                const previousSignatures = getPreviousWeekPatternSignatures(previousWeekHistoryMenu);
-                daysList.forEach(dayName => {
-                    const currentSignature = dayPatternSignature(menu.days[dayName] || []);
-                    if (currentSignature && previousSignatures.has(currentSignature)) {
-                        errors.push(`${dayName}: el patrón estructural coincide con un día de la semana anterior.`);
-                    }
-                });
-            }
-
-            return { valid: errors.length === 0, errors };
         }
 
         function renderGeneratorView() {
