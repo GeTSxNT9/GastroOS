@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gastroos-v4';
+const CACHE_NAME = 'gastroos-v5';
 
 const CACHE_FILES = [
   './',
