@@ -33,6 +33,18 @@
             normalizeFishSpecies, hasCompleteTechnicalTags
         } = window.GastroOSRecipeSchema;
 
+        // Reglas del motor de menús separadas del resto de la aplicación.
+        // Se mantienen como constantes locales para que el código existente
+        // del generador siga funcionando sin cambios de comportamiento.
+        const {
+            ENGINE_VERSION, FIRST_SLOT_LABELS, MEAT_TECHNIQUES,
+            MIN_WEEKLY_GUISOS, MAX_WEEKLY_GUISOS, GUISO_DAYS,
+            CONSECUTIVE_FIRST_SUBTYPES, LIQUID_FIRST_SUBTYPES,
+            getSecondPreparationFamily, conflictsWithSecondPreparationFamily,
+            conflictsWithSecondSpecies, getPrimaryVegetableKey, normalizeFoodKey,
+            canonicalVegetable
+        } = window.GastroOSMenuRules;
+
         let dishes = [];
         let settings = { ...defaultSettings };
         let rawStock = [];
@@ -2124,13 +2136,6 @@
 
         // --- 6. MOTOR DE GENERACIÓN Y EXPORTACIÓN LIMPIA ---
         // --- 6. MOTOR DE MENÚ: REGLAS PROFESIONALES + FALLBACK DETERMINISTA ---
-
-        const {
-            ENGINE_VERSION, FIRST_SLOT_LABELS, MEAT_TECHNIQUES, MIN_WEEKLY_GUISOS, MAX_WEEKLY_GUISOS, GUISO_DAYS,
-            CONSECUTIVE_FIRST_SUBTYPES, LIQUID_FIRST_SUBTYPES, SECOND_PREPARATION_FAMILIES, VEGETABLE_ALIASES,
-            VEGETABLE_DISH_OVERRIDES, normalizeFoodKey, canonicalVegetable, getSecondPreparationFamily,
-            conflictsWithSecondPreparationFamily, conflictsWithSecondSpecies, getPrimaryVegetableKey
-        } = window.GastroOSMenuRules;
 
         function getDayDishList(menuDays, dayIndex, cat, protein) {
             if (dayIndex < 0) return [];
