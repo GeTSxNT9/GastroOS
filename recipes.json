@@ -4669,33 +4669,5 @@
       "sulfitos"
     ],
     "ingredientes": []
-  },
-  {
-    "id": "1791272066181",
-    "nombre": "Prueba",
-    "categoria": "Primero",
-    "subcategoria_primero": "Verdura",
-    "subtipo_primero": "verduras_enteras",
-    "proteina_segundo": "",
-    "animal_carne": "",
-    "especie_pescado": "",
-    "especie_animal": "",
-    "tecnica_cocina": "",
-    "tecnica": "",
-    "precocinado": false,
-    "plato_elaborado": false,
-    "demanda": "Media",
-    "alergenos": [
-      "gluten",
-      "soja"
-    ],
-    "ingredientes": [
-      {
-        "nombre": "20",
-        "cantidad": "",
-        "unidad": "g",
-        "categoria_proveedor": "Secos"
-      }
-    ]
   }
 ]
