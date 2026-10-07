@@ -1,4 +1,4 @@
-/* GastroOS · Service Worker · Fase 9
+/* GastroOS · Service Worker · Fase 13
  * Caché versionada y actualizaciones seguras.
  * La aplicación sigue usando estrategia network-first: intenta obtener la versión
  * más reciente y recurre a la caché si no hay conexión.
@@ -6,7 +6,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v3';
+const CACHE_NAME = 'gastroos-v4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -14,6 +14,8 @@ const APP_SHELL = [
   './recipes.json',
   './css/gastroos.css',
   './js/gastroos.js',
+  './js/kitchen-rules.js',
+  './js/data-store-facade.js',
   './js/menu-engine-facade.js',
   './js/github-facade.js',
   './favicon-32.png',
