@@ -216,14 +216,32 @@
             return JSON.stringify((list || []).map(normalizeDishData).sort((a,b) => String(a.id).localeCompare(String(b.id))));
         }
 
+        const BACKUP_FORMAT_VERSION = 2;
+        const BACKUP_SCHEMA_VERSION = 1;
+
+        function buildBackupData(type, reason = "exportación") {
+            return {
+                app: "GastroOS",
+                type,
+                backupFormatVersion: BACKUP_FORMAT_VERSION,
+                schemaVersion: BACKUP_SCHEMA_VERSION,
+                exportedAt: new Date().toISOString(),
+                reason,
+                counts: {
+                    recipes: Array.isArray(dishes) ? dishes.length : 0,
+                    rawStock: Array.isArray(rawStock) ? rawStock.length : 0,
+                    preparedStock: Array.isArray(preparedStock) ? preparedStock.length : 0,
+                    historyMenus: Array.isArray(historyMenus) ? historyMenus.length : 0
+                },
+                dishes, settings: { ...settings }, rawStock, preparedStock, currentMenu, previousWeekMenu, historyMenus, recipeChangeHistory
+            };
+        }
+
         function createAutoBackup(reason = "guardado automático") {
             try {
                 const backup = {
-                    app: "GastroOS",
-                    type: "automatic-backup",
-                    reason,
-                    createdAt: new Date().toISOString(),
-                    dishes, settings: { ...settings }, rawStock, preparedStock, currentMenu, previousWeekMenu, historyMenus, recipeChangeHistory
+                    ...buildBackupData("automatic-backup", reason),
+                    createdAt: new Date().toISOString()
                 };
                 localStorage.setItem('chefTrack_autoBackup', JSON.stringify(backup));
                 localStorage.setItem('chefTrack_autoBackupAt', backup.createdAt);
@@ -320,9 +338,13 @@
             });
             const firsts = dishes.filter(d => d.categoria === 'Primero').length;
             const seconds = dishes.filter(d => d.categoria === 'Segundo').length;
+            const backupStamp = localStorage.getItem('chefTrack_autoBackupAt');
+            const backupAge = backupStamp ? Math.max(0, Date.now() - new Date(backupStamp).getTime()) : null;
+            const backupLabel = backupAge === null ? 'Sin copia' : backupAge < 86400000 ? 'Actual' : `${Math.floor(backupAge / 86400000)} d`;
+            const backupTone = backupAge === null || backupAge > 7 * 86400000 ? 'text-amber-600' : 'text-emerald-600';
             const metric = (label, value, tone='') => `<div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-2.5"><div class="text-[9px] uppercase font-bold text-gray-400">${label}</div><div class="text-lg font-black ${tone}">${value}</div></div>`;
             cards.innerHTML = metric('Recetas', dishes.length) + metric('Etiquetas pendientes', incomplete, incomplete ? 'text-amber-600' : 'text-emerald-600') + metric('IDs duplicados', duplicateIds, duplicateIds ? 'text-red-600' : 'text-emerald-600') + metric('Cantidades en blanco', blankQuantities, blankQuantities ? 'text-amber-600' : 'text-emerald-600');
-            details.innerHTML = `<div class="space-y-1"><div>${firsts} primeros · ${seconds} segundos · ${ingredients} ingredientes registrados.</div>${incompleteNames.length ? `<div>Ejemplos pendientes: ${incompleteNames.map(escapeHtml).join(', ')}${incomplete > incompleteNames.length ? '…' : ''}</div>` : '<div class="text-emerald-600 dark:text-emerald-400 font-semibold">No se detectan etiquetas técnicas incompletas.</div>'}</div>`;
+            details.innerHTML = `<div class="space-y-1"><div>${firsts} primeros · ${seconds} segundos · ${ingredients} ingredientes registrados.</div>${incompleteNames.length ? `<div>Ejemplos pendientes: ${incompleteNames.map(escapeHtml).join(', ')}${incomplete > incompleteNames.length ? '…' : ''}</div>` : '<div class="text-emerald-600 dark:text-emerald-400 font-semibold">No se detectan etiquetas técnicas incompletas.</div>'}<div>Última copia automática: <span class="font-semibold ${backupTone}">${escapeHtml(backupLabel)}</span>${backupStamp ? ` · ${new Date(backupStamp).toLocaleString('es-ES')}` : ''}.</div></div>`;
         }
 
         async function init() {
@@ -3696,7 +3718,7 @@
         }
 
         function exportData() {
-            const data = { app: 'GastroOS', type: 'full-backup', exportedAt: new Date().toISOString(), dishes, settings, rawStock, preparedStock, currentMenu, previousWeekMenu, historyMenus, recipeChangeHistory };
+            const data = buildBackupData('full-backup', 'exportación manual');
             downloadJsonFile(data, `gastroos_backup_${new Date().toISOString().slice(0,10)}.json`);
         }
 
@@ -3726,11 +3748,17 @@
         function summarizeImport(data) {
             const importedDishes = Array.isArray(data) ? data : (Array.isArray(data?.dishes) ? data.dishes : (Array.isArray(data?.recipes) ? data.recipes : null));
             const full = !Array.isArray(data) && data && typeof data === 'object';
+            const recognizedType = !full || !data.type || ['full-backup', 'automatic-backup', 'recipes-only'].includes(data.type);
+            const recipeArrayValid = Array.isArray(importedDishes);
+            const invalidRecipes = recipeArrayValid ? importedDishes.filter(recipe => !recipe || typeof recipe !== 'object' || recipe.id === undefined || !String(recipe.nombre || '').trim()).length : 0;
             return {
                 importedDishes,
                 full,
+                recognizedType,
+                recipeArrayValid,
+                invalidRecipes,
                 recipeCount: importedDishes?.length || 0,
-                hasSettings: !!(full && data.settings && typeof data.settings === 'object'),
+                hasSettings: !!(full && data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)),
                 hasStock: !!(full && (Array.isArray(data.rawStock) || Array.isArray(data.preparedStock))),
                 hasMenu: !!(full && Object.prototype.hasOwnProperty.call(data, 'currentMenu')),
                 hasHistory: !!(full && Array.isArray(data.historyMenus))
@@ -3740,12 +3768,14 @@
         function openImportPreview(data, fileName = '') {
             const summary = summarizeImport(data);
             if (!summary.importedDishes && !summary.full) throw new Error('El archivo no contiene datos reconocibles de GastroOS.');
+            if (!summary.recognizedType) throw new Error('El archivo parece ser JSON, pero no es un formato de copia de GastroOS reconocido.');
+            if (!summary.recipeArrayValid || summary.invalidRecipes > 0) throw new Error(`El archivo contiene ${summary.invalidRecipes} receta(s) con estructura básica inválida.`);
             pendingImportData = { data, fileName, summary };
             const el = document.getElementById('importPreviewContent');
             el.innerHTML = `
                 <div class="rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 p-3">
                     <div class="font-bold text-indigo-800 dark:text-indigo-200">${escapeHtml(fileName || 'archivo JSON')}</div>
-                    <div class="text-[10px] text-indigo-700 dark:text-indigo-300 mt-1">Se creará una copia automática antes de aplicar los cambios.</div>
+                    <div class="text-[10px] text-indigo-700 dark:text-indigo-300 mt-1">Formato GastroOS ${escapeHtml(String(data.backupFormatVersion || 'clásico'))} · Se creará una copia automática antes de aplicar los cambios.</div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-800"><b>${summary.recipeCount}</b><div class="text-gray-500 mt-1">recetas</div></div>
