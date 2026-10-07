@@ -1805,3 +1805,51 @@ html.dark .generator-diagnostic { background: rgba(124,45,18,.18); border-color:
     .settings-metric-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
     .compact-check-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
 }
+
+/* =========================================================
+   GastroOS — Fase final · buscador y configuración simplificados
+   ========================================================= */
+#view-banco > div:first-child.recetario-search-actions {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 0 12px 0 !important;
+}
+#view-banco > div:first-child.recetario-search-actions #searchInput {
+    display: block !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    margin: 0 !important;
+}
+.recetario-bulk-action-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    margin-top: 7px !important;
+}
+#view-banco > div:first-child.recetario-search-actions #btnBulkEdit {
+    width: auto !important;
+    flex: 0 0 auto !important;
+    min-height: 30px !important;
+    padding: 5px 9px !important;
+    border-radius: 8px !important;
+    font-size: 10px !important;
+}
+#view-banco > div:first-child.recetario-search-actions #bulkSelectedCount {
+    position: static !important;
+    margin: 0 !important;
+    font-size: 10px !important;
+}
+
+/* La cabecera identifica la instalación sin competir con el título. */
+#kitchenHeaderName { line-height: 1.1; }
+
+/* En la configuración final, los controles avanzados se leen como una lista de decisiones. */
+.settings-card .settings-accordion + .settings-accordion { margin-top: 7px; }
+.settings-card .settings-input { box-sizing: border-box; }
+.settings-card .setting-toggle:last-child { padding-bottom: 2px; }
+
+@media (max-width: 420px) {
+    .settings-metric-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .compact-check-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
