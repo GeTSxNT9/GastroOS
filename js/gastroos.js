@@ -24,7 +24,12 @@
         // Se aplica solo a ingredientes con cantidad calculable.
         const PURCHASE_ADJUSTMENT_FACTOR = 0.80;
 
-        const defaultSettings = { comensales: 100, margenActivo: false, darkMode: false };
+        const defaultSettings = {
+            comensales: 100,
+            margenActivo: false,
+            darkMode: false,
+            kitchenProfile: { ...window.GastroOSKitchenRules.DEFAULT_RULES }
+        };
         const proveedorCategorias = ["Carne", "Pescado", "Lácteos", "Verduras y frutas", "Secos", "Congelados"];
         const daysList = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
         const FIRST_SUBCATEGORIES = {
@@ -198,6 +203,53 @@
         let bulkEditMode = false;
         let bulkSelectedDishIds = new Set();
 
+        function getKitchenProfile() {
+            return window.GastroOSKitchenRules.normalize(settings.kitchenProfile);
+        }
+
+        function getGuisoDays() {
+            return window.GastroOSKitchenRules.getGuisoDays(getKitchenProfile());
+        }
+
+        function getMaxWeeklyFritos() {
+            return getKitchenProfile().maxWeeklyFritos;
+        }
+
+        function getMaxWeeklyCreams() {
+            return getKitchenProfile().maxWeeklyCreams;
+        }
+
+        function renderKitchenRules() {
+            const profile = getKitchenProfile();
+            const name = document.getElementById('kitchenName');
+            const fritos = document.getElementById('kitchenMaxFritos');
+            const creams = document.getElementById('kitchenMaxCreams');
+            const margin = document.getElementById('kitchenMarginPercent');
+            if (name) name.value = profile.nombre;
+            if (fritos) fritos.value = profile.maxWeeklyFritos;
+            if (creams) creams.value = profile.maxWeeklyCreams;
+            if (margin) margin.value = profile.margenCompraPorcentaje;
+            document.querySelectorAll('.kitchen-guiso-day').forEach(box => {
+                box.checked = profile.guisoDays.includes(Number(box.dataset.dayIndex));
+            });
+        }
+
+        function saveKitchenRules() {
+            const guisoDays = [...document.querySelectorAll('.kitchen-guiso-day:checked')].map(box => Number(box.dataset.dayIndex));
+            settings.kitchenProfile = window.GastroOSKitchenRules.normalize({
+                nombre: document.getElementById('kitchenName')?.value,
+                guisoDays,
+                maxWeeklyFritos: document.getElementById('kitchenMaxFritos')?.value,
+                maxWeeklyCreams: document.getElementById('kitchenMaxCreams')?.value,
+                margenCompraPorcentaje: document.getElementById('kitchenMarginPercent')?.value
+            });
+            saveAll();
+            renderKitchenRules();
+            updateCalculatedRaciones(false);
+            const status = document.getElementById('kitchenRulesStatus');
+            if (status) status.textContent = `Normas guardadas para «${settings.kitchenProfile.nombre}».`;
+        }
+
         // --- 2. INICIALIZACIÓN ---
         function safeLoadJSON(key, fallback) {
             try {
@@ -353,6 +405,7 @@
             dishes = (Array.isArray(storedDishesSafe) ? storedDishesSafe : []).map(normalizeDishData);
             const storedSettingsSafe = safeLoadJSON('chefTrack_settings', {});
             settings = { ...defaultSettings, ...(storedSettingsSafe && typeof storedSettingsSafe === 'object' && !Array.isArray(storedSettingsSafe) ? storedSettingsSafe : {}) };
+            settings.kitchenProfile = window.GastroOSKitchenRules.normalize(settings.kitchenProfile);
             if (settings.darkMode === undefined) settings.darkMode = false;
             const storedRawSafe = safeLoadJSON('chefTrack_rawStock', []);
             rawStock = Array.isArray(storedRawSafe) ? storedRawSafe.map(item => {
@@ -406,6 +459,7 @@
             renderMigrationUI();
             renderRecipeDiagnostics();
             renderRecipeChangeHistory();
+            renderKitchenRules();
             updateAutoBackupStatus();
         }
 
@@ -416,6 +470,7 @@
         }
 
         function saveAll() {
+            settings.kitchenProfile = window.GastroOSKitchenRules.normalize(settings.kitchenProfile);
             try {
                 localStorage.setItem('chefTrack_dishes', JSON.stringify(dishes));
                 localStorage.setItem('chefTrack_settings', JSON.stringify(settings));
@@ -458,6 +513,7 @@
 
         // --- 3. EVENTOS Y VISTAS ---
         function setupEventListeners() {
+            document.getElementById('btnSaveKitchenRules')?.addEventListener('click', saveKitchenRules);
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const targetId = e.currentTarget.getAttribute('data-target');
@@ -1867,8 +1923,8 @@
 
                 slotCandidates.forEach(({ slot, spec }) => {
                     let compatible = isStructuralMatch(normalized, spec);
-                    if (compatible && isGuiso && (!isMeat || !GUISO_DAYS.has(dayIndex))) compatible = false;
-                    if (compatible && isGuiso && assignedWeeklyGuisos >= MAX_WEEKLY_GUISOS &&
+                    if (compatible && isGuiso && (!isMeat || !getGuisoDays().has(dayIndex))) compatible = false;
+                    if (compatible && isGuiso && assignedWeeklyGuisos >= getGuisoDays().size &&
                         !preparedStock.some(item => normalizeFoodKey(item.nombre) === normalizeFoodKey(normalized.nombre))) {
                         compatible = false;
                     }
@@ -1895,8 +1951,8 @@
                             // En L/M/V debe quedar exactamente un guiso entre las dos carnes.
                             // Por tanto, no permitimos dar de alta una segunda carne no-guiso
                             // si ya existe otra carne fija ese día y todavía no hay guiso.
-                            if (!isGuiso && GUISO_DAYS.has(dayIndex) && guisosAlready === 0 && meatAlready >= 1) compatible = false;
-                            if (!isGuiso && GUISO_DAYS.has(dayIndex) && guisosAlready >= 1 && sameDaySeconds.filter(d => d.proteina_segundo === "Carne").length >= 2) compatible = false;
+                            if (!isGuiso && getGuisoDays().has(dayIndex) && guisosAlready === 0 && meatAlready >= 1) compatible = false;
+                            if (!isGuiso && getGuisoDays().has(dayIndex) && guisosAlready >= 1 && sameDaySeconds.filter(d => d.proteina_segundo === "Carne").length >= 2) compatible = false;
                         } else if (isFish) {
                             const fishAlready = sameDaySeconds.filter(d => d.proteina_segundo === "Pescado").length;
                             if (fishAlready >= 1) compatible = false;
@@ -1969,7 +2025,8 @@
 
         function getTotalRaciones() {
             const base = Math.max(0, Number(settings.comensales) || 0);
-            return settings.margenActivo ? Math.ceil(base * 1.3) : base;
+            const margin = getKitchenProfile().margenCompraPorcentaje / 100;
+            return settings.margenActivo ? Math.ceil(base * (1 + margin)) : base;
         }
 
         function updateCalculatedRaciones(shouldSave = true) {
@@ -1980,7 +2037,8 @@
             if (shouldSave) saveAll();
 
             const total = getTotalRaciones();
-            const infoText = margen ? `${base} base + 30% margen de seguridad` : `${base} raciones base`;
+            const margin = getKitchenProfile().margenCompraPorcentaje;
+            const infoText = margen ? `${base} base + ${margin}% margen de seguridad` : `${base} raciones base`;
             document.getElementById('totalRacionesDisplay').innerText = `${total} raciones`;
             document.getElementById('totalRacionesSubtext').innerText = infoText;
         }
@@ -2301,9 +2359,6 @@
             starch: "1º Tenedor / Hidratos"
         };
         const MEAT_TECHNIQUES = ["tecnica_guiso", "tecnica_seco_asado", "tecnica_frito_rebozado"];
-        const MIN_WEEKLY_GUISOS = 3;
-        const MAX_WEEKLY_GUISOS = 3;
-        const GUISO_DAYS = new Set([0, 2, 4]); // Lunes, Miércoles y Viernes
         const CONSECUTIVE_FIRST_SUBTYPES = new Set([
             "legumbres", "guisos", "sopas_o_caldos", "cremas",
             "arroces", "otros_hidratos",
@@ -2592,7 +2647,7 @@
             if (hasLiquidFirstConflict(dish, chosenFirsts)) return true;
 
             // Máximo 2 días de crema de verdura por semana.
-            if (dish.subtipo_primero === "cremas" && getWeeklyFirstSubtypeCount(menuDays, "cremas", dayIndex) >= 2) return true;
+            if (dish.subtipo_primero === "cremas" && getWeeklyFirstSubtypeCount(menuDays, "cremas", dayIndex) >= getMaxWeeklyCreams()) return true;
 
             // Regla intocable: una verdura principal solo puede aparecer una vez de lunes a viernes.
             if (spec.allowedParents?.includes("Verdura")) {
@@ -2637,7 +2692,7 @@
 
             // Fritos: máximo 2 en la semana y nunca en días consecutivos.
             if (dish.tecnica_cocina === "tecnica_frito_rebozado") {
-                if (getWeeklyTechniqueCount(menuDays, "tecnica_frito_rebozado", chosenTechniques) >= 2) return true;
+                if (getWeeklyTechniqueCount(menuDays, "tecnica_frito_rebozado", chosenTechniques) >= getMaxWeeklyFritos()) return true;
                 const previousDayFritos = dayIndex > 0 && getDayDishList(menuDays, dayIndex - 1, "Segundo")
                     .some(d => d?.tecnica_cocina === "tecnica_frito_rebozado");
                 if (previousDayFritos) return true;
@@ -2646,9 +2701,9 @@
             // Guisos: exactamente uno en Lunes/Miércoles/Viernes y ninguno
             // en Martes/Jueves. Nunca puede haber dos guisos el mismo día.
             if (dish.tecnica_cocina === "tecnica_guiso") {
-                if (!GUISO_DAYS.has(dayIndex)) return true;
-                if (getWeeklyTechniqueCount(menuDays, "tecnica_guiso", chosenTechniques) >= MAX_WEEKLY_GUISOS) return true;
-            } else if (GUISO_DAYS.has(dayIndex) && chosenTechniques.length >= 1 &&
+                if (!getGuisoDays().has(dayIndex)) return true;
+                if (getWeeklyTechniqueCount(menuDays, "tecnica_guiso", chosenTechniques) >= getGuisoDays().size) return true;
+            } else if (getGuisoDays().has(dayIndex) && chosenTechniques.length >= 1 &&
                        chosenTechniques.every(t => t !== "tecnica_guiso") &&
                        chosenTechniques.length >= 1) {
                 // En el segundo hueco de carne de un día de guiso, si el primero
@@ -2704,7 +2759,7 @@
             if (spec.cat === "Segundo" && spec.protein === "Pescado" && dayIndex === 0) score += 1;
 
             if (spec.cat === "Segundo" && spec.protein === "Carne") {
-                const isGuisoDay = GUISO_DAYS.has(dayIndex);
+                const isGuisoDay = getGuisoDays().has(dayIndex);
                 if (dish.tecnica_cocina === "tecnica_guiso") score += isGuisoDay ? 30 : -100;
                 else if (isGuisoDay && chosenTechniques.length === 0) score += 3;
                 else if (!isGuisoDay && dish.tecnica_cocina !== "tecnica_frito_rebozado") score += 1;
@@ -2763,7 +2818,7 @@
                 // El segundo hueco de carne de L/M/V debe cerrar obligatoriamente
                 // el día con un guiso si el primer hueco no lo ha elegido ya.
                 if (spec.cat === "Segundo" && spec.protein === "Carne" &&
-                    GUISO_DAYS.has(dayIndex) && chosenTechniques.length === 1 &&
+                    getGuisoDays().has(dayIndex) && chosenTechniques.length === 1 &&
                     !chosenTechniques.includes("tecnica_guiso")) {
                     candidates = candidates.filter(d => d.tecnica_cocina === "tecnica_guiso");
                 }
@@ -2786,7 +2841,7 @@
                 // si existe un guiso compatible, reservamos uno de los dos segundos
                 // de carne para él desde el primer hueco.
                 if (spec.cat === "Segundo" && spec.protein === "Carne" &&
-                    GUISO_DAYS.has(dayIndex) && !chosenTechniques.includes("tecnica_guiso")) {
+                    getGuisoDays().has(dayIndex) && !chosenTechniques.includes("tecnica_guiso")) {
                     let guisoCandidates = candidates.filter(d => d.tecnica_cocina === "tecnica_guiso");
 
                     // El guiso de L/M/V es una obligación, no una preferencia.
@@ -2815,7 +2870,7 @@
                     const isMeatGuisoPool =
                         spec.cat === "Segundo" &&
                         spec.protein === "Carne" &&
-                        GUISO_DAYS.has(dayIndex) &&
+                        getGuisoDays().has(dayIndex) &&
                         candidates.every(d => d.tecnica_cocina === "tecnica_guiso");
 
                     const selectedDish = isMeatGuisoPool
@@ -2927,7 +2982,7 @@
                     // aquí no dejamos que un criterio blando (ni la semana anterior, ni
                     // la puntuación, ni el orden de candidatos) lo sustituya.
                     if (isStructuralMatch(candidate, spec)) {
-                        const isGuisoDay = GUISO_DAYS.has(dayIndex);
+                        const isGuisoDay = getGuisoDays().has(dayIndex);
                         const isMeatSecond = spec.cat === "Segundo" && spec.protein === "Carne";
                         const alreadyHasGuiso = chosenTechniques.includes("tecnica_guiso");
                         const alreadyHasMeat = chosenTechniques.length > 0;
@@ -3271,15 +3326,15 @@
                 }
             });
 
-            if (weeklyFritos > 2) errors.push(`Semana: hay ${weeklyFritos} fritos o rebozados; el máximo es 2.`);
+            if (weeklyFritos > getMaxWeeklyFritos()) errors.push(`Semana: hay ${weeklyFritos} fritos o rebozados; el máximo es ${getMaxWeeklyFritos()}.`);
             const weeklyCreams = getWeeklyFirstSubtypeCount(menu.days, "cremas");
-            if (weeklyCreams > 2) errors.push(`Semana: hay ${weeklyCreams} días de crema; el máximo es 2.`);
-            if (weeklyGuisos !== 3) errors.push(`Semana: debe haber exactamente 3 guisos; hay ${weeklyGuisos}.`);
+            if (weeklyCreams > getMaxWeeklyCreams()) errors.push(`Semana: hay ${weeklyCreams} días de crema; el máximo es ${getMaxWeeklyCreams()}.`);
+            if (weeklyGuisos !== getGuisoDays().size) errors.push(`Semana: debe haber exactamente ${getGuisoDays().size} guisos; hay ${weeklyGuisos}.`);
 
             days.forEach((dayName, dayIndex) => {
                 const meats = (menu.days[dayName] || []).slice(3, 5).map(s => s.dish).filter(Boolean);
                 const dayGuisos = meats.filter(m => m?.tecnica_cocina === "tecnica_guiso").length;
-                const required = GUISO_DAYS.has(dayIndex);
+                const required = getGuisoDays().has(dayIndex);
                 if (required && dayGuisos !== 1) errors.push(`${dayName}: debe haber exactamente 1 guiso.`);
                 if (!required && dayGuisos !== 0) errors.push(`${dayName}: no debe haber guiso.`);
             });
