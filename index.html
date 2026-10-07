@@ -26,10 +26,7 @@
         <div class="w-8"></div>
         <div class="flex items-center gap-2">
             <svg class="w-6 h-6 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            <div class="min-w-0 text-center leading-tight">
-                <h1 class="text-lg font-bold tracking-wide">GastroOS</h1>
-                <p id="kitchenHeaderName" class="text-[9px] font-semibold text-gray-500 dark:text-gray-400 truncate max-w-[150px]">Autoservicio</p>
-            </div>
+            <div><h1 class="text-lg font-bold tracking-wide">GastroOS</h1><p id="kitchenHeaderName" class="text-[9px] text-gray-500 dark:text-gray-400 text-center truncate max-w-[180px]">Autoservicio</p></div>
         </div>
         <button id="themeToggleBtn" onclick="toggleDarkMode()" class="w-9 h-9 flex items-center justify-center rounded-full transition-colors duration-200 hover:bg-gray-200 dark:hover:bg-gray-700" title="Cambiar tema">
             <svg id="theme-toggle-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-contrast transition-transform duration-300 ease-in-out dark:rotate-180">
@@ -44,17 +41,12 @@
         
         <!-- VISTA 1: BANCO DE PLATOS -->
         <main id="view-banco" class="p-4 block">
-            <div class="view-heading-row">
-                <div>
-                    <h2 class="view-title">Recetario</h2>
-                    <p id="recipeResultsSummary" class="view-subtitle">Cargando recetas…</p>
-                </div>
-                <button type="button" id="btnQuickAddRecipe" class="quick-action" aria-label="Añadir receta">+ Nueva</button>
-            </div>
             <div class="recetario-search-actions">
                 <input type="text" id="searchInput" placeholder="Buscar plato..." class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-                <button type="button" id="btnBulkEdit" class="flex-1 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-2 rounded-lg text-xs font-bold">Edición múltiple ✓</button>
-                <span id="bulkSelectedCount" class="hidden text-[11px] font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">0 seleccionadas</span>
+                <div class="recetario-bulk-action-row">
+                    <button type="button" id="btnBulkEdit" class="border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-2 rounded-lg text-xs font-bold">Edición múltiple</button>
+                    <span id="bulkSelectedCount" class="hidden text-[11px] font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">0 seleccionadas</span>
+                </div>
             </div>
             <div id="bulkToolbar" class="hidden mb-4 p-3 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/70 dark:bg-indigo-950/30">
                 <div class="bulk-top-row">
@@ -99,6 +91,8 @@
             </div>
 
             <!-- Filtros Nivel 2 (Segundos) -->
+            <div id="recipeResultsSummary" class="text-[10px] text-gray-500 dark:text-gray-400 mb-2"></div>
+
             <div id="filters-segundos" class="hidden flex gap-2 overflow-x-auto no-scrollbar mb-4 pb-1">
                 <button class="filter-lvl2 active bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-sm" data-filter="all">Todas</button>
                 <button class="filter-lvl2 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-700 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shadow-sm" data-filter="Carne">Carne</button>
@@ -395,10 +389,10 @@
         <main id="view-generator" class="p-4 hidden space-y-4">
             <div class="flex bg-gray-200 dark:bg-gray-800 p-1 rounded-xl">
                 <button id="btnSubTabMenu" class="flex-1 py-2 rounded-lg text-xs font-bold text-center transition-all bg-white dark:bg-gray-900 text-indigo-700 dark:text-indigo-300 shadow-sm">
-                    📅 MENÚ
+                    📅 MENÚ SEMANAL
                 </button>
                 <button id="btnSubTabShopping" class="flex-1 py-2 rounded-lg text-xs font-bold text-center transition-all text-gray-600 dark:text-gray-400">
-                    🛒 COMPRA
+                    🛒 LISTA DE COMPRA
                 </button>
             </div>
 
@@ -408,14 +402,14 @@
                     <p class="gastro-generator-description text-[11px] text-indigo-200 mb-3">Aplica reglas, control de especies, aprovechamiento de stock y proporciones por demanda.</p>
                     <div class="flex flex-col gap-2">
                         <button id="btnGenerateMenu" class="w-full bg-amber-400 hover:bg-amber-500 text-indigo-950 font-black py-3 px-4 rounded-xl text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
-                            <span class="text-base">✨</span> Generar menú
+                            <span class="text-base">🎲</span> GENERAR MENÚ
                         </button>
                         <div class="flex gap-2">
                             <button id="btnSaveToHistory" class="flex-1 bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1 border border-indigo-600 shadow-sm">
-                                <span>💾</span> Guardar
+                                <span>💾</span> Historial
                             </button>
                             <button id="btnDownloadMenuTxt" class="flex-1 bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1 border border-indigo-600 shadow-sm">
-                                <span>📋</span> Exportar
+                                <span>📋</span> Exportar .txt
                             </button>
                         </div>
                     </div>
@@ -450,7 +444,7 @@
 
         <!-- VISTA 5: AJUSTES Y HISTÓRICO -->
         <main id="view-settings" class="p-4 hidden space-y-5">
-            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">AJUSTES Y DATOS</h2>
+            <div class="view-heading-row"><div><h2 class="view-title">Ajustes</h2><p class="view-subtitle">Normas, datos y conexiones de esta cocina.</p></div></div>
             <section class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <div class="flex items-center gap-2 mb-3">
                     <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -458,21 +452,19 @@
                 </div>
                 <div id="historyListContainer" class="space-y-2"></div>
             </section>
-            <section id="kitchenRulesSection" class="settings-card kitchen-rules-card">
+            <section id="kitchenRulesSection" class="settings-card">
                 <div class="settings-card-heading">
-                    <div>
-                        <h3 class="settings-card-title">Normas del autoservicio</h3>
-                        <p class="settings-card-description">Define las reglas que el generador debe respetar. Lo básico queda visible; el resto se abre solo cuando lo necesitas.</p>
-                    </div>
+                    <h3 class="settings-card-title">Normas del autoservicio</h3>
+                    <p class="settings-card-description">Define cómo debe ser una semana normal en esta cocina. El generador aplicará estas reglas automáticamente.</p>
                 </div>
 
                 <div class="settings-primary-grid">
                     <div>
-                        <label class="field-label">Nombre de la cocina</label>
+                        <label class="field-label" for="kitchenName">Nombre de la cocina</label>
                         <input id="kitchenName" type="text" maxlength="80" class="settings-input" placeholder="Autoservicio">
                     </div>
                     <div>
-                        <label class="field-label">Días con guiso</label>
+                        <div class="field-label">Días con guiso</div>
                         <div class="day-choice-grid">
                             <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="0"><span>Lun</span></label>
                             <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="1"><span>Mar</span></label>
@@ -480,56 +472,60 @@
                             <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="3"><span>Jue</span></label>
                             <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="4"><span>Vie</span></label>
                         </div>
+                        <p class="setting-help">Cada día seleccionado tendrá exactamente un guiso entre las dos carnes.</p>
                     </div>
                 </div>
 
                 <div class="settings-metric-grid">
-                    <div><label class="field-label">Máx. fritos / semana</label><input id="kitchenMaxFritos" type="number" min="0" max="10" class="settings-input"></div>
-                    <div><label class="field-label">Máx. cremas / semana</label><input id="kitchenMaxCreams" type="number" min="0" max="10" class="settings-input"></div>
-                    <div><label class="field-label">Margen de raciones</label><div class="input-suffix"><input id="kitchenMarginPercent" type="number" min="0" max="100" class="settings-input"><span>%</span></div></div>
-                    <div><label class="field-label">Ajuste de compra</label><div class="input-suffix"><input id="kitchenPurchaseAdjustPercent" type="number" min="1" max="150" class="settings-input"><span>%</span></div></div>
+                    <div><label class="field-label" for="kitchenMaxFritos">Máx. fritos / rebozados</label><div class="input-suffix"><input id="kitchenMaxFritos" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
+                    <div><label class="field-label" for="kitchenMaxCreams">Máx. días de crema</label><div class="input-suffix"><input id="kitchenMaxCreams" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
+                    <div><label class="field-label" for="kitchenMarginPercent">Margen de raciones</label><div class="input-suffix"><input id="kitchenMarginPercent" type="number" min="0" max="100" class="settings-input"><span>%</span></div></div>
+                    <div><label class="field-label" for="kitchenPurchaseAdjustPercent">Ajuste de compra</label><div class="input-suffix"><input id="kitchenPurchaseAdjustPercent" type="number" min="1" max="150" class="settings-input"><span>%</span></div></div>
                 </div>
 
                 <details class="settings-accordion">
-                    <summary><span><b>Proteínas</b><small>Pescado y animales permitidos</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <summary><span><b>Proteínas permitidas</b><small>Selecciona las especies y animales que esta cocina utiliza.</small></span><span class="accordion-chevron">⌄</span></summary>
                     <div class="settings-accordion-body">
-                        <label class="setting-toggle"><input id="kitchenFishRequired" type="checkbox"><span><b>Pescado obligatorio cada día</b><small>Si se desactiva, el hueco de pescado sigue existiendo pero no obliga a una especie concreta.</small></span></label>
                         <div class="setting-group">
-                            <p class="setting-group-title">Especies permitidas</p>
-                            <p class="setting-help">Sin seleccionar ninguna = todas las especies etiquetadas.</p>
+                            <p class="setting-group-title">Pescados permitidos</p>
+                            <p class="setting-help">Solo se podrán generar los pescados marcados.</p>
                             <div class="compact-check-grid">
-                                <label><input type="checkbox" class="kitchen-fish-species" value="trucha">Trucha</label><label><input type="checkbox" class="kitchen-fish-species" value="caella">Caella</label><label><input type="checkbox" class="kitchen-fish-species" value="bacalao">Bacalao</label><label><input type="checkbox" class="kitchen-fish-species" value="merluza">Merluza</label><label><input type="checkbox" class="kitchen-fish-species" value="calamares">Calamares</label><label><input type="checkbox" class="kitchen-fish-species" value="bacaladilla">Bacaladilla</label><label><input type="checkbox" class="kitchen-fish-species" value="panga">Panga</label><label><input type="checkbox" class="kitchen-fish-species" value="atun">Atún</label><label><input type="checkbox" class="kitchen-fish-species" value="perca">Perca</label><label><input type="checkbox" class="kitchen-fish-species" value="chicharro">Chicharro</label>
+                                <label><input type="checkbox" class="kitchen-fish-species" value="trucha"> Trucha</label><label><input type="checkbox" class="kitchen-fish-species" value="caella"> Caella</label><label><input type="checkbox" class="kitchen-fish-species" value="bacalao"> Bacalao</label><label><input type="checkbox" class="kitchen-fish-species" value="merluza"> Merluza</label><label><input type="checkbox" class="kitchen-fish-species" value="calamares"> Calamares</label><label><input type="checkbox" class="kitchen-fish-species" value="bacaladilla"> Bacaladilla</label><label><input type="checkbox" class="kitchen-fish-species" value="panga"> Panga</label><label><input type="checkbox" class="kitchen-fish-species" value="atun"> Atún</label><label><input type="checkbox" class="kitchen-fish-species" value="perca"> Perca</label><label><input type="checkbox" class="kitchen-fish-species" value="chicharro"> Chicharro</label>
                             </div>
                         </div>
                         <div class="setting-group">
-                            <p class="setting-group-title">Animales de carne permitidos</p>
-                            <p class="setting-help">Sin seleccionar ninguno = todos los animales etiquetados.</p>
+                            <p class="setting-group-title">Carnes permitidas</p>
+                            <p class="setting-help">Solo se podrán generar los animales marcados.</p>
                             <div class="compact-check-grid">
-                                <label><input type="checkbox" class="kitchen-meat-animal" value="carne_pollo">Pollo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_pavo">Pavo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cerdo">Cerdo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_ternera">Ternera</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_conejo">Conejo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cordero">Cordero</label>
+                                <label><input type="checkbox" class="kitchen-meat-animal" value="carne_pollo"> Pollo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_pavo"> Pavo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cerdo"> Cerdo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_ternera"> Ternera</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_conejo"> Conejo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cordero"> Cordero</label>
                             </div>
                         </div>
                     </div>
                 </details>
 
                 <details class="settings-accordion">
-                    <summary><span><b>Recetas</b><small>Obligatorias, preferidas y prohibidas</small></span><span class="accordion-chevron">⌄</span></summary>
-                    <div class="settings-accordion-body recipe-rule-fields">
-                        <div><label class="field-label">Obligatorias</label><textarea id="kitchenMandatoryRecipes" rows="2" class="settings-textarea" placeholder="Una receta por línea"></textarea></div>
-                        <div><label class="field-label">Preferidas</label><textarea id="kitchenPreferredRecipes" rows="2" class="settings-textarea" placeholder="Una receta por línea"></textarea></div>
-                        <div><label class="field-label">Prohibidas</label><textarea id="kitchenForbiddenRecipes" rows="2" class="settings-textarea" placeholder="Una receta por línea"></textarea></div>
+                    <summary><span><b>Aprovechamiento y disponibilidad</b><small>Controla cuánto pesa el stock y qué tipo de platos puede utilizar el generador.</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <div class="settings-accordion-body">
+                        <div class="setting-group">
+                            <label class="field-label" for="kitchenStockPriority">Prioridad del stock</label>
+                            <select id="kitchenStockPriority" class="settings-input">
+                                <option value="alta">Alta · aprovechar stock siempre que sea compatible</option>
+                                <option value="normal">Normal · aprovechar stock cuando encaje</option>
+                                <option value="ninguna">Ninguna · priorizar variedad</option>
+                            </select>
+                        </div>
+                        <label class="setting-toggle"><input id="kitchenAllowPrecooked" type="checkbox"><span><b>Permitir precocinados</b><small>Si se desactiva, el generador los descarta.</small></span></label>
+                        <label class="setting-toggle"><input id="kitchenAllowPreparedWithoutStock" type="checkbox"><span><b>Permitir elaborados sin stock</b><small>Si se desactiva, un plato elaborado necesita stock preparado registrado.</small></span></label>
                     </div>
                 </details>
 
                 <details class="settings-accordion">
-                    <summary><span><b>Stock y variedad</b><small>Aprovechamiento y repetición</small></span><span class="accordion-chevron">⌄</span></summary>
-                    <div class="settings-accordion-body setting-toggle-list">
-                        <label class="setting-toggle"><input id="kitchenPreferStock" type="checkbox"><span><b>Priorizar platos con stock</b><small>Favorece el uso de producto ya disponible.</small></span></label>
-                        <label class="setting-toggle"><input id="kitchenAllowPrecooked" type="checkbox"><span><b>Permitir precocinados</b></span></label>
-                        <label class="setting-toggle"><input id="kitchenAllowPreparedWithoutStock" type="checkbox"><span><b>Permitir elaborados sin stock registrado</b></span></label>
-                        <label class="setting-toggle"><input id="kitchenAvoidLiquidFirsts" type="checkbox"><span><b>Evitar dos primeros líquidos el mismo día</b></span></label>
-                        <label class="setting-toggle"><input id="kitchenAvoidConsecutiveFirsts" type="checkbox"><span><b>Evitar repetir familia de primero en días consecutivos</b></span></label>
-                        <label class="setting-toggle"><input id="kitchenAvoidRepeatedVegetable" type="checkbox"><span><b>Evitar repetir verdura principal</b></span></label>
-                        <label class="setting-toggle"><input id="kitchenAvoidRepeatedPresentation" type="checkbox"><span><b>Evitar repetir presentación en los segundos del mismo día</b></span></label>
+                    <summary><span><b>Variedad del menú</b><small>Reglas para que la semana no resulte repetitiva.</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <div class="settings-accordion-body">
+                        <label class="setting-toggle"><input id="kitchenAvoidLiquidFirsts" type="checkbox"><span><b>Evitar dos primeros líquidos el mismo día</b><small>Reduce combinaciones demasiado similares.</small></span></label>
+                        <label class="setting-toggle"><input id="kitchenAvoidConsecutiveFirsts" type="checkbox"><span><b>Evitar repetir familia de primero en días consecutivos</b><small>Busca alternancia entre cuchara, verdura y tenedor.</small></span></label>
+                        <label class="setting-toggle"><input id="kitchenAvoidRepeatedVegetable" type="checkbox"><span><b>Evitar repetir verdura principal en la semana</b><small>Evita que la misma verdura sea protagonista varias veces.</small></span></label>
+                        <label class="setting-toggle"><input id="kitchenAvoidRepeatedPresentation" type="checkbox"><span><b>Evitar repetir presentación en los segundos del día</b><small>Favorece técnicas diferentes dentro de la misma jornada.</small></span></label>
                     </div>
                 </details>
 
@@ -538,7 +534,6 @@
                     <p id="kitchenRulesStatus" class="save-status" aria-live="polite"></p>
                 </div>
             </section>
-
             <details id="githubSettingsDetails" class="gastro-settings-details bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <summary class="gastro-settings-summary">
                     <div class="flex items-center gap-2 min-w-0">
@@ -702,7 +697,7 @@
         </button>
         <button class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400 dark:text-gray-500" data-target="view-stock">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7l8-4 8 4v10l-8 4-8-4V7zm0 0l8 4 8-4M12 11v10"></path></svg>
-            <span class="text-[9px] font-semibold">STOCK</span>
+            <span class="text-[9px] font-semibold">STOCK/PREV.</span>
         </button>
         <button class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400 dark:text-gray-500" data-target="view-settings">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
