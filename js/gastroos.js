@@ -19,10 +19,6 @@
             return DEMAND_PORTION_FACTOR[demand] ?? DEMAND_PORTION_FACTOR.Media;
         }
 
-        // Factor global de ajuste de compra: permite calibrar las cantidades
-        // calculadas con la experiencia real de compra sin modificar las recetas.
-        // Se aplica solo a ingredientes con cantidad calculable.
-        const PURCHASE_ADJUSTMENT_FACTOR = 0.80;
 
         const defaultSettings = {
             comensales: 100,
@@ -200,6 +196,7 @@
         let activeFilterLevel2 = 'all';
         let selectedGeneratorDay = 'Lunes';
         let swapTarget = null;
+        let lastGenerationDiagnostics = null;
         let bulkEditMode = false;
         let bulkSelectedDishIds = new Set();
 
@@ -219,38 +216,100 @@
             return getKitchenProfile().maxWeeklyCreams;
         }
 
+        function getKitchenRule(name, fallback = undefined) {
+            const profile = getKitchenProfile();
+            return Object.prototype.hasOwnProperty.call(profile, name) ? profile[name] : fallback;
+        }
+
+        function getKitchenRuleList(name) {
+            const value = getKitchenRule(name, []);
+            return Array.isArray(value) ? value : [];
+        }
+
+        function isDishForbiddenByKitchen(dish) {
+            return window.GastroOSKitchenRules.isDishForbidden(dish, getKitchenProfile());
+        }
+
+        function isDishPreferredByKitchen(dish) {
+            return window.GastroOSKitchenRules.isDishPreferred(dish, getKitchenProfile());
+        }
+
+        function isDishMandatoryByKitchen(dish) {
+            return window.GastroOSKitchenRules.isDishMandatory(dish, getKitchenProfile());
+        }
+
         function renderKitchenRules() {
             const profile = getKitchenProfile();
             const name = document.getElementById('kitchenName');
             const fritos = document.getElementById('kitchenMaxFritos');
             const creams = document.getElementById('kitchenMaxCreams');
             const margin = document.getElementById('kitchenMarginPercent');
+            const purchaseAdjust = document.getElementById('kitchenPurchaseAdjustPercent');
+            const fishRequired = document.getElementById('kitchenFishRequired');
+            const allowPrecooked = document.getElementById('kitchenAllowPrecooked');
+            const allowPrepared = document.getElementById('kitchenAllowPreparedWithoutStock');
+            const preferStock = document.getElementById('kitchenPreferStock');
+            const liquidRule = document.getElementById('kitchenAvoidLiquidFirsts');
+            const consecutiveRule = document.getElementById('kitchenAvoidConsecutiveFirsts');
+            const vegetableRule = document.getElementById('kitchenAvoidRepeatedVegetable');
+            const presentationRule = document.getElementById('kitchenAvoidRepeatedPresentation');
+            const forbidden = document.getElementById('kitchenForbiddenRecipes');
+            const preferred = document.getElementById('kitchenPreferredRecipes');
+            const mandatory = document.getElementById('kitchenMandatoryRecipes');
             if (name) name.value = profile.nombre;
             if (fritos) fritos.value = profile.maxWeeklyFritos;
             if (creams) creams.value = profile.maxWeeklyCreams;
             if (margin) margin.value = profile.margenCompraPorcentaje;
-            document.querySelectorAll('.kitchen-guiso-day').forEach(box => {
-                box.checked = profile.guisoDays.includes(Number(box.dataset.dayIndex));
-            });
+            if (purchaseAdjust) purchaseAdjust.value = profile.ajusteCompraPorcentaje;
+            if (fishRequired) fishRequired.checked = profile.pescadoObligatorio;
+            if (allowPrecooked) allowPrecooked.checked = profile.permitirPrecocinados;
+            if (allowPrepared) allowPrepared.checked = profile.permitirPlatosElaboradosSinStock;
+            if (preferStock) preferStock.checked = profile.priorizarStock;
+            if (liquidRule) liquidRule.checked = profile.evitarLiquidosEnPrimeros;
+            if (consecutiveRule) consecutiveRule.checked = profile.evitarRepeticionPrimeroConsecutivo;
+            if (vegetableRule) vegetableRule.checked = profile.evitarVerduraRepetida;
+            if (presentationRule) presentationRule.checked = profile.evitarPresentacionSegundoRepetida;
+            if (forbidden) forbidden.value = profile.recetasProhibidas.join('\n');
+            if (preferred) preferred.value = profile.recetasPreferidas.join('\n');
+            if (mandatory) mandatory.value = profile.recetasObligatorias.join('\n');
+            document.querySelectorAll('.kitchen-guiso-day').forEach(cb => { cb.checked = profile.guisoDays.includes(Number(cb.dataset.dayIndex)); });
+            document.querySelectorAll('.kitchen-fish-species').forEach(cb => { cb.checked = profile.especiesPescadoPermitidas.includes(cb.value); });
+            document.querySelectorAll('.kitchen-meat-animal').forEach(cb => { cb.checked = profile.animalesCarnePermitidos.includes(cb.value); });
         }
 
         function saveKitchenRules() {
-            const guisoDays = [...document.querySelectorAll('.kitchen-guiso-day:checked')].map(box => Number(box.dataset.dayIndex));
+            const selectedGuisoDays = [...document.querySelectorAll('.kitchen-guiso-day:checked')].map(cb => Number(cb.dataset.dayIndex));
+            const selectedFish = [...document.querySelectorAll('.kitchen-fish-species:checked')].map(cb => cb.value);
+            const selectedAnimals = [...document.querySelectorAll('.kitchen-meat-animal:checked')].map(cb => cb.value);
             settings.kitchenProfile = window.GastroOSKitchenRules.normalize({
+                ...getKitchenProfile(),
                 nombre: document.getElementById('kitchenName')?.value,
-                guisoDays,
+                guisoDays: selectedGuisoDays,
                 maxWeeklyFritos: document.getElementById('kitchenMaxFritos')?.value,
                 maxWeeklyCreams: document.getElementById('kitchenMaxCreams')?.value,
-                margenCompraPorcentaje: document.getElementById('kitchenMarginPercent')?.value
+                margenCompraPorcentaje: document.getElementById('kitchenMarginPercent')?.value,
+                ajusteCompraPorcentaje: document.getElementById('kitchenPurchaseAdjustPercent')?.value,
+                pescadoObligatorio: document.getElementById('kitchenFishRequired')?.checked,
+                especiesPescadoPermitidas: selectedFish,
+                animalesCarnePermitidos: selectedAnimals,
+                recetasProhibidas: document.getElementById('kitchenForbiddenRecipes')?.value,
+                recetasPreferidas: document.getElementById('kitchenPreferredRecipes')?.value,
+                recetasObligatorias: document.getElementById('kitchenMandatoryRecipes')?.value,
+                permitirPrecocinados: document.getElementById('kitchenAllowPrecooked')?.checked,
+                permitirPlatosElaboradosSinStock: document.getElementById('kitchenAllowPreparedWithoutStock')?.checked,
+                priorizarStock: document.getElementById('kitchenPreferStock')?.checked,
+                evitarLiquidosEnPrimeros: document.getElementById('kitchenAvoidLiquidFirsts')?.checked,
+                evitarRepeticionPrimeroConsecutivo: document.getElementById('kitchenAvoidConsecutiveFirsts')?.checked,
+                evitarVerduraRepetida: document.getElementById('kitchenAvoidRepeatedVegetable')?.checked,
+                evitarPresentacionSegundoRepetida: document.getElementById('kitchenAvoidRepeatedPresentation')?.checked
             });
             saveAll();
             renderKitchenRules();
-            updateCalculatedRaciones(false);
+            renderGeneratorView();
             const status = document.getElementById('kitchenRulesStatus');
-            if (status) status.textContent = `Normas guardadas para «${settings.kitchenProfile.nombre}».`;
+            if (status) status.textContent = 'Normas guardadas. El próximo menú se generará con este perfil.';
         }
 
-        // --- 2. INICIALIZACIÓN ---
         function safeLoadJSON(key, fallback) {
             try {
                 const raw = localStorage.getItem(key);
@@ -2643,14 +2702,13 @@
         function violatesDayFirstRule(dish, spec, menuDays, dayIndex, chosenFirsts = [], usedVegetableKeys = new Set(), previousMenu = null, slotIndex = 0, ignorePreviousTemplate = false) {
             if (spec.cat !== "Primero") return false;
 
-            // Reglas intocables: nunca dos primeros líquidos/triturados en el mismo día.
-            if (hasLiquidFirstConflict(dish, chosenFirsts)) return true;
+            if (getKitchenRule('evitarLiquidosEnPrimeros', true) && hasLiquidFirstConflict(dish, chosenFirsts)) return true;
 
             // Máximo 2 días de crema de verdura por semana.
             if (dish.subtipo_primero === "cremas" && getWeeklyFirstSubtypeCount(menuDays, "cremas", dayIndex) >= getMaxWeeklyCreams()) return true;
 
             // Regla intocable: una verdura principal solo puede aparecer una vez de lunes a viernes.
-            if (spec.allowedParents?.includes("Verdura")) {
+            if (getKitchenRule('evitarVerduraRepetida', true) && spec.allowedParents?.includes("Verdura")) {
                 const vegetableKey = getPrimaryVegetableKey(dish);
                 if (vegetableKey && usedVegetableKeys.has(vegetableKey)) return true;
             }
@@ -2663,7 +2721,7 @@
             // Las pastas normales y las rellenas son familias distintas, por lo que
             // pueden alternarse (pasta -> pasta rellena).
             const subtype = dish.subtipo_primero;
-            if (CONSECUTIVE_FIRST_SUBTYPES.has(subtype) && previousDayHasSubtype(menuDays, dayIndex, subtype)) return true;
+            if (getKitchenRule('evitarRepeticionPrimeroConsecutivo', true) && CONSECUTIVE_FIRST_SUBTYPES.has(subtype) && previousDayHasSubtype(menuDays, dayIndex, subtype)) return true;
 
             // Anti-plantilla inter-semanal: no repetir platos/verduras en la misma estructura.
             return !ignorePreviousTemplate && violatesPreviousWeekTemplate(dish, slotIndex, previousMenu);
@@ -2673,6 +2731,7 @@
             if (spec.cat !== "Segundo") return false;
 
             if (spec.protein === "Pescado") {
+                if (getKitchenRule('pescadoObligatorio', true) === false) { /* pescado opcional: se mantiene el hueco, pero no obliga la especie */ }
                 // Regla absoluta: una especie de pescado solo puede aparecer una vez en toda la semana.
                 const species = String(dish?.especie_pescado || "").toLowerCase();
                 if (!species) return true;
@@ -2684,7 +2743,7 @@
 
             // Tampoco combinamos dos segundos con la misma forma de elaboración/presentación
             // (por ejemplo, albóndigas de carne + albóndigas de merluza).
-            if (conflictsWithSecondPreparationFamily(dish, chosenSecondFamilies)) return true;
+            if (getKitchenRule('evitarPresentacionSegundoRepetida', true) && conflictsWithSecondPreparationFamily(dish, chosenSecondFamilies)) return true;
 
             // Máximo un frito/rebozado por día.
             if (dish.tecnica_cocina === "tecnica_frito_rebozado" &&
@@ -2753,10 +2812,12 @@
             // Un plato elaborado en stock pero sin día fijo puede entrar en la
             // generación normal. Le damos una ligera ventaja para aprovechar el
             // stock disponible, pero NO lo fijamos a ningún día.
-            if (preparedStock.some(item => normalizeFoodKey(item?.nombre) === normalizeFoodKey(dish?.nombre) &&
+            if (getKitchenRule('priorizarStock', true) && preparedStock.some(item => normalizeFoodKey(item?.nombre) === normalizeFoodKey(dish?.nombre) &&
                 (!item.asignacion || item.asignacion === 'Sin asignar'))) score += 2;
             if (usesFreshStock(dish)) score += dayIndex < 2 ? 3 : 0;
             if (spec.cat === "Segundo" && spec.protein === "Pescado" && dayIndex === 0) score += 1;
+            if (isDishPreferredByKitchen(dish)) score += 80;
+            if (isDishMandatoryByKitchen(dish)) score += 1000;
 
             if (spec.cat === "Segundo" && spec.protein === "Carne") {
                 const isGuisoDay = getGuisoDays().has(dayIndex);
@@ -2776,10 +2837,14 @@
 
         function isDishActiveForGenerator(dish) {
             if (!dish) return false;
-            // Una receta marcada como "Plato elaborado" NO entra en el generador
-            // solo por existir en el recetario. Tiene que estar dada de alta
-            // actualmente en STOCK/PREV.
-            if (!dish.plato_elaborado) return true;
+            const profile = getKitchenProfile();
+            if (!profile.permitirPrecocinados && dish.precocinado) return false;
+            if (isDishForbiddenByKitchen(dish)) return false;
+            if (!window.GastroOSKitchenRules.isFishAllowed(dish, profile)) return false;
+            if (!window.GastroOSKitchenRules.isMeatAnimalAllowed(dish, profile)) return false;
+            // Un plato elaborado solo entra si existe físicamente en stock, salvo que
+            // la cocina haya decidido expresamente permitirlos sin stock.
+            if (!dish.plato_elaborado || profile.permitirPlatosElaboradosSinStock) return true;
             const key = normalizeFoodKey(dish.nombre);
             return !!key && preparedStock.some(item => normalizeFoodKey(item?.nombre) === key);
         }
@@ -2811,6 +2876,9 @@
                 let candidates = getUniqueNormalizedDishes()
                     .filter(d => isStructuralMatch(d, spec))
                     .filter(d => !usedDishIdsThisWeek.has(String(d.id)))
+                    .filter(d => !isDishForbiddenByKitchen(d))
+                    .filter(d => window.GastroOSKitchenRules.isFishAllowed(d, getKitchenProfile()))
+                    .filter(d => window.GastroOSKitchenRules.isMeatAnimalAllowed(d, getKitchenProfile()))
                     .filter(d => !violatesDayFirstRule(d, spec, menuDays, dayIndex, chosenFirsts, usedVegetableKeys, previousMenu, slotIndex))
                     .filter(d => !violatesDaySecondRule(d, spec, menuDays, dayIndex, chosenAnimals, chosenTechniques, chosenSecondFamilies))
                     .filter(d => !violatesFutureGuisoProtection(d, dayIndex, menuDays, usedDishIdsThisWeek));
@@ -2981,7 +3049,7 @@
                     // globales ya se validan al construir el menú y en validateWeeklyMenu;
                     // aquí no dejamos que un criterio blando (ni la semana anterior, ni
                     // la puntuación, ni el orden de candidatos) lo sustituya.
-                    if (isStructuralMatch(candidate, spec)) {
+                    if (isStructuralMatch(candidate, spec) && !isDishForbiddenByKitchen(candidate) && window.GastroOSKitchenRules.isFishAllowed(candidate, getKitchenProfile()) && window.GastroOSKitchenRules.isMeatAnimalAllowed(candidate, getKitchenProfile()) && (getKitchenProfile().permitirPrecocinados || !candidate.precocinado)) {
                         const isGuisoDay = getGuisoDays().has(dayIndex);
                         const isMeatSecond = spec.cat === "Segundo" && spec.protein === "Carne";
                         const alreadyHasGuiso = chosenTechniques.includes("tecnica_guiso");
@@ -3128,6 +3196,7 @@
             const previousCandidate = getPreviousWeekCandidateMenu();
             const previousForAntiTemplate = previousCandidate?.days ? previousCandidate : null;
             const MAX_GENERATION_ATTEMPTS = 80;
+            lastGenerationDiagnostics = null;
             let bestMenu = null;
             let bestValidation = null;
 
@@ -3140,6 +3209,7 @@
                 }
                 if (validation.valid) {
                     currentMenu = candidate;
+                    lastGenerationDiagnostics = { valid: true, errors: [], attempts: attempt };
                     saveAll();
                     renderGeneratorView();
                     return;
@@ -3150,6 +3220,8 @@
             // únicamente el mejor candidato para que el usuario pueda ver el
             // diagnóstico y no se pierda el menú anterior válido.
             if (bestMenu && bestValidation) {
+                lastGenerationDiagnostics = { valid: false, errors: bestValidation.errors.slice(0, 12), attempts: MAX_GENERATION_ATTEMPTS };
+                renderGeneratorView();
                 alert(`No se ha podido construir una semana que cumpla todas las reglas después de ${MAX_GENERATION_ATTEMPTS} intentos.\n\nEl menú anterior se mantiene sin cambios.\n\nPrincipales incidencias detectadas: ${bestValidation.errors.slice(0, 5).join(" | ")}`);
             }
         }
@@ -3197,12 +3269,15 @@
                 }
                 if (validation.valid) {
                     currentMenu.days[dayName] = candidateDay;
+                    lastGenerationDiagnostics = { valid: true, errors: [], attempts: attempt, dayName };
                     saveAll();
                     renderGeneratorView();
                     return;
                 }
             }
 
+            lastGenerationDiagnostics = { valid: false, errors: bestValidation?.errors?.slice(0, 12) || ['Sin diagnóstico'], attempts: MAX_DAY_REGENERATION_ATTEMPTS, dayName };
+            renderGeneratorView();
             alert(`No se ha podido regenerar ${dayName} manteniendo todas las reglas.\n\nEl día anterior se conserva sin cambios.\n\nPrincipales incidencias: ${bestValidation?.errors?.slice(0, 5).join(" | ") || "sin diagnóstico"}`);
         }
 
@@ -3243,6 +3318,9 @@
                         if (usedIds.has(normalizedId)) errors.push(`${dayName}: el plato "${slot.dish?.nombre || ""}" se repite en la semana.`);
                         usedIds.add(normalizedId);
                     }
+                    if (slot.dish && isDishForbiddenByKitchen(slot.dish)) errors.push(`${dayName}: \"${slot.dish.nombre || ''}\" está prohibido por las normas de la cocina.`);
+                    if (slot.dish && !window.GastroOSKitchenRules.isFishAllowed(slot.dish, getKitchenProfile())) errors.push(`${dayName}: \"${slot.dish.nombre || ''}\" usa una especie de pescado no permitida.`);
+                    if (slot.dish && !window.GastroOSKitchenRules.isMeatAnimalAllowed(slot.dish, getKitchenProfile())) errors.push(`${dayName}: \"${slot.dish.nombre || ''}\" usa un animal de carne no permitido.`);
                 });
 
                 const verdura = slots[0]?.dish;
@@ -3253,7 +3331,7 @@
                 if (tenedor?.subcategoria_primero !== "Tenedor") errors.push(`${dayName}: sin opción compatible de tenedor.`);
 
                 const firsts = [verdura, cuchara, tenedor].filter(Boolean);
-                if (firsts.filter(d => LIQUID_FIRST_SUBTYPES.has(d?.subtipo_primero)).length > 1) {
+                if (getKitchenRule('evitarLiquidosEnPrimeros', true) && firsts.filter(d => LIQUID_FIRST_SUBTYPES.has(d?.subtipo_primero)).length > 1) {
                     errors.push(`${dayName}: no se pueden combinar crema de verduras y sopas o caldos en los primeros.`);
                 }
                 if (verdura?.subtipo_primero === "cremas" && ["guisos", "legumbres"].includes(cuchara?.subtipo_primero)) {
@@ -3263,7 +3341,7 @@
 
                 const vegetableKey = getPrimaryVegetableKey(verdura);
                 if (vegetableKey) {
-                    if (vegetableKeys.has(vegetableKey)) errors.push(`${dayName}: se repite la verdura principal durante la semana.`);
+                    if (getKitchenRule('evitarVerduraRepetida', true) && vegetableKeys.has(vegetableKey)) errors.push(`${dayName}: se repite la verdura principal durante la semana.`);
                     vegetableKeys.add(vegetableKey);
                 }
 
@@ -3281,8 +3359,8 @@
                 weeklyFritos += dayFritos;
 
                 const fish = slots[5]?.dish;
-                if (fish?.proteina_segundo !== "Pescado") errors.push(`${dayName}: falta el pescado obligatorio.`);
-                if (fish && !fish.especie_pescado) errors.push(`${dayName}: el pescado no tiene especie exacta.`);
+                if (getKitchenRule('pescadoObligatorio', true) && fish?.proteina_segundo !== "Pescado") errors.push(`${dayName}: falta el pescado obligatorio.`);
+                if (fish?.proteina_segundo === 'Pescado' && !fish.especie_pescado) errors.push(`${dayName}: el pescado no tiene especie exacta.`);
                 if (fish?.especie_pescado) {
                     const fishKey = String(fish.especie_pescado).toLowerCase();
                     if (fishSpecies.has(fishKey)) errors.push(`${dayName}: la especie de pescado se repite en la semana.`);
@@ -3290,7 +3368,7 @@
                 }
 
                 const secondFamilies = slots.slice(3, 6).map(s => getSecondPreparationFamily(s.dish)).filter(Boolean);
-                if (new Set(secondFamilies).size !== secondFamilies.length) {
+                if (getKitchenRule('evitarPresentacionSegundoRepetida', true) && new Set(secondFamilies).size !== secondFamilies.length) {
                     errors.push(`${dayName}: no se puede repetir la misma forma de preparación en los segundos.`);
                 }
 
@@ -3300,7 +3378,7 @@
                     const currentFirsts = [verdura, cuchara, tenedor].filter(Boolean);
                     currentFirsts.forEach(first => {
                         const subtype = first?.subtipo_primero;
-                        if (CONSECUTIVE_FIRST_SUBTYPES.has(subtype) &&
+                        if (getKitchenRule('evitarRepeticionPrimeroConsecutivo', true) && CONSECUTIVE_FIRST_SUBTYPES.has(subtype) &&
                             prevFirsts.some(d => d?.subtipo_primero === subtype)) {
                             errors.push(`${dayName}: ${FIRST_LABELS[subtype] || subtype} repetido en días consecutivos.`);
                         }
@@ -3339,6 +3417,13 @@
                 if (!required && dayGuisos !== 0) errors.push(`${dayName}: no debe haber guiso.`);
             });
 
+            const mandatoryNames = getKitchenRuleList('recetasObligatorias');
+            mandatoryNames.forEach(requiredName => {
+                const normalizedRequired = window.GastroOSKitchenRules.normalizeDishName(requiredName);
+                const found = days.some(dayName => (menu.days[dayName] || []).some(slot => window.GastroOSKitchenRules.normalizeDishName(slot?.dish?.nombre) === normalizedRequired));
+                if (!found) errors.push(`Semana: falta la receta obligatoria \"${requiredName}\".`);
+            });
+
             const previousWeekHistoryMenu = getPreviousWeekHistoryMenu();
             if (previousWeekHistoryMenu?.days && menu?.generatedAt) {
                 const previousSerialized = JSON.stringify(daysList.map(day => (previousWeekHistoryMenu.days[day] || []).map(slot => slot?.dish?.id || "none")));
@@ -3356,6 +3441,29 @@
             return { valid: errors.length === 0, errors };
         }
 
+        function getKitchenRulesSummary() {
+            const p = getKitchenProfile();
+            const guiso = p.guisoDays.map(i => window.GastroOSKitchenRules.DAYS[i]).join(', ') || 'ningún día';
+            const fish = p.especiesPescadoPermitidas.length ? p.especiesPescadoPermitidas.join(', ') : 'todas las especies etiquetadas';
+            const meats = p.animalesCarnePermitidos.length ? p.animalesCarnePermitidos.map(v => v.replace('carne_','')).join(', ') : 'todos los animales etiquetados';
+            return { p, guiso, fish, meats };
+        }
+
+        function getSlotRuleExplanation(slot, dayName, dayIndex) {
+            const d = slot?.dish;
+            if (!d || d.id === 'none') return 'Sin plato compatible con las normas.';
+            const p = getKitchenProfile();
+            const reasons = [];
+            if (isDishMandatoryByKitchen(d)) reasons.push('receta obligatoria');
+            else if (isDishPreferredByKitchen(d)) reasons.push('receta preferida');
+            if (p.priorizarStock && isPreparedStockDish(d)) reasons.push('aprovecha stock');
+            if (usesFreshStock(d)) reasons.push('aprovecha materia prima fresca');
+            if (d.tecnica_cocina === 'tecnica_guiso' && p.guisoDays.includes(dayIndex)) reasons.push('guiso programado');
+            if (d.proteina_segundo === 'Pescado' && p.pescadoObligatorio) reasons.push('pescado obligatorio');
+            if (d.precocinado) reasons.push('precocinado permitido');
+            return reasons.length ? reasons.join(' · ') : 'Compatible con la estructura y las reglas de la cocina.';
+        }
+
         function renderGeneratorView() {
             const container = document.getElementById('generatedMenuContainer');
             container.innerHTML = '';
@@ -3370,6 +3478,15 @@
                 `;
                 return;
             }
+
+            const { p, guiso, fish, meats } = getKitchenRulesSummary();
+            const rulesBox = document.createElement('div');
+            rulesBox.className = 'bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-2';
+            const diagnostics = lastGenerationDiagnostics?.valid === false
+                ? `<div class="mt-2 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 p-2.5 text-[11px] text-red-700 dark:text-red-300"><strong>Diagnóstico:</strong> ${lastGenerationDiagnostics.errors.map(escapeHtml).join(' · ')}</div>`
+                : '';
+            rulesBox.innerHTML = `<div class="flex justify-between gap-3 items-start"><div><h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">${escapeHtml(p.nombre)}</h3><p class="text-[10px] text-gray-500 dark:text-gray-400">Normas activas del autoservicio</p></div><span class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded-full">${p.guisoDays.length} días de guiso</span></div><div class="grid grid-cols-2 gap-2 text-[10px] text-gray-600 dark:text-gray-300"><div><b>Guisos:</b> ${escapeHtml(guiso)}</div><div><b>Fritos:</b> máx. ${p.maxWeeklyFritos}</div><div><b>Cremas:</b> máx. ${p.maxWeeklyCreams}</div><div><b>Pescado:</b> ${p.pescadoObligatorio ? 'obligatorio' : 'opcional'}</div><div><b>Animales:</b> ${escapeHtml(meats)}</div><div><b>Especies:</b> ${escapeHtml(fish)}</div></div>${p.recetasObligatorias.length ? `<div class="text-[10px] text-gray-600 dark:text-gray-300"><b>Obligatorias:</b> ${p.recetasObligatorias.map(escapeHtml).join(' · ')}</div>` : ''}${p.recetasProhibidas.length ? `<div class="text-[10px] text-gray-600 dark:text-gray-300"><b>Prohibidas:</b> ${p.recetasProhibidas.map(escapeHtml).join(' · ')}</div>` : ''}${diagnostics}`;
+            container.appendChild(rulesBox);
 
             const daysToRender = selectedGeneratorDay === 'Todos' ? daysList : [selectedGeneratorDay];
 
@@ -3430,6 +3547,7 @@
                             <div class="text-[10px] font-bold text-gray-500 uppercase">${escapeHtml(slot.slotLabel)}</div>
                             <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">${escapeHtml(dishName)} ${warningBadge} ${stockBadge} ${precookedBadge} ${preparedDishBadge}</div>
                             ${allergenLine}
+                            <div class="text-[9px] text-indigo-500 dark:text-indigo-300 mt-1">${escapeHtml(getSlotRuleExplanation(slot, dayName, daysList.indexOf(dayName)))}</div>
                         </div>
                     </div>
                     <button onclick="openSwapModal(decodeURIComponent('${safeDay}'), ${index}, decodeURIComponent('${safeCat}'), decodeURIComponent('${safeFirstSubtype}'), decodeURIComponent('${safeProtein}'))" class="gastro-slot-action flex items-center justify-center">
@@ -3531,6 +3649,8 @@
                             aggregated[key] = {
                                 nombre: rawName,
                                 totalBaseQty: 0,
+                                requiredBaseQty: 0,
+                                stockUsedBaseQty: 0,
                                 cat: category,
                                 baseUnit: isWeight ? 'kg' : (isVolume ? 'L' : ''),
                                 needsManualPurchase: false
@@ -3547,10 +3667,13 @@
 
                         const demandFactor = getDemandPortionFactor(slot.dish?.demanda || 'Media');
                         const estimatedDishRations = totalRacionesPorComida * demandFactor;
-                        const totalForMeal = rawQty * estimatedDishRations * PURCHASE_ADJUSTMENT_FACTOR;
+                        const purchaseAdjustment = getKitchenProfile().ajusteCompraPorcentaje / 100;
+                        const totalForMeal = rawQty * estimatedDishRations * purchaseAdjustment;
                         const baseQty = totalForMeal * ((unit === 'kg' || unit === 'l') ? 1000 : 1);
                         const stockUsed = deductFromStockLedger(stockLedger, rawName, baseQty, unit, category);
                         const netQty = Math.max(0, baseQty - stockUsed);
+                        aggregated[key].requiredBaseQty += baseQty;
+                        aggregated[key].stockUsedBaseQty += stockUsed;
                         aggregated[key].totalBaseQty += netQty;
                         aggregated[key].baseUnit = isWeight ? 'kg' : 'L';
                     });
@@ -3573,7 +3696,11 @@
                 groupedByCategory[item.cat].push({
                     nombre: item.nombre,
                     cantidad,
-                    unidad
+                    unidad,
+                    necesario: item.requiredBaseQty,
+                    disponible: item.stockUsedBaseQty,
+                    comprar: item.totalBaseQty,
+                    dimension: item.baseUnit
                 });
             });
             return { totalRacionesPorComida, groupedByCategory };
@@ -3596,7 +3723,7 @@
                 hasItems = true;
                 const section = document.createElement('div');
                 section.className = "bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-2";
-                section.innerHTML = `<h4 class="font-bold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-1">${escapeHtml(cat)}</h4><ul class="space-y-1.5">${items.map(i => `<li class="flex justify-between text-xs text-gray-800 dark:text-gray-200"><span>${escapeHtml(i.nombre)}</span><span class="font-bold">${escapeHtml(`${i.cantidad}${i.unidad}`)}</span></li>`).join('')}</ul>`;
+                section.innerHTML = `<h4 class="font-bold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-1">${escapeHtml(cat)}</h4><div class="grid grid-cols-[1fr_auto_auto_auto] gap-x-3 text-[9px] uppercase font-bold text-gray-400 px-1"><span>Ingrediente</span><span>Necesario</span><span>Stock</span><span>Comprar</span></div><ul class="space-y-1.5">${items.map(i => { const fmt = n => n > 0 ? `${Math.ceil(n/1000)} ${i.dimension}` : '—'; return `<li class="grid grid-cols-[1fr_auto_auto_auto] gap-x-3 items-center text-xs text-gray-800 dark:text-gray-200 border-t border-gray-100 dark:border-gray-800 pt-1.5"><span>${escapeHtml(i.nombre)}</span><span class="text-[10px] text-gray-500">${escapeHtml(fmt(i.necesario))}</span><span class="text-[10px] text-emerald-600 dark:text-emerald-400">${escapeHtml(fmt(i.disponible))}</span><span class="font-black">${escapeHtml(i.comprar > 0 ? `${i.cantidad} ${i.unidad}` : '0')}</span></li>`; }).join('')}</ul>`;
                 container.appendChild(section);
             });
             if (!hasItems) container.innerHTML = '<p class="text-center text-gray-500 text-xs py-4">No hay ingredientes necesarios en el menú actual.</p>';
@@ -3653,6 +3780,10 @@
                 if (swapTarget.cat === 'Primero' && swapTarget.subcat && d.subcategoria_primero !== swapTarget.subcat) return false;
                 if (swapTarget.cat === 'Segundo' && swapTarget.protein && d.proteina_segundo !== swapTarget.protein) return false;
                 if (String(d.id) === String(currentMenu?.days?.[swapTarget.dayName]?.[swapTarget.slotIndex]?.dish?.id)) return false;
+                if (isDishForbiddenByKitchen(d)) return false;
+                if (!window.GastroOSKitchenRules.isFishAllowed(d, getKitchenProfile())) return false;
+                if (!window.GastroOSKitchenRules.isMeatAnimalAllowed(d, getKitchenProfile())) return false;
+                if (!getKitchenProfile().permitirPrecocinados && d.precocinado) return false;
                 if (searchVal && !String(d.nombre || '').toLowerCase().includes(searchVal)) return false;
 
                 // Solo mostramos candidatos que, si se colocan en este hueco,
