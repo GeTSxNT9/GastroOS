@@ -241,6 +241,7 @@
         function renderKitchenRules() {
             const profile = getKitchenProfile();
             const name = document.getElementById('kitchenName');
+            const headerName = document.getElementById('kitchenHeaderName');
             const fritos = document.getElementById('kitchenMaxFritos');
             const creams = document.getElementById('kitchenMaxCreams');
             const margin = document.getElementById('kitchenMarginPercent');
@@ -257,6 +258,7 @@
             const preferred = document.getElementById('kitchenPreferredRecipes');
             const mandatory = document.getElementById('kitchenMandatoryRecipes');
             if (name) name.value = profile.nombre;
+            if (headerName) headerName.textContent = profile.nombre || 'Autoservicio';
             if (fritos) fritos.value = profile.maxWeeklyFritos;
             if (creams) creams.value = profile.maxWeeklyCreams;
             if (margin) margin.value = profile.margenCompraPorcentaje;
@@ -572,6 +574,7 @@
 
         // --- 3. EVENTOS Y VISTAS ---
         function setupEventListeners() {
+            document.getElementById('btnQuickAddRecipe')?.addEventListener('click', () => switchView('view-form'));
             document.getElementById('btnSaveKitchenRules')?.addEventListener('click', saveKitchenRules);
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -781,8 +784,15 @@
                 return true;
             });
 
+            const resultsSummary = document.getElementById('recipeResultsSummary');
+            if (resultsSummary) {
+                const total = dishes.length;
+                resultsSummary.textContent = searchVal || activeFilterLevel1 !== 'all' || activeFilterLevel2 !== 'all'
+                    ? `${filtered.length} de ${total} recetas`
+                    : `${total} recetas disponibles`;
+            }
             if (!filtered.length) {
-                list.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 mt-10 text-sm">No hay resultados.</p>';
+                list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⌕</div><p>No hay recetas que coincidan.</p><small>Prueba con otro nombre o cambia los filtros.</small></div>';
                 return;
             }
 
@@ -3481,11 +3491,11 @@
 
             const { p, guiso, fish, meats } = getKitchenRulesSummary();
             const rulesBox = document.createElement('div');
-            rulesBox.className = 'bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-2';
+            rulesBox.className = 'generator-rules-card';
             const diagnostics = lastGenerationDiagnostics?.valid === false
-                ? `<div class="mt-2 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 p-2.5 text-[11px] text-red-700 dark:text-red-300"><strong>Diagnóstico:</strong> ${lastGenerationDiagnostics.errors.map(escapeHtml).join(' · ')}</div>`
+                ? `<div class="generator-diagnostic"><strong>Revisión:</strong> ${lastGenerationDiagnostics.errors.slice(0, 4).map(escapeHtml).join(' · ')}</div>`
                 : '';
-            rulesBox.innerHTML = `<div class="flex justify-between gap-3 items-start"><div><h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">${escapeHtml(p.nombre)}</h3><p class="text-[10px] text-gray-500 dark:text-gray-400">Normas activas del autoservicio</p></div><span class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded-full">${p.guisoDays.length} días de guiso</span></div><div class="grid grid-cols-2 gap-2 text-[10px] text-gray-600 dark:text-gray-300"><div><b>Guisos:</b> ${escapeHtml(guiso)}</div><div><b>Fritos:</b> máx. ${p.maxWeeklyFritos}</div><div><b>Cremas:</b> máx. ${p.maxWeeklyCreams}</div><div><b>Pescado:</b> ${p.pescadoObligatorio ? 'obligatorio' : 'opcional'}</div><div><b>Animales:</b> ${escapeHtml(meats)}</div><div><b>Especies:</b> ${escapeHtml(fish)}</div></div>${p.recetasObligatorias.length ? `<div class="text-[10px] text-gray-600 dark:text-gray-300"><b>Obligatorias:</b> ${p.recetasObligatorias.map(escapeHtml).join(' · ')}</div>` : ''}${p.recetasProhibidas.length ? `<div class="text-[10px] text-gray-600 dark:text-gray-300"><b>Prohibidas:</b> ${p.recetasProhibidas.map(escapeHtml).join(' · ')}</div>` : ''}${diagnostics}`;
+            rulesBox.innerHTML = `<details class="generator-rules-details"><summary><span><b>Normas aplicadas</b><small>${escapeHtml(p.nombre)} · ${p.guisoDays.length} días de guiso · pescado ${p.pescadoObligatorio ? 'obligatorio' : 'opcional'}</small></span><span class="accordion-chevron">⌄</span></summary><div class="generator-rules-body"><div class="generator-rule-grid"><div><b>Guisos</b><span>${escapeHtml(guiso)}</span></div><div><b>Fritos</b><span>máx. ${p.maxWeeklyFritos}</span></div><div><b>Cremas</b><span>máx. ${p.maxWeeklyCreams}</span></div><div><b>Carne</b><span>${escapeHtml(meats)}</span></div><div><b>Pescado</b><span>${escapeHtml(fish)}</span></div><div><b>Compra</b><span>ajuste ${p.ajusteCompraPorcentaje}%</span></div></div>${p.recetasObligatorias.length ? `<div class="generator-rule-line"><b>Obligatorias</b><span>${p.recetasObligatorias.map(escapeHtml).join(' · ')}</span></div>` : ''}${p.recetasProhibidas.length ? `<div class="generator-rule-line"><b>Prohibidas</b><span>${p.recetasProhibidas.map(escapeHtml).join(' · ')}</span></div>` : ''}</div></details>${diagnostics}`;
             container.appendChild(rulesBox);
 
             const daysToRender = selectedGeneratorDay === 'Todos' ? daysList : [selectedGeneratorDay];
