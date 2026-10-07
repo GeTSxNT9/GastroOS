@@ -226,6 +226,7 @@
             const profile = getKitchenProfile();
             const name = document.getElementById('kitchenName');
             const headerName = document.getElementById('kitchenHeaderName');
+            const generatorName = document.getElementById('generatorKitchenName');
             const fritos = document.getElementById('kitchenMaxFritos');
             const creams = document.getElementById('kitchenMaxCreams');
             const margin = document.getElementById('kitchenMarginPercent');
@@ -239,6 +240,7 @@
             const presentationRule = document.getElementById('kitchenAvoidRepeatedPresentation');
             if (name) name.value = profile.nombre;
             if (headerName) headerName.textContent = profile.nombre || 'Autoservicio';
+            if (generatorName) generatorName.textContent = profile.nombre || 'Autoservicio';
             if (fritos) fritos.value = profile.maxWeeklyFritos;
             if (creams) creams.value = profile.maxWeeklyCreams;
             if (margin) margin.value = profile.margenCompraPorcentaje;
@@ -3445,7 +3447,9 @@
             const diagnostics = lastGenerationDiagnostics?.valid === false
                 ? `<div class="generator-diagnostic"><strong>Revisión:</strong> ${lastGenerationDiagnostics.errors.slice(0, 4).map(escapeHtml).join(' · ')}</div>`
                 : '';
-            rulesBox.innerHTML = `<details class="generator-rules-details"><summary><span><b>Normas aplicadas</b><small>${escapeHtml(p.nombre)} · ${p.guisoDays.length} días de guiso · ${p.especiesPescadoPermitidas.length} especies de pescado</small></span><span class="accordion-chevron">⌄</span></summary><div class="generator-rules-body"><div class="generator-rule-grid"><div><b>Guisos</b><span>${escapeHtml(guiso)}</span></div><div><b>Fritos</b><span>máx. ${p.maxWeeklyFritos}/semana</span></div><div><b>Cremas</b><span>máx. ${p.maxWeeklyCreams}/semana</span></div><div><b>Carne</b><span>${escapeHtml(meats)}</span></div><div><b>Pescado</b><span>${escapeHtml(fish)}</span></div><div><b>Stock</b><span>${escapeHtml(p.prioridadStock)}</span></div></div></div></details>${diagnostics}`;
+            const stockPriorityLabels = { alta: 'Alta · Aprovechar stock si es compatible', normal: 'Normal · Aprovechar stock cuando encaje', ninguna: 'Ninguna · Priorizar variedad' };
+            const guisoText = guiso === 'ningún día' ? 'Sin días de guiso' : guiso;
+            rulesBox.innerHTML = `<details class="generator-rules-details"><summary><span><b>NORMAS APLICADAS</b><small>Ver configuración de esta cocina</small></span><span class="accordion-chevron">⌄</span></summary><div class="generator-rules-body"><div class="generator-rule-grid"><div><b>Guisos</b><span>${escapeHtml(guisoText)}</span></div><div><b>Fritos</b><span>Máx. ${p.maxWeeklyFritos} por semana</span></div><div><b>Cremas</b><span>Máx. ${p.maxWeeklyCreams} por semana</span></div><div><b>Carnes</b><span>${escapeHtml(meats)}</span></div><div><b>Pescados</b><span>${escapeHtml(fish)}</span></div><div><b>Stock</b><span>${escapeHtml(stockPriorityLabels[p.prioridadStock] || p.prioridadStock)}</span></div></div></div></details>${diagnostics}`;
             container.appendChild(rulesBox);
 
             const daysToRender = selectedGeneratorDay === 'Todos' ? daysList : [selectedGeneratorDay];
