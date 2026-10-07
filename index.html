@@ -44,7 +44,7 @@
             <div class="recetario-search-actions">
                 <input type="text" id="searchInput" placeholder="Buscar plato..." class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 <div class="recetario-bulk-action-row">
-                    <button type="button" id="btnBulkEdit" class="border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-2 rounded-lg text-xs font-bold">Edición múltiple</button>
+                    <button type="button" id="btnBulkEdit" class="border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-2 rounded-lg text-xs font-bold">EDICIÓN MÚLTIPLE</button>
                     <span id="bulkSelectedCount" class="hidden text-[11px] font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">0 seleccionadas</span>
                 </div>
             </div>
@@ -398,8 +398,9 @@
 
             <div id="subtab-menu-content" class="space-y-4">
                 <div class="bg-indigo-900 dark:bg-indigo-950 text-white p-4 rounded-xl shadow-lg border border-indigo-800 dark:border-indigo-900 text-center">
-                    <h2 class="gastro-generator-title">Motor de Planificación</h2>
-                    <p class="gastro-generator-description text-[11px] text-indigo-200 mb-3">Aplica reglas, control de especies, aprovechamiento de stock y proporciones por demanda.</p>
+                    <p class="gastro-generator-kitchen-name" id="generatorKitchenName">Autoservicio</p>
+                    <h2 class="gastro-generator-title">GENERADOR SEMANAL</h2>
+                    <p class="gastro-generator-description text-[11px] text-indigo-200 mb-3">Crea una propuesta equilibrada según las normas de esta cocina, el stock disponible y la variedad del menú.</p>
                     <div class="flex flex-col gap-2">
                         <button id="btnGenerateMenu" class="w-full bg-amber-400 hover:bg-amber-500 text-indigo-950 font-black py-3 px-4 rounded-xl text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
                             <span class="text-base">🎲</span> GENERAR MENÚ
@@ -484,34 +485,34 @@
                 </div>
 
                 <details class="settings-accordion">
-                    <summary><span><b>Proteínas permitidas</b><small>Selecciona las especies y animales que esta cocina utiliza.</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <summary><span><b>PROTEÍNAS PERMITIDAS</b><small>Marca las carnes y pescados que utiliza esta cocina.</small></span><span class="accordion-chevron">⌄</span></summary>
                     <div class="settings-accordion-body">
                         <div class="setting-group">
-                            <p class="setting-group-title">Pescados permitidos</p>
-                            <p class="setting-help">Solo se podrán generar los pescados marcados.</p>
+                            <p class="setting-group-title">CARNES PERMITIDAS</p>
+                            <p class="setting-help">Solo se generarán platos con las carnes marcadas.</p>
                             <div class="compact-check-grid">
-                                <label><input type="checkbox" class="kitchen-fish-species" value="trucha"> Trucha</label><label><input type="checkbox" class="kitchen-fish-species" value="caella"> Caella</label><label><input type="checkbox" class="kitchen-fish-species" value="bacalao"> Bacalao</label><label><input type="checkbox" class="kitchen-fish-species" value="merluza"> Merluza</label><label><input type="checkbox" class="kitchen-fish-species" value="calamares"> Calamares</label><label><input type="checkbox" class="kitchen-fish-species" value="bacaladilla"> Bacaladilla</label><label><input type="checkbox" class="kitchen-fish-species" value="panga"> Panga</label><label><input type="checkbox" class="kitchen-fish-species" value="atun"> Atún</label><label><input type="checkbox" class="kitchen-fish-species" value="perca"> Perca</label><label><input type="checkbox" class="kitchen-fish-species" value="chicharro"> Chicharro</label>
+                                <label><input type="checkbox" class="kitchen-meat-animal" value="carne_pollo"> Pollo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_pavo"> Pavo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cerdo"> Cerdo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_ternera"> Ternera</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_conejo"> Conejo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cordero"> Cordero</label>
                             </div>
                         </div>
                         <div class="setting-group">
-                            <p class="setting-group-title">Carnes permitidas</p>
-                            <p class="setting-help">Solo se podrán generar los animales marcados.</p>
+                            <p class="setting-group-title">PESCADOS PERMITIDOS</p>
+                            <p class="setting-help">Solo se generarán platos con los pescados marcados.</p>
                             <div class="compact-check-grid">
-                                <label><input type="checkbox" class="kitchen-meat-animal" value="carne_pollo"> Pollo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_pavo"> Pavo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cerdo"> Cerdo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_ternera"> Ternera</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_conejo"> Conejo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cordero"> Cordero</label>
+                                <label><input type="checkbox" class="kitchen-fish-species" value="trucha"> Trucha</label><label><input type="checkbox" class="kitchen-fish-species" value="caella"> Caella</label><label><input type="checkbox" class="kitchen-fish-species" value="bacalao"> Bacalao</label><label><input type="checkbox" class="kitchen-fish-species" value="merluza"> Merluza</label><label><input type="checkbox" class="kitchen-fish-species" value="calamares"> Calamares</label><label><input type="checkbox" class="kitchen-fish-species" value="bacaladilla"> Bacaladilla</label><label><input type="checkbox" class="kitchen-fish-species" value="panga"> Panga</label><label><input type="checkbox" class="kitchen-fish-species" value="atun"> Atún</label><label><input type="checkbox" class="kitchen-fish-species" value="perca"> Perca</label><label><input type="checkbox" class="kitchen-fish-species" value="chicharro"> Chicharro</label>
                             </div>
                         </div>
                     </div>
                 </details>
 
                 <details class="settings-accordion">
-                    <summary><span><b>Aprovechamiento y disponibilidad</b><small>Controla cuánto pesa el stock y qué tipo de platos puede utilizar el generador.</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <summary><span><b>APROVECHAMIENTO Y DISPONIBILIDAD</b><small>Decide cómo debe aprovecharse el stock y qué platos puede utilizar el generador.</small></span><span class="accordion-chevron">⌄</span></summary>
                     <div class="settings-accordion-body">
                         <div class="setting-group">
                             <label class="field-label" for="kitchenStockPriority">Prioridad del stock</label>
                             <select id="kitchenStockPriority" class="settings-input">
-                                <option value="alta">Alta · aprovechar stock siempre que sea compatible</option>
-                                <option value="normal">Normal · aprovechar stock cuando encaje</option>
-                                <option value="ninguna">Ninguna · priorizar variedad</option>
+                                <option value="alta">Alta · Aprovechar stock si es compatible</option>
+                                <option value="normal">Normal · Aprovechar stock cuando encaje</option>
+                                <option value="ninguna">Ninguna · Priorizar variedad</option>
                             </select>
                         </div>
                         <label class="setting-toggle"><input id="kitchenAllowPrecooked" type="checkbox"><span><b>Permitir precocinados</b><small>Si se desactiva, el generador los descarta.</small></span></label>
@@ -520,7 +521,7 @@
                 </details>
 
                 <details class="settings-accordion">
-                    <summary><span><b>Variedad del menú</b><small>Reglas para que la semana no resulte repetitiva.</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <summary><span><b>VARIEDAD DEL MENÚ</b><small>Ayuda a mantener una semana variada y equilibrada.</small></span><span class="accordion-chevron">⌄</span></summary>
                     <div class="settings-accordion-body">
                         <label class="setting-toggle"><input id="kitchenAvoidLiquidFirsts" type="checkbox"><span><b>Evitar dos primeros líquidos el mismo día</b><small>Reduce combinaciones demasiado similares.</small></span></label>
                         <label class="setting-toggle"><input id="kitchenAvoidConsecutiveFirsts" type="checkbox"><span><b>Evitar repetir familia de primero en días consecutivos</b><small>Busca alternancia entre cuchara, verdura y tenedor.</small></span></label>
@@ -530,7 +531,7 @@
                 </details>
 
                 <div class="settings-save-row">
-                    <button type="button" id="btnSaveKitchenRules" class="primary-action">Guardar normas</button>
+                    <button type="button" id="btnSaveKitchenRules" class="primary-action">GUARDAR NORMAS</button>
                     <p id="kitchenRulesStatus" class="save-status" aria-live="polite"></p>
                 </div>
             </section>
