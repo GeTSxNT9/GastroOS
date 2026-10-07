@@ -1,15 +1,21 @@
-const CACHE_NAME = 'gastroos-v5';
+/* GastroOS · Service Worker · Fase 9
+ * Caché versionada y actualizaciones seguras.
+ * La aplicación sigue usando estrategia network-first: intenta obtener la versión
+ * más reciente y recurre a la caché si no hay conexión.
+ */
+'use strict';
 
-const CACHE_FILES = [
+const CACHE_PREFIX = 'gastroos-';
+const CACHE_NAME = 'gastroos-v3';
+const APP_SHELL = [
   './',
   './index.html',
-  './recipes.json',
   './manifest.json',
+  './recipes.json',
   './css/gastroos.css',
-  './js/recipe-schema.js',
-  './js/menu-rules.js',
-  './js/menu-validator.js',
   './js/gastroos.js',
+  './js/menu-engine-facade.js',
+  './js/github-facade.js',
   './favicon-32.png',
   './apple-touch-icon.png',
   './icon-192.png',
@@ -17,50 +23,57 @@ const CACHE_FILES = [
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(CACHE_FILES))
-      .then(() => self.skipWaiting())
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    // Los recursos principales se precargan individualmente para que un icono
+    // opcional ausente no impida instalar toda la aplicación.
+    await Promise.all(APP_SHELL.map(async path => {
+      try {
+        const response = await fetch(path, { cache: 'reload' });
+        if (response && response.status === 200 && response.type === 'basic') {
+          await cache.put(path, response);
+        }
+      } catch (_) {
+        // Si no se puede descargar un recurso ahora, la instalación continúa.
+      }
+    }));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      ))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys
+      .filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
+      .map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
+  const request = event.request;
+  if (request.method !== 'GET') return;
 
-  const requestUrl = new URL(event.request.url);
-  if (requestUrl.origin !== self.location.origin) return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
 
-  event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        if (response && response.status === 200) {
-          const responseClone = response.clone();
-          event.waitUntil(
-            caches.open(CACHE_NAME)
-              .then(cache => cache.put(event.request, responseClone))
-              .catch(() => {})
-          );
-        }
-        return response;
-      })
-      .catch(() => {
-        return caches.match(event.request).then(cached => {
-          if (cached) return cached;
-          if (event.request.mode === 'navigate') return caches.match('./index.html');
-          return Response.error();
-        });
-      })
-  );
+  event.respondWith((async () => {
+    try {
+      const response = await fetch(request);
+      if (response && response.status === 200 && response.type === 'basic') {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(request, response.clone());
+      }
+      return response;
+    } catch (_) {
+      const cached = await caches.match(request);
+      if (cached) return cached;
+      if (request.mode === 'navigate') {
+        const appShell = await caches.match('./index.html');
+        if (appShell) return appShell;
+      }
+      return Response.error();
+    }
+  })());
 });
