@@ -429,7 +429,7 @@
                         <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">CÁLCULO CATEGORIZADO POR PROVEEDORES</h3>
                         <span class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 px-2 py-0.5 rounded-full" id="shoppingRacionesBadge">130 Raciones</span>
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug">Cantidades agrupadas en categorías.</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug">Se muestra por ingrediente: <b>necesario</b>, <b>cubierto por stock</b> y <b>comprar</b>.</p>
                     <button id="btnDownloadShoppingTxt" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-lg text-xs flex items-center justify-center gap-2 shadow-sm">
                         <span>📄</span> Descargar Lista (.txt)
                     </button>
@@ -451,7 +451,7 @@
             <section id="kitchenRulesSection" class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-3">
                 <div>
                     <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">Normas del autoservicio</h3>
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Configuración local de las reglas que utiliza el generador de menús para esta cocina.</p>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Aquí defines la cocina real: qué debe aparecer, qué no debe aparecer y qué preferencias debe seguir el generador.</p>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre de la cocina / autoservicio</label>
@@ -460,24 +460,49 @@
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Días en los que debe aparecer un guiso</label>
                     <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                        ${['Lunes','Martes','Miércoles','Jueves','Viernes'].map((d,i)=>`<label class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-xs"><input type="checkbox" class="kitchen-guiso-day" data-day-index="${i}"> <span>${d}</span></label>`).join('')}
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-xs"><input type="checkbox" class="kitchen-guiso-day" data-day-index="0"> <span>Lunes</span></label>
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-xs"><input type="checkbox" class="kitchen-guiso-day" data-day-index="1"> <span>Martes</span></label>
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-xs"><input type="checkbox" class="kitchen-guiso-day" data-day-index="2"> <span>Miércoles</span></label>
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-xs"><input type="checkbox" class="kitchen-guiso-day" data-day-index="3"> <span>Jueves</span></label>
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-xs"><input type="checkbox" class="kitchen-guiso-day" data-day-index="4"> <span>Viernes</span></label>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Máx. fritos/rebozados por semana</label>
-                        <input id="kitchenMaxFritos" type="number" min="0" max="10" step="1" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Máx. días de crema por semana</label>
-                        <input id="kitchenMaxCreams" type="number" min="0" max="10" step="1" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                    </div>
+                    <div><label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Máx. fritos/rebozados por semana</label><input id="kitchenMaxFritos" type="number" min="0" max="10" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800"></div>
+                    <div><label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Máx. días de crema por semana</label><input id="kitchenMaxCreams" type="number" min="0" max="10" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800"></div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Margen de compra (%)</label>
-                    <input id="kitchenMarginPercent" type="number" min="0" max="100" step="1" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Se aplica a las raciones previstas cuando activas el margen de seguridad.</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Margen de raciones (%)</label><input id="kitchenMarginPercent" type="number" min="0" max="100" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800"></div>
+                    <div><label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Ajuste de compra (%)</label><input id="kitchenPurchaseAdjustPercent" type="number" min="1" max="150" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800"></div>
                 </div>
+                <details class="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+                    <summary class="cursor-pointer text-xs font-bold text-gray-700 dark:text-gray-200">Proteínas y pescado</summary>
+                    <div class="space-y-3 pt-3">
+                        <label class="flex items-center gap-2 text-xs"><input id="kitchenFishRequired" type="checkbox" class="w-4 h-4"> <span>Pescado obligatorio cada día</span></label>
+                        <div><p class="text-[10px] text-gray-500 mb-1">Especies permitidas (si no marcas ninguna, se permiten todas las etiquetadas)</p><div class="grid grid-cols-2 gap-1.5"><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="trucha"> Trucha</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="caella"> Caella</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="bacalao"> Bacalao</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="merluza"> Merluza</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="calamares"> Calamares</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="bacaladilla"> Bacaladilla</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="panga"> Panga</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="atun"> Atún</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="perca"> Perca</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-fish-species" value="chicharro"> Chicharro</label></div></div>
+                        <div><p class="text-[10px] text-gray-500 mb-1">Animales de carne permitidos (si no marcas ninguno, se permiten todos los etiquetados)</p><div class="grid grid-cols-2 gap-1.5"><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-meat-animal" value="carne_pollo"> Pollo</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-meat-animal" value="carne_pavo"> Pavo</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-meat-animal" value="carne_cerdo"> Cerdo</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-meat-animal" value="carne_ternera"> Ternera</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-meat-animal" value="carne_conejo"> Conejo</label><label class="text-[10px] flex items-center gap-1.5"><input type="checkbox" class="kitchen-meat-animal" value="carne_cordero"> Cordero</label></div></div>
+                    </div>
+                </details>
+                <details class="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+                    <summary class="cursor-pointer text-xs font-bold text-gray-700 dark:text-gray-200">Recetas obligatorias, preferidas y prohibidas</summary>
+                    <div class="space-y-3 pt-3">
+                        <div><label class="block text-[10px] font-semibold text-gray-500 mb-1">Obligatorias · una por línea</label><textarea id="kitchenMandatoryRecipes" rows="3" class="w-full p-2 border rounded-lg text-xs bg-gray-50 dark:bg-gray-800" placeholder="Ej.: Lentejas con chorizo"></textarea></div>
+                        <div><label class="block text-[10px] font-semibold text-gray-500 mb-1">Preferidas · una por línea</label><textarea id="kitchenPreferredRecipes" rows="3" class="w-full p-2 border rounded-lg text-xs bg-gray-50 dark:bg-gray-800" placeholder="Ej.: Merluza a la plancha"></textarea></div>
+                        <div><label class="block text-[10px] font-semibold text-gray-500 mb-1">Prohibidas · una por línea</label><textarea id="kitchenForbiddenRecipes" rows="3" class="w-full p-2 border rounded-lg text-xs bg-gray-50 dark:bg-gray-800" placeholder="Ej.: San Jacobo"></textarea></div>
+                    </div>
+                </details>
+                <details class="rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+                    <summary class="cursor-pointer text-xs font-bold text-gray-700 dark:text-gray-200">Política de stock y variedad</summary>
+                    <div class="space-y-2 pt-3 text-xs">
+                        <label class="flex items-center gap-2"><input id="kitchenPreferStock" type="checkbox"> <span>Priorizar platos que aprovechen stock</span></label>
+                        <label class="flex items-center gap-2"><input id="kitchenAllowPrecooked" type="checkbox"> <span>Permitir recetas marcadas como precocinadas</span></label>
+                        <label class="flex items-center gap-2"><input id="kitchenAllowPreparedWithoutStock" type="checkbox"> <span>Permitir platos elaborados sin stock registrado</span></label>
+                        <label class="flex items-center gap-2"><input id="kitchenAvoidLiquidFirsts" type="checkbox"> <span>Evitar dos primeros líquidos el mismo día</span></label>
+                        <label class="flex items-center gap-2"><input id="kitchenAvoidConsecutiveFirsts" type="checkbox"> <span>Evitar repetir familia de primero en días consecutivos</span></label>
+                        <label class="flex items-center gap-2"><input id="kitchenAvoidRepeatedVegetable" type="checkbox"> <span>Evitar repetir verdura principal en la semana</span></label>
+                        <label class="flex items-center gap-2"><input id="kitchenAvoidRepeatedPresentation" type="checkbox"> <span>Evitar repetir presentación en los segundos del mismo día</span></label>
+                    </div>
+                </details>
                 <button type="button" id="btnSaveKitchenRules" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold text-sm shadow-md">Guardar normas del autoservicio</button>
                 <p id="kitchenRulesStatus" class="text-[11px] text-gray-500 dark:text-gray-400" aria-live="polite"></p>
             </section>
