@@ -448,6 +448,39 @@
                 </div>
                 <div id="historyListContainer" class="space-y-2"></div>
             </section>
+            <section id="kitchenRulesSection" class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-3">
+                <div>
+                    <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">Normas del autoservicio</h3>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-1">Configuración local de las reglas que utiliza el generador de menús para esta cocina.</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Nombre de la cocina / autoservicio</label>
+                    <input id="kitchenName" type="text" maxlength="80" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100" placeholder="Autoservicio">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">Días en los que debe aparecer un guiso</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                        ${['Lunes','Martes','Miércoles','Jueves','Viernes'].map((d,i)=>`<label class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-xs"><input type="checkbox" class="kitchen-guiso-day" data-day-index="${i}"> <span>${d}</span></label>`).join('')}
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Máx. fritos/rebozados por semana</label>
+                        <input id="kitchenMaxFritos" type="number" min="0" max="10" step="1" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Máx. días de crema por semana</label>
+                        <input id="kitchenMaxCreams" type="number" min="0" max="10" step="1" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Margen de compra (%)</label>
+                    <input id="kitchenMarginPercent" type="number" min="0" max="100" step="1" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-1">Se aplica a las raciones previstas cuando activas el margen de seguridad.</p>
+                </div>
+                <button type="button" id="btnSaveKitchenRules" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold text-sm shadow-md">Guardar normas del autoservicio</button>
+                <p id="kitchenRulesStatus" class="text-[11px] text-gray-500 dark:text-gray-400" aria-live="polite"></p>
+            </section>
             <details id="githubSettingsDetails" class="gastro-settings-details bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <summary class="gastro-settings-summary">
                     <div class="flex items-center gap-2 min-w-0">
@@ -619,6 +652,7 @@
         </button>
     </nav>
 
+    <script src="js/kitchen-rules.js"></script>
     <script src="js/gastroos.js"></script>
     <script src="js/menu-engine-facade.js"></script>
     <script src="js/github-facade.js"></script>
