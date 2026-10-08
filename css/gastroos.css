@@ -1979,3 +1979,40 @@ html.dark .generator-rules-details {
     background: rgba(24,24,27,.92) !important;
     border-color: rgba(255,255,255,.08) !important;
 }
+
+
+/* GastroOS · revisión definitiva de UX */
+.recetario-search-actions { display:grid !important; grid-template-columns:minmax(0,1fr) auto !important; gap:10px !important; align-items:center !important; margin-bottom:14px !important; }
+.recetario-bulk-action-row { display:flex !important; align-items:center !important; gap:7px !important; white-space:nowrap !important; }
+#bulkSelectedCount:not(.hidden) { display:inline !important; }
+.settings-forecast-card { margin-top:14px; padding:14px; border-radius:16px; background:rgba(99,102,241,.055); border:1px solid rgba(99,102,241,.12); }
+.settings-section-kicker { font-size:10px; font-weight:900; letter-spacing:.12em; color:#64748b; margin-bottom:10px; text-align:center; }
+.settings-forecast-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.weekly-limit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.product-allergen-card .primary-action { width:100%; }
+.secondary-action { background:rgba(99,102,241,.08) !important; color:#4338ca !important; border:1px solid rgba(99,102,241,.18) !important; box-shadow:none !important; }
+.product-allergen-row { padding:12px; border:1px solid rgba(148,163,184,.18); border-radius:14px; background:rgba(248,250,252,.72); }
+.dark .product-allergen-row { background:rgba(39,39,42,.6); border-color:rgba(82,82,91,.5); }
+.product-allergen-name { font-size:12px; font-weight:800; margin-bottom:9px; }
+.product-allergen-chips { display:flex; flex-wrap:wrap; gap:6px; }
+.product-allergen-chip { display:inline-flex; align-items:center; gap:5px; padding:5px 8px; border-radius:999px; font-size:10px; font-weight:700; background:#fff; border:1px solid #e2e8f0; cursor:pointer; transition:.15s ease; }
+.dark .product-allergen-chip { background:#18181b; border-color:#3f3f46; }
+.product-allergen-chip.is-selected { background:rgba(79,70,229,.1); border-color:rgba(79,70,229,.28); color:#4338ca; }
+.product-allergen-chip input { width:13px; height:13px; }
+.shopping-grid { display:grid; grid-template-columns:minmax(0,1fr) 78px 68px 86px; column-gap:10px; align-items:center; min-width:0; }
+.shopping-grid-header { padding:0 4px 5px; font-size:9px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; color:#94a3b8; }
+.shopping-grid-header span:not(:first-child), .shopping-number, .shopping-buy { text-align:right; }
+.shopping-grid-row { padding:7px 4px 0; border-top:1px solid rgba(148,163,184,.16); font-size:11px; min-height:31px; }
+.shopping-product-name { min-width:0; overflow-wrap:anywhere; }
+.shopping-number { color:#64748b; font-size:10px; white-space:nowrap; }
+.shopping-stock { color:#059669; }
+.shopping-buy { font-weight:900; white-space:nowrap; }
+.shopping-grid-list { margin:0; padding:0; list-style:none; }
+.app-splash { position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; background:#f5f5f7; color:#111827; animation:gastroSplash .62s cubic-bezier(.22,1,.36,1) forwards; pointer-events:none; }
+.dark .app-splash { background:#0b0b0d; color:#f5f5f7; }
+.app-splash-mark { width:42px; height:42px; border-radius:13px; display:grid; place-items:center; font-size:22px; font-weight:900; background:#111827; color:#fff; box-shadow:0 8px 24px rgba(15,23,42,.16); animation:gastroMark .52s ease-out; }
+.dark .app-splash-mark { background:#f5f5f7; color:#111827; }
+.app-splash-name { font-size:13px; font-weight:800; letter-spacing:.08em; }
+@keyframes gastroMark { from { transform:scale(.82); opacity:0 } to { transform:scale(1); opacity:1 } }
+@keyframes gastroSplash { 0%,68% { opacity:1 } 100% { opacity:0; visibility:hidden } }
+@media (max-width:640px) { .shopping-grid { grid-template-columns:minmax(0,1fr) 65px 58px 72px; column-gap:7px; } .settings-forecast-grid, .weekly-limit-grid { grid-template-columns:1fr 1fr; } .recetario-search-actions { gap:7px !important; } #btnBulkEdit { padding-left:10px !important; padding-right:10px !important; } }
