@@ -978,8 +978,8 @@
             document.getElementById('btnSubTabShopping').addEventListener('click', () => switchGeneratorSubTab('shopping'));
             document.getElementById('btnGenerateMenu').addEventListener('click', generateWeeklyMenu);
             document.getElementById('btnSaveToHistory').addEventListener('click', saveMenuToHistory);
-            document.getElementById('btnDownloadMenuTxt').addEventListener('click', downloadWeeklyMenuTxt);
-            document.getElementById('btnDownloadShoppingTxt').addEventListener('click', downloadShoppingListTxt);
+            // Los exportadores se enlazan también mediante onclick inline en index.html.
+            // En iOS/PWA esto evita perder el gesto de usuario que necesita Web Share.
 
             document.querySelectorAll('.generator-day-tab').forEach(tab => {
                 tab.addEventListener('click', (e) => {
@@ -4002,7 +4002,7 @@
                             <div class="text-[10px] font-bold text-gray-500 uppercase">${escapeHtml(slot.slotLabel)}</div>
                             <div class="gastro-slot-title-row">
                                 <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight min-w-0">${escapeHtml(dishName)} ${warningBadge}</div>
-                                ${proteinBadges ? `<div class="menu-status-badges menu-status-badges-inline">${proteinBadges}</div>` : ''}
+                                ${proteinBadges ? `<div class="menu-status-badges-inline">${proteinBadges}</div>` : ''}
                             </div>
                             ${allergenLine}
                         </div>
@@ -4029,43 +4029,91 @@
             });
         }
 
-        function downloadTextFile(text, filename) {
+        async function downloadTextFile(text, filename) {
             const content = String(text ?? '');
             if (!content.trim()) {
                 alert('No hay contenido para exportar.');
                 return false;
             }
 
-            const anchor = document.createElement('a');
-            anchor.download = filename;
-            anchor.rel = 'noopener';
-            anchor.style.display = 'none';
-            document.body.appendChild(anchor);
+            const safeFilename = String(filename || 'gastroos.txt').replace(/[^a-zA-Z0-9._-]/g, '_');
+            const isIOS = typeof navigator !== 'undefined' && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
 
-            let objectUrl = '';
+            // iOS/PWA: el gesto del botón es especialmente importante. Probamos
+            // primero el Web Share de archivos, que permite guardar el .txt en Archivos.
+            if (isIOS && typeof navigator.share === 'function' && typeof File !== 'undefined') {
+                try {
+                    const file = new File([content], safeFilename, { type: 'text/plain' });
+                    const canShareFile = typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] });
+                    if (canShareFile) {
+                        await navigator.share({ files: [file], title: safeFilename });
+                        return true;
+                    }
+                } catch (error) {
+                    if (error?.name === 'AbortError') return false;
+                    console.warn('Web Share de archivo no disponible; se prueba el texto.', error);
+                }
+
+                // Segundo intento nativo de iOS: compartir el contenido directamente.
+                // No depende de que Safari acepte un File .txt en modo PWA.
+                try {
+                    await navigator.share({ title: safeFilename, text: content });
+                    return true;
+                } catch (error) {
+                    if (error?.name === 'AbortError') return false;
+                    console.warn('Web Share de texto no disponible; se abre una vista de exportación.', error);
+                }
+
+                // Último recurso iOS: se abre inmediatamente una ventana con el TXT.
+                // Como se ejecuta desde el mismo gesto, no pierde la activación del usuario.
+                try {
+                    const popup = window.open('', '_blank');
+                    if (popup) {
+                        popup.document.open();
+                        popup.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escapeHtml(safeFilename) + '</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:20px;background:#f5f5f7;color:#111827}pre{white-space:pre-wrap;word-break:break-word;line-height:1.5;background:#fff;padding:16px;border-radius:14px;border:1px solid #e5e7eb}</style></head><body><pre>' + escapeHtml(content) + '</pre></body></html>');
+                        popup.document.close();
+                        return true;
+                    }
+                } catch (error) {
+                    console.warn('No se pudo abrir la vista de exportación en iOS.', error);
+                }
+            }
+
+            // Escritorio/Android: descarga estándar mediante Blob.
             try {
                 const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-                objectUrl = URL.createObjectURL(blob);
+                const objectUrl = URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
                 anchor.href = objectUrl;
+                anchor.download = safeFilename;
+                anchor.rel = 'noopener';
+                anchor.style.display = 'none';
+                document.body.appendChild(anchor);
                 anchor.click();
                 window.setTimeout(() => {
                     anchor.remove();
-                    if (objectUrl) URL.revokeObjectURL(objectUrl);
-                }, 1200);
+                    URL.revokeObjectURL(objectUrl);
+                }, 1500);
                 return true;
             } catch (error) {
-                // Fallback para navegadores/WebViews que no permiten descargar Blob URLs.
-                try {
-                    anchor.href = `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`;
-                    anchor.click();
-                    window.setTimeout(() => anchor.remove(), 1200);
-                    return true;
-                } catch (fallbackError) {
-                    anchor.remove();
-                    alert('No se ha podido preparar el archivo para exportar.');
-                    return false;
-                }
+                console.warn('La descarga Blob ha fallado; se intenta abrir el TXT.', error);
             }
+
+            // Fallback universal si el navegador no permite la descarga.
+            try {
+                const popup = window.open('', '_blank');
+                if (popup) {
+                    popup.document.open();
+                    popup.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escapeHtml(safeFilename) + '</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:20px;white-space:pre-wrap;line-height:1.5}pre{white-space:pre-wrap;word-break:break-word}</style></head><body><pre>' + escapeHtml(content) + '</pre></body></html>');
+                    popup.document.close();
+                    return true;
+                }
+            } catch (error) {
+                console.warn('No se pudo abrir la vista alternativa de exportación.', error);
+            }
+
+            alert('No se ha podido preparar el archivo para exportar.');
+            return false;
         }
 
         function downloadWeeklyMenuTxt() {
@@ -4538,6 +4586,11 @@
                 location.reload();
             }
         }
+
+        // API pública mínima para botones/instalaciones antiguas que todavía
+        // puedan invocar los exportadores mediante onclick inline.
+        window.downloadWeeklyMenuTxt = downloadWeeklyMenuTxt;
+        window.downloadShoppingListTxt = downloadShoppingListTxt;
 
         init();
     
