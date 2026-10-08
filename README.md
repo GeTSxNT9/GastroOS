@@ -32,18 +32,16 @@ The application runs primarily in the browser, with **local persistence, PWA ins
 
 ### 📅 Menu Planning
 
-A **constraint-based engine** generates and validates Monday–Friday menus with the fixed self-service structure:
+A **constraint-based engine** generates and validates Monday–Friday menus using a configurable self-service structure. The default offer is:
 
-1. Vegetable first
-2. Spoon first
-3. Starch first
-4. Meat
-5. Meat
-6. Fish
+- 3 primeros: 1 verdura + 1 cuchara + 1 tenedor/hidrato.
+- 3 segundos: 2 carnes + 1 pescado.
 
-The engine supports randomized generation, day regeneration, manual dish replacement, prepared-dish assignments, stock awareness, fish/meat allow-lists, guiso days, repetition control, and weekly family limits.
+Both groups are configurable from Settings: a kitchen can, for example, offer 2 platos de cuchara + 1 tenedor, or 1 carne + 2 pescados, without changing the code.
 
-**Current engine:** `menu-rules-v11-stock-prepared-guiso-rations`
+The engine supports randomized generation, day regeneration, manual dish replacement, prepared-dish assignments, stock awareness, fish/meat allow-lists, guiso days, configurable weekly limits, consecutive-day rules by first-course subfamily, and menu validation.
+
+**Current engine:** `menu-rules-v11-stock-prepared-guiso-rations` (with configurable offer structure and weekly-family repetition rules)
 
 ### 🍽️ Prepared Dishes
 
@@ -59,6 +57,7 @@ Separate management of **raw ingredients** and **prepared dishes**, including:
 - Ingredient aggregation by supplier category.
 - Clear **Required / Stock / Buy** columns.
 - Stock deduction and availability.
+- Temporary **Ya tengo** marks for products that are physically available but are not registered in stock; these marks affect only the current shopping list and are excluded from the TXT export. 
 - Demand-based quantity calculations.
 - Purchase adjustment percentage.
 - Prepared-dish planning assignments.
@@ -70,6 +69,8 @@ The local kitchen profile controls how the generator should behave without intro
 - Guiso days.
 - Allowed meat animals and fish species.
 - Weekly limits for fried/reboiled dishes, creams, pasta, legumes, rice, whole vegetables, and soups/broths.
+- Configurable number and composition of first and second courses.
+- Consecutive-day switches for pasta, legumes, rice, and soups/broths. Pasta distinguishes dry pasta and filled pasta for consecutive-day rules while keeping a single weekly pasta limit.
 - Stock priority and prepared-food availability.
 - Menu variety rules.
 - Estimated diners and safety margin for reference portions and shopping calculations.

@@ -20,7 +20,7 @@
         <link rel="stylesheet" href="css/gastroos.css">
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
-    <div id="appSplash" class="app-splash" aria-hidden="true"><div class="app-splash-mark">G</div><div class="app-splash-name">GastroOS</div></div>
+    <div id="appSplash" class="app-splash" aria-hidden="true"><div class="app-splash-mark">G</div><div class="app-splash-name">GastroOS</div><div class="app-splash-loading">Cargando…</div></div>
 
     <!-- CABECERA PRINCIPAL -->
     <header class="sticky top-0 z-40 flex-shrink-0 flex items-center justify-between px-4">
@@ -413,7 +413,7 @@
                         <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">CÁLCULO CATEGORIZADO POR PROVEEDORES</h3>
                         <span class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 px-2 py-0.5 rounded-full" id="shoppingRacionesBadge">130 Raciones</span>
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug">Se muestra por ingrediente: <b>necesario</b>, <b>cubierto por stock</b> y <b>comprar</b>.</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug">Se muestra por ingrediente: <b>necesario</b>, <b>stock</b> y <b>comprar</b>. Si ya tienes algo, marca <b>Ya tengo</b> y no se incluirá al exportar.</p>
                     <button id="btnDownloadShoppingTxt" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-lg text-xs flex items-center justify-center gap-2 shadow-sm">
                         <span>📄</span> Descargar Lista (.txt)
                     </button>
@@ -472,16 +472,47 @@
                 </div>
 
                 <details class="settings-accordion">
-                    <summary><span><b>LÍMITES SEMANALES</b><small>Controla cuántos días puede aparecer cada familia de primeros.</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <summary><span><b>ESTRUCTURA DE LA OFERTA</b><small>Define cuántos primeros y segundos salen cada día y cómo se reparte cada familia.</small></span><span class="accordion-chevron">⌄</span></summary>
                     <div class="settings-accordion-body">
-                        <div class="weekly-limit-grid">
+                        <div class="setting-group">
+                            <p class="setting-group-title">PRIMEROS PLATOS</p>
+                            <p class="setting-help">Configuración predeterminada: 1 verdura + 1 cuchara + 1 tenedor/hidrato. Puedes repetir una familia y dejar otra a cero.</p>
+                            <div class="weekly-limit-grid">
+                                <div><label class="field-label" for="kitchenFirstVegetableCount">Verdura</label><input id="kitchenFirstVegetableCount" type="number" min="0" max="5" class="settings-input"></div>
+                                <div><label class="field-label" for="kitchenFirstSpoonCount">Cuchara</label><input id="kitchenFirstSpoonCount" type="number" min="0" max="5" class="settings-input"></div>
+                                <div><label class="field-label" for="kitchenFirstForkCount">Tenedor / hidratos</label><input id="kitchenFirstForkCount" type="number" min="0" max="5" class="settings-input"></div>
+                            </div>
+                        </div>
+                        <div class="setting-group">
+                            <p class="setting-group-title">SEGUNDOS PLATOS</p>
+                            <p class="setting-help">Configuración predeterminada: 2 carnes + 1 pescado. Puedes cambiar la oferta a 1+2, 3+0, 0+3, etc.</p>
+                            <div class="weekly-limit-grid">
+                                <div><label class="field-label" for="kitchenSecondMeatCount">Carne</label><input id="kitchenSecondMeatCount" type="number" min="0" max="5" class="settings-input"></div>
+                                <div><label class="field-label" for="kitchenSecondFishCount">Pescado</label><input id="kitchenSecondFishCount" type="number" min="0" max="5" class="settings-input"></div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="settings-accordion">
+                    <summary><span><b>LÍMITES Y REPETICIÓN SEMANAL</b><small>Controla la frecuencia de las familias y si pueden repetirse en días consecutivos.</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <div class="settings-accordion-body">
+                        <div class="settings-metric-grid">
                             <div><label class="field-label" for="kitchenMaxPasta">Pasta</label><div class="input-suffix"><input id="kitchenMaxPasta" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
                             <div><label class="field-label" for="kitchenMaxLegumes">Legumbres</label><div class="input-suffix"><input id="kitchenMaxLegumes" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
                             <div><label class="field-label" for="kitchenMaxRice">Arroz</label><div class="input-suffix"><input id="kitchenMaxRice" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
                             <div><label class="field-label" for="kitchenMaxVegetableWhole">Verdura entera</label><div class="input-suffix"><input id="kitchenMaxVegetableWhole" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
                             <div><label class="field-label" for="kitchenMaxSoups">Sopas y caldos</label><div class="input-suffix"><input id="kitchenMaxSoups" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
                         </div>
-                        <p class="setting-help">El primer plato de verdura sigue siendo obligatorio cada día. El límite de «Verdura entera» se aplica a esa familia concreta, no al conjunto de verduras.</p>
+                        <div class="setting-group mt-4">
+                            <p class="setting-group-title">PERMITIR DÍAS CONSECUTIVOS</p>
+                            <label class="setting-toggle"><input id="kitchenAllowPastaConsecutive" type="checkbox"><span><b>Pasta</b><small>Permite pasta en días consecutivos solo si cambia la subfamilia: pasta seca → rellena sí; seca → seca no.</small></span></label>
+                            <label class="setting-toggle"><input id="kitchenAllowLegumesConsecutive" type="checkbox"><span><b>Legumbres</b><small>Permite repetir legumbres en días consecutivos.</small></span></label>
+                            <label class="setting-toggle"><input id="kitchenAllowRiceConsecutive" type="checkbox"><span><b>Arroz</b><small>Permite repetir arroz en días consecutivos.</small></span></label>
+                            <label class="setting-toggle"><input id="kitchenAllowSoupsConsecutive" type="checkbox"><span><b>Sopas y caldos</b><small>Permite repetir esta subfamilia en días consecutivos.</small></span></label>
+                        </div>
+                        <p class="setting-help">En pasta, el límite semanal se aplica a toda la familia. Por ejemplo, pasta seca lunes + pasta rellena martes + pasta seca miércoles son 3 días de pasta y no se añadirá un cuarto día si el máximo es 3.</p>
+                        <p class="setting-help">La verdura entera mantiene un máximo semanal independiente. El primer plato de verdura puede seguir siendo obligatorio cada día si la estructura lo configura así.</p>
                     </div>
                 </details>
 
