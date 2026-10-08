@@ -176,3 +176,6 @@ It combines structured recipes, configurable kitchen rules, stock awareness, pro
 ### Regeneración inteligente y diagnóstico de configuración
 
 La generación semanal incluye regeneración inteligente de un día: en lugar de sustituirlo a ciegas, GastroOS busca varias alternativas de día completo y solo ofrece opciones que mantienen las reglas activas. También comprueba configuraciones potencialmente imposibles antes de guardar los ajustes, especialmente por disponibilidad de especies de pescado, animales de carne y familias de primeros.
+
+### Catálogo editable de carnes y pescados
+Las especies de pescado y tipos de carne ya no están limitados a los valores incluidos en el código. Desde Ajustes se pueden dar de alta nuevas especies/tipos directamente en la aplicación. El alta queda almacenada dentro del perfil local de la cocina, se incluye en copias de seguridad y restauraciones, aparece automáticamente en el formulario de recetas, en la migración de etiquetas, en las listas de permitidos, en la validación del generador y en sus resúmenes. Las recetas pueden seguir sincronizándose mediante el flujo habitual de GitHub sin modificar el código fuente para cada nueva incorporación.

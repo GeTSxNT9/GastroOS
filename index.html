@@ -157,32 +157,12 @@
 
                 <div id="speciesContainer" class="hidden">
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Tipo de animal</label>
-                    <select id="dishSpecies" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                        <option value="">Seleccionar...</option>
-                        <option value="carne_pollo">Pollo</option>
-                        <option value="carne_pavo">Pavo</option>
-                        <option value="carne_cerdo">Cerdo</option>
-                        <option value="carne_ternera">Ternera</option>
-                        <option value="carne_conejo">Conejo</option>
-                        <option value="carne_cordero">Cordero</option>
-                    </select>
+                    <select id="dishSpecies" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100"></select>
                 </div>
 
                 <div id="fishSpeciesContainer" class="hidden">
                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Especie</label>
-                    <select id="dishFishSpecies" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                        <option value="">Seleccionar...</option>
-                        <option value="trucha">Trucha</option>
-                        <option value="caella">Caella</option>
-                        <option value="bacalao">Bacalao</option>
-                        <option value="merluza">Merluza</option>
-                        <option value="calamares">Calamares</option>
-                        <option value="bacaladilla">Bacaladilla</option>
-                        <option value="panga">Panga</option>
-                        <option value="atun">Atún</option>
-                        <option value="perca">Perca</option>
-                        <option value="chicharro">Chicharro</option><option value="cabracho">Cabracho</option><option value="tintorera">Tintorera</option>
-                    </select>
+                    <select id="dishFishSpecies" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100"></select>
 
                 </div>
 
@@ -521,16 +501,20 @@
                     <div class="settings-accordion-body">
                         <div class="setting-group">
                             <p class="setting-group-title">CARNES PERMITIDAS</p>
-                            <p class="setting-help">Solo se generarán platos con las carnes marcadas.</p>
-                            <div class="compact-check-grid">
-                                <label><input type="checkbox" class="kitchen-meat-animal" value="carne_pollo"> Pollo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_pavo"> Pavo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cerdo"> Cerdo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_ternera"> Ternera</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_conejo"> Conejo</label><label><input type="checkbox" class="kitchen-meat-animal" value="carne_cordero"> Cordero</label>
+                            <p class="setting-help">Solo se generarán platos con las carnes marcadas. Puedes añadir nuevas carnes sin tocar el código.</p>
+                            <div id="kitchenMeatCatalog" class="compact-check-grid"></div>
+                            <div class="protein-catalog-add-row">
+                                <input id="newKitchenMeat" type="text" maxlength="40" class="settings-input" placeholder="Nueva carne, por ejemplo: Pato">
+                                <button type="button" id="btnAddKitchenMeat" class="secondary-action">AÑADIR</button>
                             </div>
                         </div>
                         <div class="setting-group">
                             <p class="setting-group-title">PESCADOS PERMITIDOS</p>
-                            <p class="setting-help">Solo se generarán platos con los pescados marcados.</p>
-                            <div class="compact-check-grid">
-                                <label><input type="checkbox" class="kitchen-fish-species" value="trucha"> Trucha</label><label><input type="checkbox" class="kitchen-fish-species" value="caella"> Caella</label><label><input type="checkbox" class="kitchen-fish-species" value="bacalao"> Bacalao</label><label><input type="checkbox" class="kitchen-fish-species" value="merluza"> Merluza</label><label><input type="checkbox" class="kitchen-fish-species" value="calamares"> Calamares</label><label><input type="checkbox" class="kitchen-fish-species" value="bacaladilla"> Bacaladilla</label><label><input type="checkbox" class="kitchen-fish-species" value="panga"> Panga</label><label><input type="checkbox" class="kitchen-fish-species" value="atun"> Atún</label><label><input type="checkbox" class="kitchen-fish-species" value="perca"> Perca</label><label><input type="checkbox" class="kitchen-fish-species" value="chicharro"> Chicharro</label><label><input type="checkbox" class="kitchen-fish-species" value="cabracho"> Cabracho</label><label><input type="checkbox" class="kitchen-fish-species" value="tintorera"> Tintorera</label>
+                            <p class="setting-help">Solo se generarán platos con los pescados marcados. Puedes añadir nuevas especies sin tocar el código.</p>
+                            <div id="kitchenFishCatalog" class="compact-check-grid"></div>
+                            <div class="protein-catalog-add-row">
+                                <input id="newKitchenFish" type="text" maxlength="40" class="settings-input" placeholder="Nuevo pescado, por ejemplo: Lubina">
+                                <button type="button" id="btnAddKitchenFish" class="secondary-action">AÑADIR</button>
                             </div>
                         </div>
                     </div>
