@@ -187,11 +187,11 @@
 
                 <div class="grid grid-cols-1 gap-2 mt-2">
                     <label class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900 cursor-pointer">
-                        <span class="text-sm font-bold text-indigo-900 dark:text-indigo-300">¿Plato precocinado?</span>
+                        <span class="text-sm font-bold text-indigo-900 dark:text-indigo-300">Plato precocinado</span>
                         <input type="checkbox" id="dishPrecooked" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
                     </label>
                     <label class="flex items-center justify-between bg-purple-50 dark:bg-purple-950/40 p-3 rounded-lg border border-purple-100 dark:border-purple-900 cursor-pointer">
-                        <span class="text-sm font-bold text-purple-900 dark:text-purple-300">¿Plato elaborado?</span>
+                        <span class="text-sm font-bold text-purple-900 dark:text-purple-300">Plato elaborado</span>
                         <input type="checkbox" id="dishPrepared" class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
                     </label>
                 </div>
@@ -418,14 +418,18 @@
                     <p class="settings-card-description">Define cómo debe ser una semana normal en esta cocina. El generador aplicará estas reglas automáticamente.</p>
                 </div>
 
-                <div class="settings-primary-grid">
+                <div class="settings-primary-grid settings-primary-grid--kitchen">
                     <div>
                         <label class="field-label" for="kitchenName">Nombre de la cocina</label>
                         <input id="kitchenName" type="text" maxlength="80" class="settings-input" placeholder="Autoservicio">
-                    </div></div>
-
-                <div class="settings-metric-grid">
-                    <div><label class="field-label" for="kitchenPurchaseAdjustPercent">Ajuste de compra</label><div class="input-suffix"><input id="kitchenPurchaseAdjustPercent" type="number" min="1" max="150" class="settings-input"><span>%</span></div></div>
+                    </div>
+                    <div>
+                        <label class="field-label" for="kitchenPurchaseAdjustPercent">Ajuste de compra</label>
+                        <div class="input-suffix">
+                            <input id="kitchenPurchaseAdjustPercent" type="number" min="1" max="150" class="settings-input">
+                            <span>%</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="settings-forecast-card">
