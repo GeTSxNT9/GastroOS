@@ -422,19 +422,7 @@
                     <div>
                         <label class="field-label" for="kitchenName">Nombre de la cocina</label>
                         <input id="kitchenName" type="text" maxlength="80" class="settings-input" placeholder="Autoservicio">
-                    </div>
-                    <div>
-                        <div class="field-label">Días con guiso</div>
-                        <div class="day-choice-grid">
-                            <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="0"><span>Lun</span></label>
-                            <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="1"><span>Mar</span></label>
-                            <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="2"><span>Mié</span></label>
-                            <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="3"><span>Jue</span></label>
-                            <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="4"><span>Vie</span></label>
-                        </div>
-                        <p class="setting-help">Cada día seleccionado tendrá exactamente un guiso entre las dos carnes.</p>
-                    </div>
-                </div>
+                    </div></div>
 
                 <div class="settings-metric-grid">
                     <div><label class="field-label" for="kitchenPurchaseAdjustPercent">Ajuste de compra</label><div class="input-suffix"><input id="kitchenPurchaseAdjustPercent" type="number" min="1" max="150" class="settings-input"><span>%</span></div></div>
@@ -475,6 +463,17 @@
                 <details class="settings-accordion">
                     <summary><span><b>LÍMITES Y REPETICIÓN SEMANAL</b><small>Controla la frecuencia de las familias y si pueden repetirse en días consecutivos.</small></span><span class="accordion-chevron">⌄</span></summary>
                     <div class="settings-accordion-body">
+                        <div class="setting-group">
+                            <p class="setting-group-title">DÍAS CON GUISO</p>
+                            <div class="day-choice-grid">
+                                <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="0"><span>Lun</span></label>
+                                <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="1"><span>Mar</span></label>
+                                <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="2"><span>Mié</span></label>
+                                <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="3"><span>Jue</span></label>
+                                <label><input type="checkbox" class="kitchen-guiso-day" data-day-index="4"><span>Vie</span></label>
+                            </div>
+                            <p class="setting-help">Cada día seleccionado tendrá exactamente un guiso entre las dos carnes.</p>
+                        </div>
                         <div class="settings-metric-grid">
                             <div><label class="field-label" for="kitchenMaxFritos">Fritos / rebozados</label><div class="input-suffix"><input id="kitchenMaxFritos" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
                             <div><label class="field-label" for="kitchenMaxCreams">Cremas</label><div class="input-suffix"><input id="kitchenMaxCreams" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
@@ -503,7 +502,7 @@
                             <p class="setting-group-title">CARNES PERMITIDAS</p>
                             <p class="setting-help">Solo se generarán platos con las carnes marcadas. Puedes añadir nuevas carnes sin tocar el código. Si GitHub está conectado, el catálogo también se actualiza en el recipes.json compartido.</p>
                             <div id="kitchenMeatCatalog" class="compact-check-grid"></div>
-                            <div class="protein-catalog-add-row">
+                            <div class="protein-catalog-add-row mt-4">
                                 <input id="newKitchenMeat" type="text" maxlength="40" class="settings-input" placeholder="Nueva carne, por ejemplo: Pato">
                                 <button type="button" id="btnAddKitchenMeat" class="secondary-action">AÑADIR</button>
                             </div>
@@ -512,7 +511,7 @@
                             <p class="setting-group-title">PESCADOS PERMITIDOS</p>
                             <p class="setting-help">Solo se generarán platos con los pescados marcados. Puedes añadir nuevas especies sin tocar el código. Si GitHub está conectado, el catálogo también se actualiza en el recipes.json compartido.</p>
                             <div id="kitchenFishCatalog" class="compact-check-grid"></div>
-                            <div class="protein-catalog-add-row">
+                            <div class="protein-catalog-add-row mt-4">
                                 <input id="newKitchenFish" type="text" maxlength="40" class="settings-input" placeholder="Nuevo pescado, por ejemplo: Lubina">
                                 <button type="button" id="btnAddKitchenFish" class="secondary-action">AÑADIR</button>
                             </div>
