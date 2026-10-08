@@ -22,10 +22,12 @@
 
         const defaultSettings = {
             comensales: 100,
-            margenActivo: false,
+            margenActivo: true,
+            margenSeguridadPorcentaje: 30,
             darkMode: false,
             kitchenProfile: { ...window.GastroOSKitchenRules.DEFAULT_RULES }
         };
+        let productAllergenMap = {};
         const proveedorCategorias = ["Carne", "Pescado", "Lácteos", "Verduras y frutas", "Secos", "Congelados"];
         const daysList = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
         const FIRST_SUBCATEGORIES = {
@@ -34,11 +36,11 @@
             tenedor: ["pastas", "pastas_rellenas", "arroces", "otros_hidratos"]
         };
         const MEAT_ANIMALS = ["carne_pollo", "carne_pavo", "carne_cerdo", "carne_ternera", "carne_conejo", "carne_cordero"];
-        const FISH_SPECIES = ["trucha", "caella", "bacalao", "merluza", "calamares", "bacaladilla", "panga", "atun", "perca", "chicharro"];
+        const FISH_SPECIES = ["trucha", "caella", "bacalao", "merluza", "calamares", "bacaladilla", "panga", "atun", "perca", "chicharro", "cabracho", "tintorera"];
         const FISH_LABELS = {
             trucha: "Trucha", caella: "Caella", bacalao: "Bacalao", merluza: "Merluza",
             calamares: "Calamares", bacaladilla: "Bacaladilla", panga: "Panga", atun: "Atún",
-            perca: "Perca", chicharro: "Chicharro"
+            perca: "Perca", chicharro: "Chicharro", cabracho: "Cabracho", tintorera: "Tintorera"
         };
         const MEAT_LABELS = {
             carne_pollo: "Pollo", carne_pavo: "Pavo", carne_cerdo: "Cerdo",
@@ -91,6 +93,68 @@
             return "";
         }
 
+        function getProductAllergensForDish(dish) {
+            const manual = Array.isArray(dish?.alergenosManuales) ? dish.alergenosManuales : (Array.isArray(dish?.alergenos) ? dish.alergenos : []);
+            const result = new Set(manual.filter(a => ALLERGEN_LABELS[a]));
+            (dish?.ingredientes || []).forEach(ing => {
+                const key = normalizeFoodKey(ing?.nombre || '');
+                (productAllergenMap[key] || []).forEach(a => { if (ALLERGEN_LABELS[a]) result.add(a); });
+            });
+            return [...result];
+        }
+
+        function applyProductAllergensToRecipes() {
+            dishes = dishes.map(d => ({ ...d, alergenos: getProductAllergensForDish(d) }));
+        }
+
+        function collectAllergenProducts() {
+            const names = new Map();
+            dishes.forEach(d => (d.ingredientes || []).forEach(i => { const n = String(i?.nombre || '').trim(); if (n) names.set(normalizeFoodKey(n), n); }));
+            rawStock.forEach(i => { const n = String(i?.nombre || '').trim(); if (n) names.set(normalizeFoodKey(n), n); });
+            return [...names.entries()].sort((a,b) => a[1].localeCompare(b[1], 'es'));
+        }
+
+        function renderProductAllergenManager() {
+            const container = document.getElementById('productAllergenList');
+            if (!container) return;
+            const query = normalizeFoodKey(document.getElementById('productAllergenSearch')?.value || '');
+            const products = collectAllergenProducts().filter(([,name]) => !query || normalizeFoodKey(name).includes(query));
+            if (!products.length) { container.innerHTML = '<p class="text-center text-gray-500 text-xs py-8">No hay productos que coincidan.</p>'; return; }
+            container.innerHTML = products.map(([key,name]) => {
+                const selected = new Set(productAllergenMap[key] || []);
+                const checks = ALLERGEN_OPTIONS.map(([value,label]) => `<label class="product-allergen-chip ${selected.has(value) ? 'is-selected' : ''}"><input type="checkbox" data-product-key="${escapeHtml(key)}" value="${value}" ${selected.has(value) ? 'checked' : ''}><span>${label}</span></label>`).join('');
+                return `<div class="product-allergen-row"><div class="product-allergen-name">${escapeHtml(name)}</div><div class="product-allergen-chips">${checks}</div></div>`;
+            }).join('');
+        }
+
+        function openProductAllergenManager() {
+            renderProductAllergenManager();
+            document.getElementById('modalProductAllergens')?.classList.remove('hidden');
+        }
+        function closeProductAllergenManager() { document.getElementById('modalProductAllergens')?.classList.add('hidden'); }
+        function saveProductAllergens() {
+            const next = {};
+            document.querySelectorAll('#productAllergenList input[data-product-key]').forEach(input => {
+                if (!input.checked) return;
+                const key = input.dataset.productKey;
+                if (!next[key]) next[key] = [];
+                next[key].push(input.value);
+            });
+            productAllergenMap = next;
+            applyProductAllergensToRecipes();
+            localStorage.setItem('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
+            saveAll();
+            renderDishes(); renderGeneratorView();
+            closeProductAllergenManager();
+            const status = document.getElementById('productAllergenStatus');
+            if (status) status.textContent = `${Object.keys(productAllergenMap).length} productos con alérgenos configurados.`;
+        }
+
+        function loadProductAllergens() {
+            const stored = safeLoadJSON('chefTrack_productAllergens', {});
+            productAllergenMap = stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {};
+        }
+
         function normalizeDishData(d) {
             const dish = { ...d };
             dish.demanda = dish.demanda || "Media";
@@ -102,9 +166,11 @@
             dish.animal_carne = dish.animal_carne || "";
             dish.especie_pescado = dish.especie_pescado || "";
             dish.tecnica_cocina = dish.tecnica_cocina || "";
-            dish.alergenos = Array.isArray(dish.alergenos)
-                ? [...new Set(dish.alergenos.map(a => String(a).trim()).filter(a => ALLERGEN_LABELS[a]))]
-                : [];
+            const manualAllergens = Array.isArray(dish.alergenosManuales)
+                ? dish.alergenosManuales
+                : (Array.isArray(dish.alergenos) ? dish.alergenos : []);
+            dish.alergenosManuales = [...new Set(manualAllergens.map(a => String(a).trim()).filter(a => ALLERGEN_LABELS[a]))];
+            dish.alergenos = getProductAllergensForDish(dish);
 
             // Migración y normalización transparente de los formatos anteriores/importados.
             if (dish.categoria === "Primero") {
@@ -212,9 +278,12 @@
             return getKitchenProfile().maxWeeklyFritos;
         }
 
-        function getMaxWeeklyCreams() {
-            return getKitchenProfile().maxWeeklyCreams;
-        }
+        function getMaxWeeklyCreams() { return getKitchenProfile().maxWeeklyCreams; }
+        function getMaxWeeklyPasta() { return getKitchenProfile().maxWeeklyPasta; }
+        function getMaxWeeklyLegumes() { return getKitchenProfile().maxWeeklyLegumes; }
+        function getMaxWeeklyRice() { return getKitchenProfile().maxWeeklyRice; }
+        function getMaxWeeklyVegetableWhole() { return getKitchenProfile().maxWeeklyVegetableWhole; }
+        function getMaxWeeklySoups() { return getKitchenProfile().maxWeeklySoups; }
 
         function getKitchenRule(name, fallback = undefined) {
             const profile = getKitchenProfile();
@@ -226,11 +295,16 @@
             const profile = getKitchenProfile();
             const name = document.getElementById('kitchenName');
             const headerName = document.getElementById('kitchenHeaderName');
-            const generatorName = document.getElementById('generatorKitchenName');
             const fritos = document.getElementById('kitchenMaxFritos');
             const creams = document.getElementById('kitchenMaxCreams');
-            const margin = document.getElementById('kitchenMarginPercent');
             const purchaseAdjust = document.getElementById('kitchenPurchaseAdjustPercent');
+            const settingsComensales = document.getElementById('settingsComensales');
+            const settingsMargen = document.getElementById('settingsMargenSeguridad');
+            const maxPasta = document.getElementById('kitchenMaxPasta');
+            const maxLegumes = document.getElementById('kitchenMaxLegumes');
+            const maxRice = document.getElementById('kitchenMaxRice');
+            const maxVegetableWhole = document.getElementById('kitchenMaxVegetableWhole');
+            const maxSoups = document.getElementById('kitchenMaxSoups');
             const allowPrecooked = document.getElementById('kitchenAllowPrecooked');
             const allowPrepared = document.getElementById('kitchenAllowPreparedWithoutStock');
             const stockPriority = document.getElementById('kitchenStockPriority');
@@ -240,10 +314,15 @@
             const presentationRule = document.getElementById('kitchenAvoidRepeatedPresentation');
             if (name) name.value = profile.nombre;
             if (headerName) headerName.textContent = profile.nombre || 'Autoservicio';
-            if (generatorName) generatorName.textContent = profile.nombre || 'Autoservicio';
             if (fritos) fritos.value = profile.maxWeeklyFritos;
             if (creams) creams.value = profile.maxWeeklyCreams;
-            if (margin) margin.value = profile.margenCompraPorcentaje;
+            if (settingsComensales) settingsComensales.value = settings.comensales ?? 100;
+            if (settingsMargen) settingsMargen.value = settings.margenSeguridadPorcentaje ?? 30;
+            if (maxPasta) maxPasta.value = profile.maxWeeklyPasta;
+            if (maxLegumes) maxLegumes.value = profile.maxWeeklyLegumes;
+            if (maxRice) maxRice.value = profile.maxWeeklyRice;
+            if (maxVegetableWhole) maxVegetableWhole.value = profile.maxWeeklyVegetableWhole;
+            if (maxSoups) maxSoups.value = profile.maxWeeklySoups;
             if (purchaseAdjust) purchaseAdjust.value = profile.ajusteCompraPorcentaje;
             if (allowPrecooked) allowPrecooked.checked = profile.permitirPrecocinados;
             if (allowPrepared) allowPrepared.checked = profile.permitirPlatosElaboradosSinStock;
@@ -265,6 +344,9 @@
                 alert('Selecciona al menos una especie de pescado y un tipo de carne permitido.');
                 return;
             }
+            settings.comensales = Math.max(1, Number(document.getElementById('settingsComensales')?.value) || 100);
+            settings.margenSeguridadPorcentaje = Math.min(100, Math.max(0, Number(document.getElementById('settingsMargenSeguridad')?.value) || 0));
+            settings.margenActivo = settings.margenSeguridadPorcentaje > 0;
             settings.kitchenProfile = window.GastroOSKitchenRules.normalize({
                 version: window.GastroOSKitchenRules.VERSION,
                 ...getKitchenProfile(),
@@ -272,7 +354,11 @@
                 guisoDays: selectedGuisoDays,
                 maxWeeklyFritos: document.getElementById('kitchenMaxFritos')?.value,
                 maxWeeklyCreams: document.getElementById('kitchenMaxCreams')?.value,
-                margenCompraPorcentaje: document.getElementById('kitchenMarginPercent')?.value,
+                maxWeeklyPasta: document.getElementById('kitchenMaxPasta')?.value,
+                maxWeeklyLegumes: document.getElementById('kitchenMaxLegumes')?.value,
+                maxWeeklyRice: document.getElementById('kitchenMaxRice')?.value,
+                maxWeeklyVegetableWhole: document.getElementById('kitchenMaxVegetableWhole')?.value,
+                maxWeeklySoups: document.getElementById('kitchenMaxSoups')?.value,
                 ajusteCompraPorcentaje: document.getElementById('kitchenPurchaseAdjustPercent')?.value,
                 especiesPescadoPermitidas: selectedFish,
                 animalesCarnePermitidos: selectedAnimals,
@@ -286,6 +372,7 @@
             });
             saveAll();
             renderKitchenRules();
+            renderStockView();
             renderGeneratorView();
             const status = document.getElementById('kitchenRulesStatus');
             if (status) status.textContent = 'Normas guardadas. Se aplicarán al próximo menú generado.';
@@ -325,7 +412,7 @@
                     preparedStock: Array.isArray(preparedStock) ? preparedStock.length : 0,
                     historyMenus: Array.isArray(historyMenus) ? historyMenus.length : 0
                 },
-                dishes, settings: { ...settings }, rawStock, preparedStock, currentMenu, previousWeekMenu, historyMenus, recipeChangeHistory
+                dishes, settings: { ...settings }, productAllergenMap, rawStock, preparedStock, currentMenu, previousWeekMenu, historyMenus, recipeChangeHistory
             };
         }
 
@@ -441,10 +528,16 @@
 
         async function init() {
             registerServiceWorker();
+            loadProductAllergens();
             const storedDishesSafe = safeLoadJSON('chefTrack_dishes', []);
             dishes = (Array.isArray(storedDishesSafe) ? storedDishesSafe : []).map(normalizeDishData);
             const storedSettingsSafe = safeLoadJSON('chefTrack_settings', {});
             settings = { ...defaultSettings, ...(storedSettingsSafe && typeof storedSettingsSafe === 'object' && !Array.isArray(storedSettingsSafe) ? storedSettingsSafe : {}) };
+            if (storedSettingsSafe?.margenSeguridadPorcentaje === undefined) {
+                const legacyMargin = Number(settings.kitchenProfile?.margenCompraPorcentaje);
+                settings.margenSeguridadPorcentaje = settings.margenActivo && Number.isFinite(legacyMargin) ? legacyMargin : (storedSettingsSafe && Object.keys(storedSettingsSafe).length ? 0 : 30);
+            }
+            settings.margenActivo = Number(settings.margenSeguridadPorcentaje) > 0;
             settings.kitchenProfile = window.GastroOSKitchenRules.normalize(settings.kitchenProfile);
             if (settings.darkMode === undefined) settings.darkMode = false;
             const storedRawSafe = safeLoadJSON('chefTrack_rawStock', []);
@@ -500,6 +593,8 @@
             renderRecipeDiagnostics();
             renderRecipeChangeHistory();
             renderKitchenRules();
+            const productAllergenStatus = document.getElementById('productAllergenStatus');
+            if (productAllergenStatus) productAllergenStatus.textContent = `${Object.keys(productAllergenMap).length} productos con alérgenos configurados.`;
             updateAutoBackupStatus();
         }
 
@@ -518,6 +613,7 @@
                 localStorage.setItem('chefTrack_preparedStock', JSON.stringify(preparedStock));
                 localStorage.setItem('chefTrack_historyMenus', JSON.stringify(historyMenus));
                 localStorage.setItem('chefTrack_recipeChangeHistory', JSON.stringify(recipeChangeHistory));
+                localStorage.setItem('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
                 if (currentMenu) localStorage.setItem('chefTrack_currentMenu', JSON.stringify(currentMenu));
                 else localStorage.removeItem('chefTrack_currentMenu');
                 if (previousWeekMenu) {
@@ -555,6 +651,14 @@
         function setupEventListeners() {
             document.getElementById('btnQuickAddRecipe')?.addEventListener('click', () => switchView('view-form'));
             document.getElementById('btnSaveKitchenRules')?.addEventListener('click', saveKitchenRules);
+            document.getElementById('settingsComensales')?.addEventListener('input', () => updateCalculatedRaciones(false));
+            document.getElementById('settingsMargenSeguridad')?.addEventListener('input', () => updateCalculatedRaciones(false));
+            document.getElementById('btnOpenProductAllergens')?.addEventListener('click', openProductAllergenManager);
+            document.getElementById('btnCloseProductAllergens')?.addEventListener('click', closeProductAllergenManager);
+            document.getElementById('btnCancelProductAllergens')?.addEventListener('click', closeProductAllergenManager);
+            document.getElementById('btnSaveProductAllergens')?.addEventListener('click', saveProductAllergens);
+            document.getElementById('productAllergenSearch')?.addEventListener('input', renderProductAllergenManager);
+
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const targetId = e.currentTarget.getAttribute('data-target');
@@ -628,8 +732,8 @@
                 restoreRecipeListScroll();
             });
 
-            document.getElementById('inputComensales').addEventListener('input', updateCalculatedRaciones);
-            document.getElementById('checkMargen').addEventListener('change', updateCalculatedRaciones);
+            document.getElementById('inputComensales')?.addEventListener('input', updateCalculatedRaciones);
+            document.getElementById('checkMargen')?.addEventListener('change', updateCalculatedRaciones);
             document.getElementById('rawStockForm').addEventListener('submit', handleAddRawStock);
             document.getElementById('prepStockForm').addEventListener('submit', handleAddPrepStock);
             document.getElementById('prepName').addEventListener('change', () => {
@@ -1596,7 +1700,8 @@
                 precocinado: document.getElementById('dishPrecooked').checked,
                 plato_elaborado: document.getElementById('dishPrepared').checked,
                 demanda: document.getElementById('dishDemand').value,
-                alergenos: Array.from(document.querySelectorAll('input[name="dishAllergen"]:checked')).map(input => input.value),
+                alergenosManuales: Array.from(document.querySelectorAll('input[name="dishAllergen"]:checked')).map(input => input.value),
+                alergenos: [],
                 ingredientes: []
             };
 
@@ -2063,8 +2168,6 @@
         }
 
         function renderStockView() {
-            document.getElementById('inputComensales').value = settings.comensales;
-            document.getElementById('checkMargen').checked = settings.margenActivo;
             updateCalculatedRaciones(false);
             refreshStockReferenceSelectors();
             renderRawStock();
@@ -2073,22 +2176,28 @@
 
         function getTotalRaciones() {
             const base = Math.max(0, Number(settings.comensales) || 0);
-            const margin = getKitchenProfile().margenCompraPorcentaje / 100;
+            const margin = (Number(settings.margenSeguridadPorcentaje) || 0) / 100;
             return settings.margenActivo ? Math.ceil(base * (1 + margin)) : base;
         }
 
         function updateCalculatedRaciones(shouldSave = true) {
-            const base = parseInt(document.getElementById('inputComensales').value) || 0;
-            const margen = document.getElementById('checkMargen').checked;
+            const dinersInput = document.getElementById('settingsComensales') || document.getElementById('inputComensales');
+            const marginInput = document.getElementById('settingsMargenSeguridad');
+            const legacyMarginToggle = document.getElementById('checkMargen');
+            const base = Math.max(1, parseInt(dinersInput?.value || settings.comensales, 10) || 1);
+            const margin = marginInput ? Math.min(100, Math.max(0, Number(marginInput.value) || 0)) : (Number(settings.margenSeguridadPorcentaje) || 0);
+            const margen = legacyMarginToggle ? legacyMarginToggle.checked : margin > 0;
             settings.comensales = base;
+            settings.margenSeguridadPorcentaje = margin;
             settings.margenActivo = margen;
             if (shouldSave) saveAll();
 
             const total = getTotalRaciones();
-            const margin = getKitchenProfile().margenCompraPorcentaje;
-            const infoText = margen ? `${base} base + ${margin}% margen de seguridad` : `${base} raciones base`;
-            document.getElementById('totalRacionesDisplay').innerText = `${total} raciones`;
-            document.getElementById('totalRacionesSubtext').innerText = infoText;
+            const infoText = margen && margin > 0 ? `${base} base + ${margin}% de margen de seguridad` : `${base} raciones base`;
+            const display = document.getElementById('totalRacionesDisplay');
+            const subtext = document.getElementById('totalRacionesSubtext');
+            if (display) display.innerText = `${total} raciones`;
+            if (subtext) subtext.innerText = infoText;
         }
 
         function getRawStockServings(item) {
@@ -2472,6 +2581,20 @@
                    animalAppearedOnDay(menuDays, dayIndex - 2, animal);
         }
 
+        function getWeeklyFirstFamilyCount(menuDays, family, exceptDayIndex = -1) {
+            const subtypes = {
+                pasta: new Set(['pastas','pastas_rellenas']),
+                legumbres: new Set(['legumbres']),
+                arroz: new Set(['arroces']),
+                verdura_entera: new Set(['verduras_enteras']),
+                sopas: new Set(['sopas_o_caldos'])
+            }[family] || new Set();
+            return daysList.reduce((total, dayName, index) => {
+                if (index === exceptDayIndex) return total;
+                return total + getDayDishList(menuDays, index, 'Primero').filter(d => subtypes.has(d?.subtipo_primero)).length;
+            }, 0);
+        }
+
         function getWeeklyFirstSubtypeCount(menuDays, subtype, exceptDayIndex = -1) {
             return daysList.reduce((total, dayName, index) => {
                 if (index === exceptDayIndex) return total;
@@ -2693,8 +2816,12 @@
 
             if (getKitchenRule('evitarLiquidosEnPrimeros', true) && hasLiquidFirstConflict(dish, chosenFirsts)) return true;
 
-            // Máximo 2 días de crema de verdura por semana.
             if (dish.subtipo_primero === "cremas" && getWeeklyFirstSubtypeCount(menuDays, "cremas", dayIndex) >= getMaxWeeklyCreams()) return true;
+            if (["pastas","pastas_rellenas"].includes(dish.subtipo_primero) && getWeeklyFirstFamilyCount(menuDays, "pasta", dayIndex) >= getMaxWeeklyPasta()) return true;
+            if (dish.subtipo_primero === "legumbres" && getWeeklyFirstFamilyCount(menuDays, "legumbres", dayIndex) >= getMaxWeeklyLegumes()) return true;
+            if (dish.subtipo_primero === "arroces" && getWeeklyFirstFamilyCount(menuDays, "arroz", dayIndex) >= getMaxWeeklyRice()) return true;
+            if (dish.subtipo_primero === "verduras_enteras" && getWeeklyFirstFamilyCount(menuDays, "verdura_entera", dayIndex) >= getMaxWeeklyVegetableWhole()) return true;
+            if (dish.subtipo_primero === "sopas_o_caldos" && getWeeklyFirstFamilyCount(menuDays, "sopas", dayIndex) >= getMaxWeeklySoups()) return true;
 
             // Regla intocable: una verdura principal solo puede aparecer una vez de lunes a viernes.
             if (getKitchenRule('evitarVerduraRepetida', true) && spec.allowedParents?.includes("Verdura")) {
@@ -3391,6 +3518,16 @@
             if (weeklyFritos > getMaxWeeklyFritos()) errors.push(`Semana: hay ${weeklyFritos} fritos o rebozados; el máximo es ${getMaxWeeklyFritos()}.`);
             const weeklyCreams = getWeeklyFirstSubtypeCount(menu.days, "cremas");
             if (weeklyCreams > getMaxWeeklyCreams()) errors.push(`Semana: hay ${weeklyCreams} días de crema; el máximo es ${getMaxWeeklyCreams()}.`);
+            const weeklyPasta = getWeeklyFirstFamilyCount(menu.days, 'pasta');
+            const weeklyLegumes = getWeeklyFirstFamilyCount(menu.days, 'legumbres');
+            const weeklyRice = getWeeklyFirstFamilyCount(menu.days, 'arroz');
+            const weeklyVegetableWhole = getWeeklyFirstFamilyCount(menu.days, 'verdura_entera');
+            const weeklySoups = getWeeklyFirstFamilyCount(menu.days, 'sopas');
+            if (weeklyPasta > getMaxWeeklyPasta()) errors.push(`Semana: hay ${weeklyPasta} días de pasta; el máximo es ${getMaxWeeklyPasta()}.`);
+            if (weeklyLegumes > getMaxWeeklyLegumes()) errors.push(`Semana: hay ${weeklyLegumes} días de legumbres; el máximo es ${getMaxWeeklyLegumes()}.`);
+            if (weeklyRice > getMaxWeeklyRice()) errors.push(`Semana: hay ${weeklyRice} días de arroz; el máximo es ${getMaxWeeklyRice()}.`);
+            if (weeklyVegetableWhole > getMaxWeeklyVegetableWhole()) errors.push(`Semana: hay ${weeklyVegetableWhole} días de verdura entera; el máximo es ${getMaxWeeklyVegetableWhole()}.`);
+            if (weeklySoups > getMaxWeeklySoups()) errors.push(`Semana: hay ${weeklySoups} días de sopa o caldo; el máximo es ${getMaxWeeklySoups()}.`);
             if (weeklyGuisos !== getGuisoDays().size) errors.push(`Semana: debe haber exactamente ${getGuisoDays().size} guisos; hay ${weeklyGuisos}.`);
 
             days.forEach((dayName, dayIndex) => {
@@ -3449,7 +3586,7 @@
                 : '';
             const stockPriorityLabels = { alta: 'Alta · Aprovechar stock si es compatible', normal: 'Normal · Aprovechar stock cuando encaje', ninguna: 'Ninguna · Priorizar variedad' };
             const guisoText = guiso === 'ningún día' ? 'Sin días de guiso' : guiso;
-            rulesBox.innerHTML = `<details class="generator-rules-details"><summary><span><b>NORMAS APLICADAS</b><small>Ver configuración de esta cocina</small></span><span class="accordion-chevron">⌄</span></summary><div class="generator-rules-body"><div class="generator-rule-grid"><div><b>Guisos</b><span>${escapeHtml(guisoText)}</span></div><div><b>Fritos</b><span>Máx. ${p.maxWeeklyFritos} por semana</span></div><div><b>Cremas</b><span>Máx. ${p.maxWeeklyCreams} por semana</span></div><div><b>Carnes</b><span>${escapeHtml(meats)}</span></div><div><b>Pescados</b><span>${escapeHtml(fish)}</span></div><div><b>Stock</b><span>${escapeHtml(stockPriorityLabels[p.prioridadStock] || p.prioridadStock)}</span></div></div></div></details>${diagnostics}`;
+            rulesBox.innerHTML = `<details class="generator-rules-details"><summary><span><b>NORMAS APLICADAS</b><small>Ver configuración de esta cocina</small></span><span class="accordion-chevron">⌄</span></summary><div class="generator-rules-body"><div class="generator-rule-grid"><div><b>Guisos</b><span>${escapeHtml(guisoText)}</span></div><div><b>Fritos</b><span>Máx. ${p.maxWeeklyFritos} por semana</span></div><div><b>Cremas</b><span>Máx. ${p.maxWeeklyCreams} por semana</span></div><div><b>Pasta</b><span>Máx. ${p.maxWeeklyPasta} por semana</span></div><div><b>Legumbres</b><span>Máx. ${p.maxWeeklyLegumes} por semana</span></div><div><b>Arroz</b><span>Máx. ${p.maxWeeklyRice} por semana</span></div><div><b>Verdura entera</b><span>Máx. ${p.maxWeeklyVegetableWhole} por semana</span></div><div><b>Sopas y caldos</b><span>Máx. ${p.maxWeeklySoups} por semana</span></div><div><b>Carnes</b><span>${escapeHtml(meats)}</span></div><div><b>Pescados</b><span>${escapeHtml(fish)}</span></div><div><b>Stock</b><span>${escapeHtml(stockPriorityLabels[p.prioridadStock] || p.prioridadStock)}</span></div></div></div></details>${diagnostics}`;
             container.appendChild(rulesBox);
 
             const daysToRender = selectedGeneratorDay === 'Todos' ? daysList : [selectedGeneratorDay];
@@ -3681,7 +3818,7 @@
                 hasItems = true;
                 const section = document.createElement('div');
                 section.className = "bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-2";
-                section.innerHTML = `<h4 class="font-bold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-1">${escapeHtml(cat)}</h4><div class="grid grid-cols-[1fr_auto_auto_auto] gap-x-3 text-[9px] uppercase font-bold text-gray-400 px-1"><span>Ingrediente</span><span>Necesario</span><span>Stock</span><span>Comprar</span></div><ul class="space-y-1.5">${items.map(i => { const fmt = n => n > 0 ? `${Math.ceil(n/1000)} ${i.dimension}` : '—'; return `<li class="grid grid-cols-[1fr_auto_auto_auto] gap-x-3 items-center text-xs text-gray-800 dark:text-gray-200 border-t border-gray-100 dark:border-gray-800 pt-1.5"><span>${escapeHtml(i.nombre)}</span><span class="text-[10px] text-gray-500">${escapeHtml(fmt(i.necesario))}</span><span class="text-[10px] text-emerald-600 dark:text-emerald-400">${escapeHtml(fmt(i.disponible))}</span><span class="font-black">${escapeHtml(i.comprar > 0 ? `${i.cantidad} ${i.unidad}` : '0')}</span></li>`; }).join('')}</ul>`;
+                section.innerHTML = `<h4 class="font-bold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-1">${escapeHtml(cat)}</h4><div class="shopping-grid shopping-grid-header"><span>Producto</span><span>Necesario</span><span>Stock</span><span>Comprar</span></div><ul class="shopping-grid-list">${items.map(i => { const fmt = n => n > 0 ? `${Math.ceil(n/1000)} ${i.dimension}` : '—'; return `<li class="shopping-grid shopping-grid-row"><span class="shopping-product-name">${escapeHtml(i.nombre)}</span><span class="shopping-number">${escapeHtml(fmt(i.necesario))}</span><span class="shopping-number shopping-stock">${escapeHtml(fmt(i.disponible))}</span><span class="shopping-buy">${escapeHtml(i.comprar > 0 ? `${i.cantidad} ${i.unidad}` : '0')}</span></li>`; }).join('')}</ul>`;
                 container.appendChild(section);
             });
             if (!hasItems) container.innerHTML = '<p class="text-center text-gray-500 text-xs py-4">No hay ingredientes necesarios en el menú actual.</p>';
@@ -3938,12 +4075,13 @@
             if (!pendingImportData) return;
             const { data, summary } = pendingImportData;
             createAutoBackup(`antes de restaurar ${pendingImportData.fileName || 'una copia JSON'}`);
+            if (summary.full && data.settings && typeof data.settings === 'object') settings = { ...defaultSettings, ...data.settings };
+            if (summary.full && data.productAllergenMap && typeof data.productAllergenMap === 'object') productAllergenMap = data.productAllergenMap;
             const importedDishes = summary.importedDishes;
             if (importedDishes) {
                 dishes = importedDishes.map(normalizeDishData);
                 logRecipeChange('import', null, `${dishes.length} recetas importadas`);
             }
-            if (summary.full && data.settings && typeof data.settings === 'object') settings = { ...defaultSettings, ...data.settings };
             if (summary.full && Array.isArray(data.rawStock)) rawStock = data.rawStock;
             if (summary.full && Array.isArray(data.preparedStock)) preparedStock = data.preparedStock;
             if (summary.full && Object.prototype.hasOwnProperty.call(data, 'currentMenu')) currentMenu = data.currentMenu;

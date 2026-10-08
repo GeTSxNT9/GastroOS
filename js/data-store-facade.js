@@ -17,6 +17,7 @@
         previousWeekMenu: 'chefTrack_previousWeekMenu',
         historyMenus: 'chefTrack_historyMenus',
         recipeChangeHistory: 'chefTrack_recipeChangeHistory',
+        productAllergens: 'chefTrack_productAllergens',
         autoBackup: 'chefTrack_autoBackup',
         autoBackupAt: 'chefTrack_autoBackupAt'
     });

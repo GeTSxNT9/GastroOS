@@ -5,9 +5,9 @@
  * No hay usuarios, roles ni cuentas dentro de este perfil.
  */
 (function () {
-    const VERSION = 2;
+    const VERSION = 3;
     const DAYS = Object.freeze(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']);
-    const FISH_SPECIES = Object.freeze(['trucha','caella','bacalao','merluza','calamares','bacaladilla','panga','atun','perca','chicharro']);
+    const FISH_SPECIES = Object.freeze(['trucha','caella','bacalao','merluza','calamares','bacaladilla','panga','atun','perca','chicharro','cabracho','tintorera']);
     const MEAT_ANIMALS = Object.freeze(['carne_pollo','carne_pavo','carne_cerdo','carne_ternera','carne_conejo','carne_cordero']);
 
     const DEFAULT_RULES = Object.freeze({
@@ -16,7 +16,11 @@
         guisoDays: Object.freeze([0, 2, 4]),
         maxWeeklyFritos: 2,
         maxWeeklyCreams: 2,
-        margenCompraPorcentaje: 30,
+        maxWeeklyPasta: 2,
+        maxWeeklyLegumes: 2,
+        maxWeeklyRice: 2,
+        maxWeeklyVegetableWhole: 3,
+        maxWeeklySoups: 2,
         ajusteCompraPorcentaje: 80,
         especiesPescadoPermitidas: Object.freeze([...FISH_SPECIES]),
         animalesCarnePermitidos: Object.freeze([...MEAT_ANIMALS]),
@@ -47,6 +51,10 @@
         const isLegacyProfile = source.version !== VERSION;
         const rawFish = normalizeList(source.especiesPescadoPermitidas).map(v => v.toLowerCase()).filter(v => FISH_SPECIES.includes(v));
         const rawAnimals = normalizeList(source.animalesCarnePermitidos).map(v => v.toLowerCase()).filter(v => MEAT_ANIMALS.includes(v));
+        const previousFish = ['trucha','caella','bacalao','merluza','calamares','bacaladilla','panga','atun','perca','chicharro'];
+        if (source.version === 2 && previousFish.every(v => rawFish.includes(v))) {
+            ['cabracho','tintorera'].forEach(v => { if (!rawFish.includes(v)) rawFish.push(v); });
+        }
         const fish = isLegacyProfile && rawFish.length === 0 ? [...FISH_SPECIES] : rawFish;
         const animals = isLegacyProfile && rawAnimals.length === 0 ? [...MEAT_ANIMALS] : rawAnimals;
 
@@ -60,8 +68,12 @@
             nombre: String(source.nombre ?? DEFAULT_RULES.nombre).trim() || DEFAULT_RULES.nombre,
             guisoDays,
             maxWeeklyFritos: clampInt(source.maxWeeklyFritos, 0, 10, DEFAULT_RULES.maxWeeklyFritos),
-            maxWeeklyCreams: clampInt(source.maxWeeklyCreams, 0, 10, DEFAULT_RULES.maxWeeklyCreams),
-            margenCompraPorcentaje: clampInt(source.margenCompraPorcentaje, 0, 100, DEFAULT_RULES.margenCompraPorcentaje),
+            maxWeeklyCreams: clampInt(source.maxWeeklyCreams, 0, 5, DEFAULT_RULES.maxWeeklyCreams),
+            maxWeeklyPasta: clampInt(source.maxWeeklyPasta, 0, 5, DEFAULT_RULES.maxWeeklyPasta),
+            maxWeeklyLegumes: clampInt(source.maxWeeklyLegumes, 0, 5, DEFAULT_RULES.maxWeeklyLegumes),
+            maxWeeklyRice: clampInt(source.maxWeeklyRice, 0, 5, DEFAULT_RULES.maxWeeklyRice),
+            maxWeeklyVegetableWhole: clampInt(source.maxWeeklyVegetableWhole, 0, 5, DEFAULT_RULES.maxWeeklyVegetableWhole),
+            maxWeeklySoups: clampInt(source.maxWeeklySoups, 0, 5, DEFAULT_RULES.maxWeeklySoups),
             ajusteCompraPorcentaje: clampInt(source.ajusteCompraPorcentaje, 1, 150, DEFAULT_RULES.ajusteCompraPorcentaje),
             especiesPescadoPermitidas: fish,
             animalesCarnePermitidos: animals,
