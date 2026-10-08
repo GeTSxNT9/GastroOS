@@ -368,7 +368,7 @@
                             <button id="btnSaveToHistory" class="flex-1 bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1 border border-indigo-600 shadow-sm">
                                 <span>💾</span> Historial
                             </button>
-                            <button id="btnDownloadMenuTxt" onclick="downloadWeeklyMenuTxt()" class="flex-1 bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1 border border-indigo-600 shadow-sm">
+                            <button id="btnDownloadMenuTxt" type="button" onclick="downloadWeeklyMenuTxt(); return false;" class="flex-1 bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1 border border-indigo-600 shadow-sm">
                                 <span>📋</span> Exportar
                             </button>
                         </div>
@@ -394,7 +394,7 @@
                         <span class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 px-2 py-0.5 rounded-full" id="shoppingRacionesBadge">130 Raciones</span>
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug">Se muestra por ingrediente: <b>necesario</b>, <b>stock</b> y <b>comprar</b>. Si ya tienes algo, marca <b>Stock</b>: seguirá visible aquí, pero no se incluirá al exportar.</p>
-                    <button id="btnDownloadShoppingTxt" onclick="downloadShoppingListTxt()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-lg text-xs flex items-center justify-center gap-2 shadow-sm">
+                    <button id="btnDownloadShoppingTxt" type="button" onclick="downloadShoppingListTxt(); return false;" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-lg text-xs flex items-center justify-center gap-2 shadow-sm">
                         <span>📄</span> Exportar
                     </button>
                 </div>
@@ -708,13 +708,13 @@
     </div>
 
     <!-- MODAL REGENERACIÓN INTELIGENTE DEL DÍA -->
-    <div id="modalDayRegeneration" class="day-regeneration-modal hidden fixed inset-0 bg-black/60 z-[75] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm" onclick="if(event.target===this) closeIntelligentDayRegeneration()">
-        <div class="day-regeneration-modal-panel bg-white dark:bg-gray-900 w-full max-w-lg rounded-t-2xl sm:rounded-2xl max-h-[80vh] flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800">
-            <div class="p-3.5 bg-indigo-600 dark:bg-indigo-950 text-white flex justify-between items-center">
-                <div><h3 class="font-bold text-sm" id="modalDayRegenerationTitle">Alternativas para el día</h3><p class="text-[11px] text-indigo-200">GastroOS busca días completos que cumplan todas las normas.</p></div>
-                <button type="button" onclick="closeIntelligentDayRegeneration()" aria-label="Cerrar" class="modal-close-btn text-white hover:bg-indigo-700 rounded-lg">✕</button>
+    <div id="modalDayRegeneration" class="day-regeneration-modal hidden fixed inset-0 flex items-center justify-center p-3 sm:p-4" onclick="if(event.target===this) closeIntelligentDayRegeneration()">
+        <div class="day-regeneration-modal-panel">
+            <div class="day-regeneration-modal-header">
+                <div><h3 id="modalDayRegenerationTitle">Alternativas para el día</h3><p>GastroOS busca días completos que cumplan todas las normas.</p></div>
+                <button type="button" onclick="closeIntelligentDayRegeneration()" aria-label="Cerrar" class="day-regeneration-close">✕</button>
             </div>
-            <div id="dayRegenerationList" class="p-4 overflow-y-auto space-y-3 flex-1"></div>
+            <div id="dayRegenerationList"></div>
         </div>
     </div>
 

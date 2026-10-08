@@ -1,4 +1,4 @@
-/* GastroOS · Service Worker · Fase definitiva · oferta configurable + catálogo de proteínas + UX final
+/* GastroOS · Service Worker · Fase definitiva · exportación iOS + tags + alternativas
  * Caché versionada y actualizaciones seguras.
  * La aplicación sigue usando estrategia network-first: intenta obtener la versión
  * más reciente y recurre a la caché si no hay conexión.
@@ -6,7 +6,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v10';
+const CACHE_NAME = 'gastroos-v12';
 const APP_SHELL = [
   './',
   './index.html',
