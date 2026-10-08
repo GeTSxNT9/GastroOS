@@ -229,8 +229,7 @@
         #prepStockForm label {
             letter-spacing: -.005em;
         }
-        #dishPrecooked,
-        #checkMargen { accent-color: var(--g-accent); }
+        #dishPrecooked { accent-color: var(--g-accent); }
         #dishPrecooked + label { }
         #dishPrecookedContainer { }
         #dishForm .border-t { border-color: rgba(15,23,42,.08) !important; }
@@ -739,40 +738,6 @@ html.dark #allergensContainer > label:has(input:checked) {
 #view-stock > section:first-child > div.grid > div:first-child {
     min-width: 0;
 }
-#inputComensales {
-    height: 38px !important;
-    min-height: 38px !important;
-}
-#view-stock > section:first-child > div.grid > div:nth-child(2) {
-    height: 38px !important;
-    padding: 8px 10px !important;
-    margin: 0 !important;
-    border-radius: 11px !important;
-    gap: 8px;
-}
-#view-stock > section:first-child > div.grid > div:nth-child(2) span { font-size: 10px !important; }
-#view-stock > section:first-child > div.grid > div:nth-child(2) input { width: 18px !important; height: 18px !important; }
-#view-stock > section:first-child > div.grid > div:nth-child(3) {
-    grid-column: 1 / -1;
-    display: flex !important;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 10px;
-    text-align: left !important;
-    padding: 8px 11px !important;
-    min-height: 42px;
-    border-radius: 11px !important;
-}
-#totalRacionesDisplay {
-    font-size: 15px !important;
-    line-height: 1.2 !important;
-    color: #fff !important;
-    white-space: nowrap;
-}
-#totalRacionesSubtext {
-    font-size: 10px !important;
-    color: #D1D1D6 !important;
-}
 #rawStockForm, #prepStockForm {
     display: grid !important;
     grid-template-columns: repeat(2,minmax(0,1fr)) !important;
@@ -872,14 +837,6 @@ body > nav, nav.fixed {
 }
 
 /* Small screens */
-@media (max-width: 390px) {
-    main { padding-inline: 9px !important; }
-    #dishesList > div { padding-right: 42px !important; }
-    #recipeDiagnostics { gap: 4px !important; }
-    #recipeDiagnostics > div { padding: 7px 5px !important; }
-    #recipeDiagnostics > div .text-lg { font-size: 14px !important; }
-    #totalRacionesDisplay { font-size: 14px !important; }
-}
 @media (min-width: 768px) {
     main { padding: 16px !important; }
     #dishesList { gap: 10px !important; }
@@ -1526,19 +1483,6 @@ html.dark #btnBulkEdit {
     border-color: rgba(255,255,255,.12) !important;
 }
 
-/* Stock / previsión */
-html.dark #view-stock > section:first-child > div.grid > div:nth-child(2),
-html.dark #view-stock > section:first-child > div.grid > div:nth-child(3) {
-    background: #1c1c1e !important;
-    border-color: rgba(255,255,255,.10) !important;
-    color: #f5f5f7 !important;
-}
-html.dark #totalRacionesDisplay {
-    color: #fff !important;
-}
-html.dark #totalRacionesSubtext {
-    color: #c7c7cc !important;
-}
 html.dark #rawStockForm,
 html.dark #prepStockForm {
     color: #f5f5f7 !important;
@@ -2061,10 +2005,132 @@ html.dark .menu-status-badge.precooked { background:#500724; color:#f9a8d4; bord
 
 
 /* Etiquetas del menú: a la derecha del nombre, reservando la línea inferior para alérgenos. */
-.gastro-slot-title-row { display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; }
-.gastro-slot-title-row > .text-sm { min-width:0; flex:1 1 auto; overflow-wrap:anywhere; }
-.menu-status-badges-inline { flex:0 0 auto; margin-top:0 !important; justify-content:flex-end; }
+.gastro-slot-title-row { display:grid !important; grid-template-columns:minmax(0,1fr) auto; align-items:center; column-gap:8px; width:100%; min-width:0; }
+.gastro-slot-title-row > .text-sm { min-width:0; width:100%; overflow-wrap:anywhere; }
+.menu-status-badges-inline { display:flex !important; flex:0 0 auto; align-items:center; justify-content:flex-end; gap:4px; margin:0 !important; min-width:max-content; }
+.menu-status-badges-inline .menu-status-badge { margin:0 !important; white-space:nowrap; }
 @media (max-width:640px) {
-  .gastro-slot-title-row { gap:6px; }
+  .gastro-slot-title-row { column-gap:6px; }
   .menu-status-badges-inline .menu-status-badge { font-size:8px; padding:2px 5px; }
+}
+
+
+/* Corrección puntual: tags del menú en la misma línea que el nombre. */
+.gastro-slot-title-row {
+    display:flex !important;
+    align-items:center !important;
+    gap:8px !important;
+    width:100% !important;
+    min-width:0 !important;
+}
+.gastro-slot-title-row > .text-sm {
+    flex:1 1 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    overflow-wrap:anywhere !important;
+}
+.menu-status-badges-inline {
+    display:flex !important;
+    flex:0 0 auto !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    gap:4px !important;
+    margin:0 !important;
+    min-width:max-content !important;
+}
+.menu-status-badges-inline .menu-status-badge {
+    margin:0 !important;
+    white-space:nowrap !important;
+}
+
+/* Modal de alternativas: misma superficie, escala y lenguaje visual que GastroOS. */
+.day-regeneration-modal {
+    z-index:75 !important;
+    background:rgba(15,23,42,.20) !important;
+    backdrop-filter:blur(8px) !important;
+    -webkit-backdrop-filter:blur(8px) !important;
+}
+.day-regeneration-modal-panel {
+    width:min(92vw, 520px) !important;
+    max-height:min(76vh, 620px) !important;
+    display:flex !important;
+    flex-direction:column !important;
+    overflow:hidden !important;
+    border-radius:18px !important;
+    background:var(--g-surface, #fff) !important;
+    color:var(--g-text, #111827) !important;
+    border:1px solid var(--g-border, rgba(15,23,42,.08)) !important;
+    box-shadow:var(--g-shadow, 0 12px 32px rgba(15,23,42,.12)) !important;
+}
+.day-regeneration-modal-header {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:12px !important;
+    padding:14px 16px !important;
+    background:var(--g-surface, #fff) !important;
+    border-bottom:1px solid var(--g-border, rgba(15,23,42,.08)) !important;
+}
+.day-regeneration-modal-header h3 {
+    margin:0 !important;
+    font-size:14px !important;
+    line-height:1.2 !important;
+    font-weight:800 !important;
+    color:var(--g-text, #111827) !important;
+}
+.day-regeneration-modal-header p {
+    margin:4px 0 0 !important;
+    font-size:10px !important;
+    line-height:1.35 !important;
+    color:var(--g-muted, #64748b) !important;
+}
+.day-regeneration-close {
+    flex:0 0 auto !important;
+    width:32px !important;
+    height:32px !important;
+    border-radius:999px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border:1px solid rgba(15,23,42,.08) !important;
+    background:rgba(15,23,42,.05) !important;
+    color:var(--g-muted, #64748b) !important;
+    font-size:13px !important;
+}
+.day-regeneration-close:hover { background:rgba(15,23,42,.09) !important; }
+#dayRegenerationList {
+    padding:12px !important;
+    overflow-y:auto !important;
+    flex:1 1 auto !important;
+    min-height:0 !important;
+}
+.day-regeneration-modal .day-regeneration-option {
+    border-radius:14px !important;
+    padding:10px !important;
+    background:rgba(248,250,252,.72) !important;
+    border:1px solid rgba(15,23,42,.07) !important;
+    box-shadow:none !important;
+}
+.day-regeneration-modal .day-regeneration-option + .day-regeneration-option { margin-top:8px !important; }
+.day-regeneration-modal .day-regeneration-dish {
+    grid-template-columns:92px minmax(0,1fr) !important;
+    padding:5px 6px !important;
+    border-radius:8px !important;
+    background:rgba(255,255,255,.72) !important;
+}
+.day-regeneration-modal .day-regeneration-option-head {
+    margin-bottom:7px !important;
+}
+html.dark .day-regeneration-modal-panel { background:#1c1c1e !important; color:#f5f5f7 !important; border-color:rgba(255,255,255,.09) !important; }
+html.dark .day-regeneration-modal-header { background:#1c1c1e !important; border-bottom-color:rgba(255,255,255,.09) !important; }
+html.dark .day-regeneration-modal-header h3 { color:#f5f5f7 !important; }
+html.dark .day-regeneration-modal-header p { color:#a1a1aa !important; }
+html.dark .day-regeneration-close { background:rgba(255,255,255,.08) !important; border-color:rgba(255,255,255,.10) !important; color:#d4d4d8 !important; }
+html.dark .day-regeneration-modal .day-regeneration-option { background:rgba(39,39,42,.78) !important; border-color:rgba(255,255,255,.08) !important; }
+html.dark .day-regeneration-modal .day-regeneration-dish { background:rgba(24,24,27,.72) !important; }
+@media (max-width:640px) {
+    .gastro-slot-title-row { gap:6px !important; }
+    .menu-status-badge { font-size:8px !important; padding:2px 5px !important; }
+    .day-regeneration-modal { padding:12px !important; }
+    .day-regeneration-modal-panel { width:100% !important; max-height:80vh !important; border-radius:16px !important; }
 }
