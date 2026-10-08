@@ -3700,7 +3700,7 @@
                 list.innerHTML = alternatives.map((alternative, index) => {
                     const primeros = alternative.day.filter(s => s.cat === 'Primero');
                     const segundos = alternative.day.filter(s => s.cat === 'Segundo');
-                    const renderGroup = (label, slots) => `<div class="day-regeneration-group"><b>${label}</b>${slots.map(s => `<div class="day-regeneration-dish"><span>${escapeHtml(s.slotLabel)}</span><strong>${escapeHtml(s.dish?.nombre || 'Sin asignar')}</strong></div>`).join('')}</div>`;
+                    const renderGroup = (label, slots) => `<div class="day-regeneration-group"><b>${label}</b>${slots.map(s => { const status = getMenuDishStatusFlags(s.dish, s); const badges = [status.platoElaborado ? '<span class="menu-status-badge prepared">Plato elaborado</span>' : '', status.precocinado ? '<span class="menu-status-badge precooked">Precocinado</span>' : ''].filter(Boolean).join(''); return `<div class="day-regeneration-dish"><span>${escapeHtml(s.slotLabel)}</span><strong>${escapeHtml(s.dish?.nombre || 'Sin asignar')}${badges ? `<div class="menu-status-badges">${badges}</div>` : ''}</strong></div>`; }).join('')}</div>`;
                     return `<div class="day-regeneration-option"><div class="day-regeneration-option-head"><div><span class="day-regeneration-option-number">OPCIÓN ${index + 1}</span><span class="day-regeneration-option-note">Cumple todas las normas</span></div><button type="button" class="primary-action day-regeneration-select" onclick="confirmIntelligentDayRegeneration(${index})">ELEGIR</button></div>${renderGroup('PRIMEROS', primeros)}${renderGroup('SEGUNDOS', segundos)}</div>`;
                 }).join('');
                 modal._alternatives = alternatives;
@@ -3963,6 +3963,18 @@
             });
         }
 
+        function getMenuDishStatusFlags(dish, slot = null) {
+            const id = dish?.id != null ? String(dish.id) : '';
+            const nameKey = normalizeFoodKey(dish?.nombre);
+            const source = dishes.find(d => String(d?.id ?? '') === id)
+                || dishes.find(d => normalizeFoodKey(d?.nombre) === nameKey);
+            const preparedByStock = !!(dish && isPreparedStockDish(dish));
+            return {
+                platoElaborado: !!(dish?.plato_elaborado || source?.plato_elaborado || preparedByStock || slot?.isPreparedStock),
+                precocinado: !!(dish?.precocinado || source?.precocinado)
+            };
+        }
+
         function renderSlotCard(dayName, index, slot) {
             const isPrimero = slot.cat === 'Primero';
             let dishName = slot.dish ? slot.dish.nombre : "Sin asignar";
@@ -3973,9 +3985,10 @@
             const allergenLine = allergenNames.length
                 ? `<div class="text-[9px] text-gray-500 dark:text-gray-400 mt-1 leading-tight">Alérgenos: ${allergenNames.map(escapeHtml).join(' · ')}</div>`
                 : '';
+            const menuStatus = getMenuDishStatusFlags(slot.dish, slot);
             const proteinBadges = [
-                slot.dish?.plato_elaborado ? '<span class="menu-status-badge prepared">Plato elaborado</span>' : '',
-                slot.dish?.precocinado ? '<span class="menu-status-badge precooked">Precocinado</span>' : ''
+                menuStatus.platoElaborado ? '<span class="menu-status-badge prepared">Plato elaborado</span>' : '',
+                menuStatus.precocinado ? '<span class="menu-status-badge precooked">Precocinado</span>' : ''
             ].filter(Boolean).join('');
 
             const safeDay = escapeJsArg(dayName);
