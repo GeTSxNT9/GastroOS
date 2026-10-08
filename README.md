@@ -171,3 +171,8 @@ Because authentication is client-side, credentials stored in `localStorage` are 
 GastroOS aims to automate repetitive weekly kitchen planning **without hiding the logic behind it**.
 
 It combines structured recipes, configurable kitchen rules, stock awareness, production calculations, allergen mapping, and local persistence while keeping final decisions under user control.
+
+
+### Regeneración inteligente y diagnóstico de configuración
+
+La generación semanal incluye regeneración inteligente de un día: en lugar de sustituirlo a ciegas, GastroOS busca varias alternativas de día completo y solo ofrece opciones que mantienen las reglas activas. También comprueba configuraciones potencialmente imposibles antes de guardar los ajustes, especialmente por disponibilidad de especies de pescado, animales de carne y familias de primeros.

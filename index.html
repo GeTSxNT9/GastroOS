@@ -723,6 +723,17 @@
         </div>
     </div>
 
+    <!-- MODAL REGENERACIÓN INTELIGENTE DEL DÍA -->
+    <div id="modalDayRegeneration" class="hidden fixed inset-0 bg-black/60 z-[75] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm" onclick="if(event.target===this) closeIntelligentDayRegeneration()">
+        <div class="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-t-2xl sm:rounded-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800">
+            <div class="p-4 bg-indigo-600 dark:bg-indigo-950 text-white flex justify-between items-center">
+                <div><h3 class="font-bold text-sm" id="modalDayRegenerationTitle">Alternativas para el día</h3><p class="text-[11px] text-indigo-200">GastroOS busca días completos que cumplan todas las normas.</p></div>
+                <button type="button" onclick="closeIntelligentDayRegeneration()" aria-label="Cerrar" class="modal-close-btn text-white hover:bg-indigo-700 rounded-lg">✕</button>
+            </div>
+            <div id="dayRegenerationList" class="p-4 overflow-y-auto space-y-3 flex-1"></div>
+        </div>
+    </div>
+
     <!-- MODAL CAMBIAR PLATO -->
     <div id="modalChangeDish" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm" onclick="if(event.target===this) closeSwapModal()">
         <div class="bg-white dark:bg-gray-900 w-full max-w-lg rounded-t-2xl sm:rounded-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl animate-fade-in border border-gray-200 dark:border-gray-800">
