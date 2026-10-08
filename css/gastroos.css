@@ -2017,26 +2017,27 @@ html.dark .menu-status-badge.precooked { background:#500724; color:#f9a8d4; bord
 
 /* Corrección puntual: tags del menú en la misma línea que el nombre. */
 .gastro-slot-title-row {
-    display:flex !important;
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) minmax(145px, .62fr) !important;
     align-items:center !important;
     gap:8px !important;
     width:100% !important;
     min-width:0 !important;
 }
 .gastro-slot-title-row > .text-sm {
-    flex:1 1 auto !important;
-    width:auto !important;
     min-width:0 !important;
+    width:auto !important;
     overflow-wrap:anywhere !important;
 }
 .menu-status-badges-inline {
     display:flex !important;
     flex:0 0 auto !important;
     align-items:center !important;
-    justify-content:flex-end !important;
+    justify-content:center !important;
     gap:4px !important;
     margin:0 !important;
-    min-width:max-content !important;
+    min-width:0 !important;
+    width:100% !important;
 }
 .menu-status-badges-inline .menu-status-badge {
     margin:0 !important;
@@ -2129,7 +2130,7 @@ html.dark .day-regeneration-close { background:rgba(255,255,255,.08) !important;
 html.dark .day-regeneration-modal .day-regeneration-option { background:rgba(39,39,42,.78) !important; border-color:rgba(255,255,255,.08) !important; }
 html.dark .day-regeneration-modal .day-regeneration-dish { background:rgba(24,24,27,.72) !important; }
 @media (max-width:640px) {
-    .gastro-slot-title-row { gap:6px !important; }
+    .gastro-slot-title-row { grid-template-columns:minmax(0, 1fr) minmax(128px, .52fr) !important; gap:6px !important; }
     .menu-status-badge { font-size:8px !important; padding:2px 5px !important; }
     .day-regeneration-modal { padding:12px !important; }
     .day-regeneration-modal-panel { width:100% !important; max-height:80vh !important; border-radius:16px !important; }
