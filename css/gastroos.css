@@ -2037,3 +2037,24 @@ html.dark .generator-rules-details {
 .day-regeneration-dish span { font-size:9px; color:#94a3b8; }
 .day-regeneration-dish strong { min-width:0; font-size:10px; overflow-wrap:anywhere; }
 @media (max-width:640px) { .day-regeneration-dish { grid-template-columns:92px minmax(0,1fr); } }
+
+
+.protein-catalog-add-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    margin-top: 10px;
+}
+.protein-catalog-add-row .secondary-action {
+    white-space: nowrap;
+    padding: 0 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 800;
+}
+.dark .protein-catalog-add-row .secondary-action { border-color: #374151; }
+@media (max-width: 520px) {
+    .protein-catalog-add-row { grid-template-columns: 1fr; }
+    .protein-catalog-add-row .secondary-action { min-height: 38px; }
+}
