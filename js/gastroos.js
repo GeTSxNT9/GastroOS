@@ -3997,10 +3997,13 @@
             const safeProtein = escapeJsArg(!isPrimero ? (slot.dish?.proteina_segundo || '') : '');
             return `
                 <div class="gastro-slot flex items-center justify-between p-3">
-                    <div class="flex items-center gap-2 flex-1">
-                        <div>
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                        <div class="min-w-0 w-full">
                             <div class="text-[10px] font-bold text-gray-500 uppercase">${escapeHtml(slot.slotLabel)}</div>
-                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">${escapeHtml(dishName)} ${warningBadge}</div>${proteinBadges ? `<div class="menu-status-badges">${proteinBadges}</div>` : ''}
+                            <div class="gastro-slot-title-row">
+                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight min-w-0">${escapeHtml(dishName)} ${warningBadge}</div>
+                                ${proteinBadges ? `<div class="menu-status-badges menu-status-badges-inline">${proteinBadges}</div>` : ''}
+                            </div>
                             ${allergenLine}
                         </div>
                     </div>
@@ -4027,19 +4030,42 @@
         }
 
         function downloadTextFile(text, filename) {
-            const blob = new Blob([String(text ?? '')], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
+            const content = String(text ?? '');
+            if (!content.trim()) {
+                alert('No hay contenido para exportar.');
+                return false;
+            }
+
             const anchor = document.createElement('a');
-            anchor.href = url;
             anchor.download = filename;
             anchor.rel = 'noopener';
             anchor.style.display = 'none';
             document.body.appendChild(anchor);
-            try { anchor.click(); } catch (error) {
-                window.open(url, '_blank', 'noopener,noreferrer');
+
+            let objectUrl = '';
+            try {
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                objectUrl = URL.createObjectURL(blob);
+                anchor.href = objectUrl;
+                anchor.click();
+                window.setTimeout(() => {
+                    anchor.remove();
+                    if (objectUrl) URL.revokeObjectURL(objectUrl);
+                }, 1200);
+                return true;
+            } catch (error) {
+                // Fallback para navegadores/WebViews que no permiten descargar Blob URLs.
+                try {
+                    anchor.href = `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`;
+                    anchor.click();
+                    window.setTimeout(() => anchor.remove(), 1200);
+                    return true;
+                } catch (fallbackError) {
+                    anchor.remove();
+                    alert('No se ha podido preparar el archivo para exportar.');
+                    return false;
+                }
             }
-            window.setTimeout(() => { anchor.remove(); URL.revokeObjectURL(url); }, 1500);
-            return true;
         }
 
         function downloadWeeklyMenuTxt() {
