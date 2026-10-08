@@ -324,6 +324,33 @@
         }
 
 
+        function validateKitchenConfiguration(profile = getKitchenProfile()) {
+            const errors = [];
+            const warnings = [];
+            const firstCounts = {
+                Verdura: Number(profile.primerosVerdura) || 0,
+                Cuchara: Number(profile.primerosCuchara) || 0,
+                Tenedor: Number(profile.primerosTenedor) || 0
+            };
+            const meatSlots = Number(profile.segundosCarne) || 0;
+            const fishSlots = Number(profile.segundosPescado) || 0;
+            const allowedFish = new Set(profile.especiesPescadoPermitidas || []);
+            const allowedMeat = new Set(profile.animalesCarnePermitidos || []);
+            const availableFirsts = new Set(dishes.filter(d => d?.categoria === 'Primero').map(d => d?.subcategoria_primero).filter(Boolean));
+            if (firstCounts.Verdura > 0 && !availableFirsts.has('Verdura')) errors.push('Hay primeros de verdura configurados, pero no hay recetas de verdura disponibles.');
+            if (firstCounts.Cuchara > 0 && !availableFirsts.has('Cuchara')) errors.push('Hay primeros de cuchara configurados, pero no hay recetas de cuchara disponibles.');
+            if (firstCounts.Tenedor > 0 && !availableFirsts.has('Tenedor')) errors.push('Hay primeros de tenedor/hidrato configurados, pero no hay recetas de esa familia disponibles.');
+
+            const fishSpeciesInRecipes = new Set(dishes.filter(d => d?.categoria === 'Segundo' && d?.proteina_segundo === 'Pescado' && allowedFish.has(String(d?.especie_pescado || '').toLowerCase())).map(d => String(d.especie_pescado || '').toLowerCase()).filter(Boolean));
+            const meatAnimalsInRecipes = new Set(dishes.filter(d => d?.categoria === 'Segundo' && d?.proteina_segundo === 'Carne' && allowedMeat.has(String(d?.animal_carne || '').toLowerCase())).map(d => String(d.animal_carne || '').toLowerCase()).filter(Boolean));
+            if (fishSlots > fishSpeciesInRecipes.size) errors.push(`La oferta necesita ${fishSlots} pescados por día, pero solo hay ${fishSpeciesInRecipes.size} especies permitidas con recetas disponibles; cada especie solo puede aparecer una vez por semana.`);
+            if (meatSlots > meatAnimalsInRecipes.size) errors.push(`La oferta necesita ${meatSlots} carnes por día, pero solo hay ${meatAnimalsInRecipes.size} tipos de carne permitidos con recetas disponibles; no se puede repetir animal dentro del mismo día.`);
+            if (fishSlots * daysList.length > fishSpeciesInRecipes.size) warnings.push(`La configuración requiere ${fishSlots * daysList.length} pescados por semana y solo hay ${fishSpeciesInRecipes.size} especies disponibles sin repetir.`);
+            if (meatSlots > 1 && meatAnimalsInRecipes.size < meatSlots + 1) warnings.push('Hay poca variedad de animales de carne para la oferta configurada; puede ser difícil evitar repeticiones en días consecutivos.');
+
+            return { valid: errors.length === 0, errors, warnings };
+        }
+
         function renderKitchenRules() {
             const profile = getKitchenProfile();
             const name = document.getElementById('kitchenName');
@@ -404,7 +431,7 @@
             settings.comensales = Math.max(1, Number(document.getElementById('settingsComensales')?.value) || 100);
             settings.margenSeguridadPorcentaje = Math.min(100, Math.max(0, Number(document.getElementById('settingsMargenSeguridad')?.value) || 0));
             settings.margenActivo = settings.margenSeguridadPorcentaje > 0;
-            settings.kitchenProfile = window.GastroOSKitchenRules.normalize({
+            const candidateKitchenProfile = window.GastroOSKitchenRules.normalize({
                 version: window.GastroOSKitchenRules.VERSION,
                 ...getKitchenProfile(),
                 nombre: document.getElementById('kitchenName')?.value,
@@ -436,7 +463,23 @@
                 evitarVerduraRepetida: document.getElementById('kitchenAvoidRepeatedVegetable')?.checked,
                 evitarPresentacionSegundoRepetida: document.getElementById('kitchenAvoidRepeatedPresentation')?.checked
             });
-            saveAll();
+            const configurationCheck = validateKitchenConfiguration(candidateKitchenProfile);
+            if (!configurationCheck.valid) {
+                alert(`La configuración no se ha guardado porque puede impedir generar una semana completa.\n\n${configurationCheck.errors.join('\n')}`);
+                return;
+            } else if (configurationCheck.warnings.length) {
+                const warning = configurationCheck.warnings.slice(0, 3).join('\n');
+                console.warn('GastroOS: configuración exigente:', configurationCheck.warnings);
+                if (confirm(`La configuración es posible, pero puede ser difícil de generar.\n\n${warning}\n\n¿Quieres guardarla igualmente?`)) {
+                    settings.kitchenProfile = candidateKitchenProfile;
+                    saveAll();
+                } else {
+                    return;
+                }
+            } else if (configurationCheck.valid) {
+                settings.kitchenProfile = candidateKitchenProfile;
+                saveAll();
+            }
             renderKitchenRules();
             renderStockView();
             renderGeneratorView();
@@ -3457,60 +3500,103 @@
             }
         }
 
-        function regenerateSingleDay(dayName) {
-            if (!currentMenu?.days || !daysList.includes(dayName)) return;
-
+        function buildDayRegenerationContext(dayName) {
             const originalMenu = JSON.parse(JSON.stringify(currentMenu));
             const usedDishIdsInOtherDays = new Set();
+            const rebuilt = {};
             daysList.forEach(d => {
                 if (d !== dayName) {
-                    (currentMenu.days[d] || []).forEach(slot => {
-                        if (slot.dish?.id && slot.dish.id !== "none") usedDishIdsInOtherDays.add(String(slot.dish.id));
+                    rebuilt[d] = currentMenu.days[d] || [];
+                    rebuilt[d].forEach(slot => {
+                        if (slot.dish?.id && slot.dish.id !== 'none') usedDishIdsInOtherDays.add(String(slot.dish.id));
                     });
                 }
             });
+            return {
+                originalMenu,
+                rebuilt,
+                usedDishIdsInOtherDays,
+                dayIndex: daysList.indexOf(dayName),
+                usedVegetableKeys: getWeeklyUsedVegetableKeys(rebuilt, dayName),
+                previousMenu: getLatestHistoryMenu()
+            };
+        }
 
-            const rebuilt = {};
-            daysList.forEach(d => {
-                if (d !== dayName) rebuilt[d] = currentMenu.days[d] || [];
-            });
+        function getIntelligentDayAlternatives(dayName, maxAlternatives = 3) {
+            if (!currentMenu?.days?.[dayName] || !daysList.includes(dayName)) return [];
+            const ctx = buildDayRegenerationContext(dayName);
+            const signatures = new Set();
+            const alternatives = [];
+            const MAX_ATTEMPTS = 140;
 
-            const dayIndex = daysList.indexOf(dayName);
-            const usedVegetableKeys = getWeeklyUsedVegetableKeys(rebuilt, dayName);
-            const previousMenu = getLatestHistoryMenu();
-            const MAX_DAY_REGENERATION_ATTEMPTS = 80;
-            let bestDay = null;
-            let bestValidation = null;
-
-            for (let attempt = 1; attempt <= MAX_DAY_REGENERATION_ATTEMPTS; attempt++) {
+            for (let attempt = 1; attempt <= MAX_ATTEMPTS && alternatives.length < maxAlternatives; attempt++) {
                 const candidateDay = generateDayMenu(
                     dayName,
-                    dayIndex,
-                    rebuilt,
-                    new Set(usedDishIdsInOtherDays),
+                    ctx.dayIndex,
+                    ctx.rebuilt,
+                    new Set(ctx.usedDishIdsInOtherDays),
                     getPreparedMap(),
-                    { previousMenu, usedVegetableKeys: new Set(usedVegetableKeys) }
+                    { previousMenu: ctx.previousMenu, usedVegetableKeys: new Set(ctx.usedVegetableKeys) }
                 );
-                const testMenu = JSON.parse(JSON.stringify(originalMenu));
+                const signature = candidateDay.map(slot => String(slot?.dish?.id || 'none')).join('|');
+                if (signatures.has(signature)) continue;
+                signatures.add(signature);
+                const testMenu = JSON.parse(JSON.stringify(ctx.originalMenu));
                 testMenu.days[dayName] = candidateDay;
                 const validation = validateWeeklyMenu(testMenu);
-                if (!bestValidation || validation.errors.length < bestValidation.errors.length) {
-                    bestDay = candidateDay;
-                    bestValidation = validation;
-                }
-                if (validation.valid) {
-                    currentMenu.days[dayName] = candidateDay;
-                    shoppingManualStockKeys.clear();
-                    lastGenerationDiagnostics = { valid: true, errors: [], attempts: attempt, dayName };
-                    saveAll();
-                    renderGeneratorView();
+                if (!validation.valid) continue;
+                alternatives.push({ day: candidateDay, validation, attempt });
+            }
+            return alternatives;
+        }
+
+        function openIntelligentDayRegeneration(dayName) {
+            const modal = document.getElementById('modalDayRegeneration');
+            if (!modal) return regenerateSingleDay(dayName);
+            modal.dataset.dayName = dayName;
+            document.getElementById('modalDayRegenerationTitle').textContent = `Alternativas para ${dayName}`;
+            const list = document.getElementById('dayRegenerationList');
+            list.innerHTML = '<div class="day-regeneration-loading">Buscando alternativas que cumplan todas las normas…</div>';
+            modal.classList.remove('hidden');
+            window.setTimeout(() => {
+                const alternatives = getIntelligentDayAlternatives(dayName, 3);
+                if (!alternatives.length) {
+                    list.innerHTML = '<div class="day-regeneration-empty">No he encontrado una alternativa completa que mantenga todas las reglas actuales. El día original no se modifica.</div>';
                     return;
                 }
-            }
+                list.innerHTML = alternatives.map((alternative, index) => {
+                    const primeros = alternative.day.filter(s => s.cat === 'Primero');
+                    const segundos = alternative.day.filter(s => s.cat === 'Segundo');
+                    const renderGroup = (label, slots) => `<div class="day-regeneration-group"><b>${label}</b>${slots.map(s => `<div class="day-regeneration-dish"><span>${escapeHtml(s.slotLabel)}</span><strong>${escapeHtml(s.dish?.nombre || 'Sin asignar')}</strong></div>`).join('')}</div>`;
+                    return `<div class="day-regeneration-option"><div class="day-regeneration-option-head"><div><span class="day-regeneration-option-number">OPCIÓN ${index + 1}</span><span class="day-regeneration-option-note">Cumple todas las normas</span></div><button type="button" class="primary-action day-regeneration-select" onclick="confirmIntelligentDayRegeneration(${index})">ELEGIR</button></div>${renderGroup('PRIMEROS', primeros)}${renderGroup('SEGUNDOS', segundos)}</div>`;
+                }).join('');
+                modal._alternatives = alternatives;
+            }, 30);
+        }
 
-            lastGenerationDiagnostics = { valid: false, errors: bestValidation?.errors?.slice(0, 12) || ['Sin diagnóstico'], attempts: MAX_DAY_REGENERATION_ATTEMPTS, dayName };
+        function closeIntelligentDayRegeneration() {
+            const modal = document.getElementById('modalDayRegeneration');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal._alternatives = [];
+            modal.dataset.dayName = '';
+        }
+
+        function confirmIntelligentDayRegeneration(index) {
+            const modal = document.getElementById('modalDayRegeneration');
+            const dayName = modal?.dataset?.dayName;
+            const alternative = modal?._alternatives?.[index];
+            if (!dayName || !alternative || !currentMenu?.days?.[dayName]) return;
+            currentMenu.days[dayName] = JSON.parse(JSON.stringify(alternative.day));
+            shoppingManualStockKeys.clear();
+            lastGenerationDiagnostics = { valid: true, errors: [], attempts: alternative.attempts || alternative.attempt || 1, dayName, intelligent: true };
+            saveAll();
+            closeIntelligentDayRegeneration();
             renderGeneratorView();
-            alert(`No se ha podido regenerar ${dayName} manteniendo todas las reglas.\n\nEl día anterior se conserva sin cambios.\n\nPrincipales incidencias: ${bestValidation?.errors?.slice(0, 5).join(" | ") || "sin diagnóstico"}`);
+        }
+
+        function regenerateSingleDay(dayName) {
+            openIntelligentDayRegeneration(dayName);
         }
 
         function validateWeeklyMenu(menu) {
@@ -3727,8 +3813,8 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
                             <h3 class="font-bold text-gray-800 dark:text-gray-100 text-base">${dayName}</h3>
                         </div>
-                        <button onclick="regenerateSingleDay('${dayName}')" class="text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm">
-                            Reorganizar día ↻
+                        <button onclick="openIntelligentDayRegeneration('${dayName}')" class="text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm">
+                            Buscar alternativas ↻
                         </button>
                     </div>
                     <div>

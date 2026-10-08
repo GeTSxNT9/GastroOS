@@ -1,5 +1,5 @@
 /*
- * GastroOS — Fase 5
+ * GastroOS — Fase siguiente · motor de menús
  * Fachada del motor de generación de menús.
  *
  * IMPORTANTE: esta capa NO contiene una copia de la lógica del generador.
@@ -14,7 +14,9 @@
         'buildWeeklyMenuCandidate',
         'generateWeeklyMenu',
         'regenerateSingleDay',
-        'validateWeeklyMenu'
+        'validateWeeklyMenu',
+        'getIntelligentDayAlternatives',
+        'validateKitchenConfiguration'
     ];
 
     const missing = required.filter(name => typeof window[name] !== 'function');
@@ -30,6 +32,8 @@
         buildWeeklyMenuCandidate: (...args) => window.buildWeeklyMenuCandidate(...args),
         generateWeeklyMenu: (...args) => window.generateWeeklyMenu(...args),
         regenerateSingleDay: (...args) => window.regenerateSingleDay(...args),
-        validateWeeklyMenu: (...args) => window.validateWeeklyMenu(...args)
+        validateWeeklyMenu: (...args) => window.validateWeeklyMenu(...args),
+        getIntelligentDayAlternatives: (...args) => window.getIntelligentDayAlternatives(...args),
+        validateKitchenConfiguration: (...args) => window.validateKitchenConfiguration(...args)
     });
 })();
