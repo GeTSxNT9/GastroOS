@@ -133,7 +133,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100002",
@@ -188,7 +189,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100003",
@@ -237,7 +239,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100004",
@@ -294,7 +297,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "100005",
@@ -343,7 +349,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100006",
@@ -392,7 +399,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100007",
@@ -441,7 +449,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100008",
@@ -490,7 +499,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100009",
@@ -539,7 +549,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100010",
@@ -588,7 +599,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100011",
@@ -637,7 +649,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100012",
@@ -686,7 +699,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100013",
@@ -735,7 +749,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100014",
@@ -784,7 +799,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100015",
@@ -839,7 +855,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100016",
@@ -894,7 +911,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100017",
@@ -951,7 +969,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "moluscos"
+      ]
     },
     {
       "id": "100018",
@@ -996,7 +1017,10 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten"
+      ]
     },
     {
       "id": "100019",
@@ -1030,7 +1054,11 @@
           "categoria_proveedor": "Lácteos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "lacteo"
+      ]
     },
     {
       "id": "100020",
@@ -1077,7 +1105,12 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "crustaceos",
+        "gluten",
+        "moluscos"
+      ]
     },
     {
       "id": "100021",
@@ -1129,7 +1162,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "huevos"
+      ]
     },
     {
       "id": "100022",
@@ -1174,7 +1211,10 @@
           "categoria_proveedor": "Lácteos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "lacteo"
+      ]
     },
     {
       "id": "100023",
@@ -1219,7 +1259,10 @@
           "categoria_proveedor": "Lácteos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "lacteo"
+      ]
     },
     {
       "id": "100024",
@@ -1258,7 +1301,10 @@
           "categoria_proveedor": "Lácteos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "lacteo"
+      ]
     },
     {
       "id": "100025",
@@ -1307,7 +1353,8 @@
           "categoria_proveedor": "Verduras y frutas"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100026",
@@ -1352,7 +1399,10 @@
           "categoria_proveedor": "Lácteos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "lacteo"
+      ]
     },
     {
       "id": "100027",
@@ -1391,7 +1441,10 @@
           "categoria_proveedor": "Lácteos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "lacteo"
+      ]
     },
     {
       "id": "100028",
@@ -1416,7 +1469,8 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100029",
@@ -1447,7 +1501,8 @@
           "categoria_proveedor": "Verduras y frutas"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100030",
@@ -1478,7 +1533,8 @@
           "categoria_proveedor": "Verduras y frutas"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100031",
@@ -1509,7 +1565,8 @@
           "categoria_proveedor": "Verduras y frutas"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100032",
@@ -1540,7 +1597,8 @@
           "categoria_proveedor": "Verduras y frutas"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100033",
@@ -1577,7 +1635,8 @@
           "categoria_proveedor": "Carne"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100034",
@@ -1605,7 +1664,11 @@
           "categoria_proveedor": "Verduras y frutas"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "lacteo"
+      ]
     },
     {
       "id": "100035",
@@ -1650,7 +1713,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten"
+      ]
     },
     {
       "id": "100036",
@@ -1707,7 +1773,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten"
+      ]
     },
     {
       "id": "100037",
@@ -1753,7 +1822,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "pescado"
+      ]
     },
     {
       "id": "100038",
@@ -1798,7 +1871,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten"
+      ]
     },
     {
       "id": "100039",
@@ -1856,7 +1932,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "soja"
+      ]
     },
     {
       "id": "100040",
@@ -1908,7 +1988,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "lacteo"
+      ]
     },
     {
       "id": "100041",
@@ -1960,7 +2044,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "lacteo"
+      ]
     },
     {
       "id": "100042",
@@ -2006,7 +2094,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "lacteo"
+      ]
     },
     {
       "id": "100043",
@@ -2051,7 +2143,10 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "huevos"
+      ]
     },
     {
       "id": "100044",
@@ -2106,7 +2201,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "100045",
@@ -2165,7 +2261,12 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "crustaceos",
+        "pescado",
+        "moluscos"
+      ]
     },
     {
       "id": "100046",
@@ -2222,7 +2323,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "lacteo"
+      ]
     },
     {
       "id": "1790909079125",
@@ -2247,7 +2351,8 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790909204912",
@@ -2290,7 +2395,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790909304768",
@@ -2315,7 +2421,8 @@
           "categoria_proveedor": "Carne"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790921245068",
@@ -2348,7 +2455,10 @@
           "categoria_proveedor": "Verduras y frutas"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "1790921314185",
@@ -2373,7 +2483,8 @@
           "categoria_proveedor": "Carne"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790938832994",
@@ -2406,7 +2517,10 @@
           "categoria_proveedor": "Verduras y frutas"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "moluscos"
+      ]
     },
     {
       "id": "1790940000001",
@@ -2465,7 +2579,12 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "crustaceos",
+        "moluscos"
+      ]
     },
     {
       "id": "1790940000002",
@@ -2506,7 +2625,12 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "pescado",
+        "lacteo"
+      ]
     },
     {
       "id": "1790940000003",
@@ -2546,7 +2670,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "lacteo"
+      ]
     },
     {
       "id": "1790940000004",
@@ -2597,7 +2725,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten"
+      ]
     },
     {
       "id": "1790940000005",
@@ -2626,7 +2757,12 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "pescado",
+        "lacteo"
+      ]
     },
     {
       "id": "1790940000006",
@@ -2695,7 +2831,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "sulfitos"
+      ]
     },
     {
       "id": "1790940000007",
@@ -2720,7 +2859,8 @@
           "categoria_proveedor": "Carne"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790940000008",
@@ -2777,7 +2917,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "sulfitos"
+      ]
     },
     {
       "id": "1790940000009",
@@ -2808,7 +2951,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790940000010",
@@ -2865,7 +3009,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "sulfitos"
+      ]
     },
     {
       "id": "1790940000011",
@@ -2910,7 +3057,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "lacteo"
+      ]
     },
     {
       "id": "1790940000012",
@@ -2941,7 +3091,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790940000013",
@@ -2978,7 +3129,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790940000014",
@@ -3009,7 +3161,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790940000015",
@@ -3058,7 +3211,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790940000016",
@@ -3087,7 +3241,12 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "huevos",
+        "lacteo"
+      ]
     },
     {
       "id": "1790940000017",
@@ -3118,7 +3277,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790940000018",
@@ -3163,7 +3323,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "lacteo"
+      ]
     },
     {
       "id": "1790940000019",
@@ -3192,7 +3355,12 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "huevos",
+        "lacteo"
+      ]
     },
     {
       "id": "1790940000020",
@@ -3220,7 +3388,11 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "huevos"
+      ]
     },
     {
       "id": "1790940000021",
@@ -3265,7 +3437,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten"
+      ]
     },
     {
       "id": "1790940000022",
@@ -3316,7 +3491,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "sulfitos"
+      ]
     },
     {
       "id": "1790940000023",
@@ -3379,7 +3557,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "sulfitos"
+      ]
     },
     {
       "id": "1790940000024",
@@ -3442,7 +3623,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "sulfitos"
+      ]
     },
     {
       "id": "1790940000025",
@@ -3467,7 +3651,8 @@
           "categoria_proveedor": "Carne"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790940000026",
@@ -3504,7 +3689,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1790940000027",
@@ -3533,7 +3719,12 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "huevos",
+        "pescado"
+      ]
     },
     {
       "id": "1790940000028",
@@ -3574,7 +3765,12 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "pescado",
+        "lacteo"
+      ]
     },
     {
       "id": "1790940000029",
@@ -3632,7 +3828,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado",
+        "sulfitos"
+      ]
     },
     {
       "id": "1790940000030",
@@ -3672,7 +3872,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "pescado"
+      ]
     },
     {
       "id": "1790940000031",
@@ -3723,7 +3927,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "1790940000032",
@@ -3762,7 +3969,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "1790940000033",
@@ -3803,7 +4013,12 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "huevos",
+        "pescado"
+      ]
     },
     {
       "id": "1790940000034",
@@ -3850,7 +4065,12 @@
           "categoria_proveedor": "Verduras y frutas"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "huevos",
+        "pescado"
+      ]
     },
     {
       "id": "1790940000035",
@@ -3890,7 +4110,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "pescado"
+      ]
     },
     {
       "id": "1790940000036",
@@ -3935,7 +4159,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "1790940000037",
@@ -3976,7 +4203,12 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "pescado",
+        "lacteo"
+      ]
     },
     {
       "id": "1790940000038",
@@ -4027,7 +4259,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "1790940000039",
@@ -4054,7 +4289,10 @@
           "categoria_proveedor": "Pescado"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "1790940000040",
@@ -4112,7 +4350,11 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "sulfitos",
+        "moluscos"
+      ]
     },
     {
       "id": "1790940000041",
@@ -4140,7 +4382,11 @@
           "categoria_proveedor": "Pescado"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "moluscos"
+      ]
     },
     {
       "id": "1790940000042",
@@ -4168,7 +4414,11 @@
           "categoria_proveedor": "Congelados"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "moluscos"
+      ]
     },
     {
       "id": "1790940000043",
@@ -4207,7 +4457,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "moluscos"
+      ]
     },
     {
       "id": "1790940000044",
@@ -4246,7 +4499,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "1790940000045",
@@ -4297,7 +4553,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "1790940000046",
@@ -4336,7 +4595,10 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "pescado"
+      ]
     },
     {
       "id": "1790940000047",
@@ -4364,7 +4626,11 @@
           "categoria_proveedor": "Pescado"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "pescado"
+      ]
     },
     {
       "id": "1790957918433",
@@ -4425,7 +4691,8 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": []
     },
     {
       "id": "1791047313444",
@@ -4478,7 +4745,12 @@
           "categoria_proveedor": "Secos"
         }
       ],
-      "plato_elaborado": false
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "gluten",
+        "frutos_cascara",
+        "sulfitos"
+      ]
     },
     {
       "id": "1791107231078",
@@ -4537,6 +4809,11 @@
           "unidad": "g",
           "categoria_proveedor": "Secos"
         }
+      ],
+      "alergenosManuales": [
+        "gluten",
+        "frutos_cascara",
+        "sulfitos"
       ]
     },
     {
@@ -4555,7 +4832,8 @@
       "plato_elaborado": true,
       "demanda": "Media",
       "alergenos": [],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": []
     },
     {
       "id": "1791119447076",
@@ -4573,7 +4851,8 @@
       "plato_elaborado": true,
       "demanda": "Media",
       "alergenos": [],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": []
     },
     {
       "id": "1791119484394",
@@ -4591,7 +4870,8 @@
       "plato_elaborado": true,
       "demanda": "Media",
       "alergenos": [],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": []
     },
     {
       "id": "1791119542997",
@@ -4613,7 +4893,12 @@
         "frutos_cascara",
         "sulfitos"
       ],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": [
+        "gluten",
+        "frutos_cascara",
+        "sulfitos"
+      ]
     },
     {
       "id": "1791119622711",
@@ -4631,7 +4916,8 @@
       "plato_elaborado": true,
       "demanda": "Media",
       "alergenos": [],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": []
     },
     {
       "id": "1791124268075",
@@ -4653,7 +4939,12 @@
         "frutos_cascara",
         "sulfitos"
       ],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": [
+        "gluten",
+        "frutos_cascara",
+        "sulfitos"
+      ]
     },
     {
       "id": "1791124520027",
@@ -4671,7 +4962,8 @@
       "plato_elaborado": true,
       "demanda": "Media",
       "alergenos": [],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": []
     },
     {
       "id": "1791124552243",
@@ -4691,7 +4983,10 @@
       "alergenos": [
         "gluten"
       ],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": [
+        "gluten"
+      ]
     },
     {
       "id": "1791124578878",
@@ -4709,7 +5004,8 @@
       "plato_elaborado": true,
       "demanda": "Media",
       "alergenos": [],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": []
     },
     {
       "id": "1791124602022",
@@ -4727,7 +5023,8 @@
       "plato_elaborado": true,
       "demanda": "Baja",
       "alergenos": [],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": []
     },
     {
       "id": "1791186565934",
@@ -4749,7 +5046,12 @@
         "frutos_cascara",
         "sulfitos"
       ],
-      "ingredientes": []
+      "ingredientes": [],
+      "alergenosManuales": [
+        "gluten",
+        "frutos_cascara",
+        "sulfitos"
+      ]
     }
   ]
 }
