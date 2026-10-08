@@ -2058,3 +2058,13 @@ html.dark .generator-rules-details {
 .menu-status-badge.precooked { background:#fce7f3; color:#be185d; border-color:#fbcfe8; }
 html.dark .menu-status-badge.prepared { background:#2e1065; color:#d8b4fe; border-color:#581c87; }
 html.dark .menu-status-badge.precooked { background:#500724; color:#f9a8d4; border-color:#831843; }
+
+
+/* Etiquetas del menú: a la derecha del nombre, reservando la línea inferior para alérgenos. */
+.gastro-slot-title-row { display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; }
+.gastro-slot-title-row > .text-sm { min-width:0; flex:1 1 auto; overflow-wrap:anywhere; }
+.menu-status-badges-inline { flex:0 0 auto; margin-top:0 !important; justify-content:flex-end; }
+@media (max-width:640px) {
+  .gastro-slot-title-row { gap:6px; }
+  .menu-status-badges-inline .menu-status-badge { font-size:8px; padding:2px 5px; }
+}
