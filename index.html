@@ -393,9 +393,9 @@
                         <h3 class="font-bold text-gray-800 dark:text-gray-100 text-sm">CÁLCULO CATEGORIZADO POR PROVEEDORES</h3>
                         <span class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 px-2 py-0.5 rounded-full" id="shoppingRacionesBadge">130 Raciones</span>
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug">Se muestra por ingrediente: <b>necesario</b>, <b>stock</b> y <b>comprar</b>. Si ya tienes algo, marca <b>Ya tengo</b> y no se incluirá al exportar.</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-snug">Se muestra por ingrediente: <b>necesario</b>, <b>stock</b> y <b>comprar</b>. Si ya tienes algo, marca <b>Stock</b>: seguirá visible aquí, pero no se incluirá al exportar.</p>
                     <button id="btnDownloadShoppingTxt" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-lg text-xs flex items-center justify-center gap-2 shadow-sm">
-                        <span>📄</span> Descargar Lista (.txt)
+                        <span>📄</span> Exportar
                     </button>
                 </div>
                 <div id="shoppingListBreakdown" class="space-y-4"></div>
@@ -437,8 +437,6 @@
                 </div>
 
                 <div class="settings-metric-grid">
-                    <div><label class="field-label" for="kitchenMaxFritos">Máx. días de fritos / rebozados</label><div class="input-suffix"><input id="kitchenMaxFritos" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
-                    <div><label class="field-label" for="kitchenMaxCreams">Máx. días de crema</label><div class="input-suffix"><input id="kitchenMaxCreams" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
                     <div><label class="field-label" for="kitchenPurchaseAdjustPercent">Ajuste de compra</label><div class="input-suffix"><input id="kitchenPurchaseAdjustPercent" type="number" min="1" max="150" class="settings-input"><span>%</span></div></div>
                 </div>
 
@@ -478,6 +476,8 @@
                     <summary><span><b>LÍMITES Y REPETICIÓN SEMANAL</b><small>Controla la frecuencia de las familias y si pueden repetirse en días consecutivos.</small></span><span class="accordion-chevron">⌄</span></summary>
                     <div class="settings-accordion-body">
                         <div class="settings-metric-grid">
+                            <div><label class="field-label" for="kitchenMaxFritos">Fritos / rebozados</label><div class="input-suffix"><input id="kitchenMaxFritos" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
+                            <div><label class="field-label" for="kitchenMaxCreams">Cremas</label><div class="input-suffix"><input id="kitchenMaxCreams" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
                             <div><label class="field-label" for="kitchenMaxPasta">Pasta</label><div class="input-suffix"><input id="kitchenMaxPasta" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
                             <div><label class="field-label" for="kitchenMaxLegumes">Legumbres</label><div class="input-suffix"><input id="kitchenMaxLegumes" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
                             <div><label class="field-label" for="kitchenMaxRice">Arroz</label><div class="input-suffix"><input id="kitchenMaxRice" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
@@ -501,7 +501,7 @@
                     <div class="settings-accordion-body">
                         <div class="setting-group">
                             <p class="setting-group-title">CARNES PERMITIDAS</p>
-                            <p class="setting-help">Solo se generarán platos con las carnes marcadas. Puedes añadir nuevas carnes sin tocar el código.</p>
+                            <p class="setting-help">Solo se generarán platos con las carnes marcadas. Puedes añadir nuevas carnes sin tocar el código. Si GitHub está conectado, el catálogo también se actualiza en el recipes.json compartido.</p>
                             <div id="kitchenMeatCatalog" class="compact-check-grid"></div>
                             <div class="protein-catalog-add-row">
                                 <input id="newKitchenMeat" type="text" maxlength="40" class="settings-input" placeholder="Nueva carne, por ejemplo: Pato">
@@ -510,7 +510,7 @@
                         </div>
                         <div class="setting-group">
                             <p class="setting-group-title">PESCADOS PERMITIDOS</p>
-                            <p class="setting-help">Solo se generarán platos con los pescados marcados. Puedes añadir nuevas especies sin tocar el código.</p>
+                            <p class="setting-help">Solo se generarán platos con los pescados marcados. Puedes añadir nuevas especies sin tocar el código. Si GitHub está conectado, el catálogo también se actualiza en el recipes.json compartido.</p>
                             <div id="kitchenFishCatalog" class="compact-check-grid"></div>
                             <div class="protein-catalog-add-row">
                                 <input id="newKitchenFish" type="text" maxlength="40" class="settings-input" placeholder="Nuevo pescado, por ejemplo: Lubina">
@@ -672,8 +672,8 @@
 
     <!-- MODAL ALÉRGENOS POR PRODUCTO -->
     <div id="modalProductAllergens" class="hidden fixed inset-0 bg-black/60 z-[80] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
-        <div class="bg-white dark:bg-gray-900 w-full max-w-3xl rounded-t-2xl sm:rounded-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800">
-            <div class="p-4 bg-indigo-600 dark:bg-indigo-950 text-white flex justify-between items-center">
+        <div class="gastro-modal-panel product-allergen-modal-panel bg-white dark:bg-gray-900 w-full max-w-xl rounded-t-2xl sm:rounded-2xl max-h-[82vh] flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800">
+            <div class="gastro-modal-header p-4 bg-indigo-600 dark:bg-indigo-950 text-white flex justify-between items-center">
                 <div><h3 class="font-bold text-sm">ALÉRGENOS POR PRODUCTO</h3><p class="text-[11px] text-indigo-200">Marca los alérgenos de cada producto. Se aplicarán automáticamente a las recetas.</p></div>
                 <button type="button" id="btnCloseProductAllergens" aria-label="Cerrar" class="text-white hover:bg-indigo-700 rounded-lg p-1.5">✕</button>
             </div>
@@ -710,7 +710,7 @@
     <!-- MODAL REGENERACIÓN INTELIGENTE DEL DÍA -->
     <div id="modalDayRegeneration" class="hidden fixed inset-0 bg-black/60 z-[75] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm" onclick="if(event.target===this) closeIntelligentDayRegeneration()">
         <div class="bg-white dark:bg-gray-900 w-full max-w-2xl rounded-t-2xl sm:rounded-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800">
-            <div class="p-4 bg-indigo-600 dark:bg-indigo-950 text-white flex justify-between items-center">
+            <div class="gastro-modal-header p-4 bg-indigo-600 dark:bg-indigo-950 text-white flex justify-between items-center">
                 <div><h3 class="font-bold text-sm" id="modalDayRegenerationTitle">Alternativas para el día</h3><p class="text-[11px] text-indigo-200">GastroOS busca días completos que cumplan todas las normas.</p></div>
                 <button type="button" onclick="closeIntelligentDayRegeneration()" aria-label="Cerrar" class="modal-close-btn text-white hover:bg-indigo-700 rounded-lg">✕</button>
             </div>

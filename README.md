@@ -12,7 +12,7 @@
 
 ## 🧭 Overview
 
-GastroOS is a lightweight, backend-free application designed for **one concrete self-service kitchen/autoservice**. It centralizes recipes, menu planning, stock, shopping, production references, kitchen rules, backups, diagnostics, and optional GitHub recipe synchronization.
+GastroOS is a lightweight, backend-free application designed for **one concrete self-service kitchen/autoservice**. It centralizes recipes, menu planning, stock, shopping, production references, kitchen rules, allergens, backups, diagnostics, and optional GitHub recipe synchronization.
 
 **Recipes · Weekly Menu · Stock · Shopping · Kitchen Rules · Allergens · History · Backups · Diagnostics · GitHub Sync**
 
@@ -39,7 +39,7 @@ A **constraint-based engine** generates and validates Monday–Friday menus usin
 
 Both groups are configurable from Settings: a kitchen can, for example, offer 2 platos de cuchara + 1 tenedor, or 1 carne + 2 pescados, without changing the code.
 
-The engine supports randomized generation, day regeneration, manual dish replacement, prepared-dish assignments, stock awareness, fish/meat allow-lists, guiso days, configurable weekly limits, consecutive-day rules by first-course subfamily, and menu validation.
+The engine supports randomized generation, intelligent day alternatives, manual dish replacement, prepared-dish assignments, stock awareness, fish/meat allow-lists, guiso days, configurable weekly limits and repetition controls, consecutive-day rules by first-course subfamily, and menu validation.
 
 **Current engine:** `menu-rules-v11-stock-prepared-guiso-rations` (with configurable offer structure and weekly-family repetition rules)
 
@@ -49,6 +49,8 @@ Prepared dishes can be managed independently through stock and incorporated into
 
 **Prepared Dish → Prepared Stock → Assignment → Menu Validation**
 
+The generated menu visibly marks both **Plato elaborado** and **Precocinado** when those recipe properties apply.
+
 ### 🛒 Stock & Shopping
 
 Separate management of **raw ingredients** and **prepared dishes**, including:
@@ -56,11 +58,11 @@ Separate management of **raw ingredients** and **prepared dishes**, including:
 - Automatic shopping-list generation.
 - Ingredient aggregation by supplier category.
 - Clear **Required / Stock / Buy** columns.
-- Stock deduction and availability.
-- Temporary **Ya tengo** marks for products that are physically available but are not registered in stock; these marks affect only the current shopping list and are excluded from the TXT export. 
+- Temporary **Stock** marks for products that are physically available but are not registered in stock. The mark remains visible in the current shopping list, does not modify real stock, and excludes the product from the TXT export.
 - Demand-based quantity calculations.
 - Purchase adjustment percentage.
 - Prepared-dish planning assignments.
+- TXT export for both the weekly menu and the shopping list.
 
 ### 🧮 Kitchen Rules & Forecast
 
@@ -68,12 +70,32 @@ The local kitchen profile controls how the generator should behave without intro
 
 - Guiso days.
 - Allowed meat animals and fish species.
+- Editable meat and fish catalogs directly from the application.
 - Weekly limits for fried/reboiled dishes, creams, pasta, legumes, rice, whole vegetables, and soups/broths.
 - Configurable number and composition of first and second courses.
 - Consecutive-day switches for pasta, legumes, rice, and soups/broths. Pasta distinguishes dry pasta and filled pasta for consecutive-day rules while keeping a single weekly pasta limit.
 - Stock priority and prepared-food availability.
 - Menu variety rules.
 - Estimated diners and safety margin for reference portions and shopping calculations.
+- Preventive diagnostics for configurations that may make a complete week impossible.
+
+### 🐟 Editable Protein Catalog
+
+Fish species and meat types are no longer limited to the values hard-coded in the application.
+
+From **Settings → Proteins**, a new fish or meat can be added directly. The new entry becomes available in:
+
+- Recipe creation and editing.
+- Allowed-protein settings.
+- Generator filtering.
+- Protein labels and menu summaries.
+- Weekly configuration diagnostics.
+- Recipe normalization and migration.
+- Backups and restoration.
+
+The local installation remains functional without GitHub. When the existing GitHub connection is configured, adding a custom protein also updates the shared `recipes.json` catalog metadata so the new protein can be distributed to other installations using that shared repository.
+
+`recipes.json` therefore contains both the recipe collection and the shared protein catalog metadata while remaining compatible with GastroOS's recipe parser.
 
 ### 🧾 Allergens by Product
 
@@ -84,17 +106,20 @@ Allergens can be assigned once per ingredient/product from a dedicated managemen
 Browser `localStorage` provides local persistence and supports:
 
 - Full JSON export/import.
-- Recipe-only export.
+- Recipe-only export, including the editable protein catalog.
 - Automatic backups.
 - Restore and recovery.
 - Saved menu history.
 - Product allergen mappings.
+- Custom meat/fish catalog entries.
 
 ### ☁️ GitHub Integration
 
 Optional synchronization of the recipe collection with a configured GitHub repository.
 
-Supports repository configuration, recipe upload/download, bulk recipe synchronization, and synchronization status.
+Supports repository configuration, recipe upload/download, bulk recipe synchronization, synchronization status, and shared protein-catalog metadata in `recipes.json`.
+
+GitHub synchronization is optional: the core application does not require a backend or GitHub account.
 
 ### 📡 PWA & Offline
 
@@ -132,7 +157,7 @@ GastroOS/
 
 **Stack:** HTML5 · CSS · JavaScript · PWA · Web Storage · GitHub API
 
-The application deliberately keeps the generator logic in the main client runtime while using small facades for storage, GitHub, and engine integration.
+The application deliberately keeps the generator logic in the main client runtime while using small facades for storage, GitHub, and engine integration. `menu-engine-facade.js` is an integration layer; it does not duplicate the generator.
 
 ---
 
@@ -142,7 +167,7 @@ GastroOS follows a restrained, Apple-inspired design focused on:
 
 **Clarity · Information Hierarchy · Consistency · Responsiveness · Minimal Visual Clutter**
 
-The interface keeps advanced configuration inside accordions and prioritizes the information needed for the current task.
+The interface keeps advanced configuration inside accordions and uses compact, cohesive modals for tasks such as intelligent day alternatives and product allergen management.
 
 ---
 
@@ -153,6 +178,8 @@ GastroOS can be deployed as a static application through **GitHub Pages**.
 **Repository → GitHub Pages → PWA**
 
 No backend is required for the core application.
+
+If a shared recipe repository is configured, the existing GitHub connection can also synchronize recipe changes and the editable protein catalog metadata.
 
 ---
 
@@ -170,12 +197,4 @@ Because authentication is client-side, credentials stored in `localStorage` are 
 
 GastroOS aims to automate repetitive weekly kitchen planning **without hiding the logic behind it**.
 
-It combines structured recipes, configurable kitchen rules, stock awareness, production calculations, allergen mapping, and local persistence while keeping final decisions under user control.
-
-
-### Regeneración inteligente y diagnóstico de configuración
-
-La generación semanal incluye regeneración inteligente de un día: en lugar de sustituirlo a ciegas, GastroOS busca varias alternativas de día completo y solo ofrece opciones que mantienen las reglas activas. También comprueba configuraciones potencialmente imposibles antes de guardar los ajustes, especialmente por disponibilidad de especies de pescado, animales de carne y familias de primeros.
-
-### Catálogo editable de carnes y pescados
-Las especies de pescado y tipos de carne ya no están limitados a los valores incluidos en el código. Desde Ajustes se pueden dar de alta nuevas especies/tipos directamente en la aplicación. El alta queda almacenada dentro del perfil local de la cocina, se incluye en copias de seguridad y restauraciones, aparece automáticamente en el formulario de recetas, en la migración de etiquetas, en las listas de permitidos, en la validación del generador y en sus resúmenes. Las recetas pueden seguir sincronizándose mediante el flujo habitual de GitHub sin modificar el código fuente para cada nueva incorporación.
+It combines structured recipes, configurable kitchen rules, editable protein catalogs, stock awareness, production calculations, allergen mapping, shopping control, and local persistence while keeping final decisions under user control.
