@@ -2875,13 +2875,17 @@
       "tecnica_cocina": "tecnica_guiso",
       "tecnica": "tecnica_guiso",
       "precocinado": false,
+      "plato_elaborado": false,
       "demanda": "Media",
+      "alergenosManuales": [
+        "sulfitos"
+      ],
       "alergenos": [
         "sulfitos"
       ],
       "ingredientes": [
         {
-          "nombre": "Longaniza",
+          "nombre": "Salchicha fresca",
           "cantidad": 200,
           "unidad": "g",
           "categoria_proveedor": "Carne"
@@ -2893,7 +2897,7 @@
           "categoria_proveedor": "Congelados"
         },
         {
-          "nombre": "Cebolla picado",
+          "nombre": "Cebolla picada",
           "cantidad": "",
           "unidad": "g",
           "categoria_proveedor": "Congelados"
@@ -2916,10 +2920,6 @@
           "unidad": "g",
           "categoria_proveedor": "Secos"
         }
-      ],
-      "plato_elaborado": false,
-      "alergenosManuales": [
-        "sulfitos"
       ]
     },
     {
