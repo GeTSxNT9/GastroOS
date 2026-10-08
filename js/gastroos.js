@@ -4050,7 +4050,7 @@
                 return false;
             }
             const safeFilename = String(filename || 'gastroos.txt').replace(/[^a-zA-Z0-9._-]/g, '_');
-            const blob = new Blob(['\\ufeff', content], { type: 'text/plain;charset=utf-8' });
+            const blob = new Blob(['\ufeff', content], { type: 'text/plain;charset=utf-8' });
             const objectUrl = URL.createObjectURL(blob);
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);

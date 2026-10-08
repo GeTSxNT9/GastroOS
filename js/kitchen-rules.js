@@ -81,7 +81,7 @@
             const seenLabels = new Set();
             return items.filter(item => {
                 const id = String(item?.id ?? '').trim().toLowerCase();
-                const label = String(item?.label ?? '').replace(/\\s+/g, ' ').trim().toLowerCase();
+                const label = String(item?.label ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
                 if (!id || !label || seenIds.has(id) || seenLabels.has(label)) return false;
                 seenIds.add(id);
                 seenLabels.add(label);
@@ -95,7 +95,7 @@
             ]),
             meat: uniqueCatalog([
                 ...MEAT_ANIMALS.map(id => ({ id, label: MEAT_LABELS[id] || id })),
-                ...profile.animalesCarnePersonalizadas
+                ...profile.animalesCarnePersonalizados
             ])
         };
     }
