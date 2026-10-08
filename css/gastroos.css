@@ -230,7 +230,274 @@
             letter-spacing: -.005em;
         }
         #dishPrecooked,
-        
+        #checkMargen { accent-color: var(--g-accent); }
+        #dishPrecooked + label { }
+        #dishPrecookedContainer { }
+        #dishForm .border-t { border-color: rgba(15,23,42,.08) !important; }
+
+        /* Demand / semantic badges */
+        .rounded-full { }
+        .bg-indigo-50, .bg-indigo-100 { background-color: var(--g-accent-soft) !important; }
+        .text-indigo-600, .text-indigo-700 { color: var(--g-accent) !important; }
+        .border-indigo-100, .border-indigo-200 { border-color: rgba(0,113,227,.12) !important; }
+
+        /* Menu generator */
+        #subtab-menu-content > div:first-child {
+            background: linear-gradient(145deg, rgba(255,255,255,.94), rgba(247,250,255,.82)) !important;
+            color: var(--g-text) !important;
+            border: 1px solid rgba(15,23,42,.08) !important;
+            border-radius: 22px !important;
+            box-shadow: var(--g-shadow) !important;
+        }
+        html.dark #subtab-menu-content > div:first-child {
+            background: linear-gradient(145deg, rgba(28,28,30,.94), rgba(39,39,42,.88)) !important;
+            color: var(--g-text) !important;
+            border-color: var(--g-border) !important;
+            box-shadow: var(--g-shadow) !important;
+        }
+        #subtab-menu-content > div:first-child p { color: var(--g-muted) !important; }
+        #btnSaveToHistory, #btnDownloadMenuTxt {
+            background: rgba(241,245,249,.9) !important;
+            color: #334155 !important;
+            border: 1px solid rgba(15,23,42,.07) !important;
+            border-radius: 999px !important;
+        }
+        #btnSubTabMenu, #btnSubTabShopping {
+            border-radius: 999px !important;
+        }
+
+        /* Slot cards */
+        .gastro-slot {
+            background: rgba(248,250,252,.72);
+            border: 1px solid rgba(15,23,42,.065);
+            border-radius: 16px;
+            min-height: 66px;
+            transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+        }
+        .gastro-slot:hover {
+            background: rgba(255,255,255,.92);
+            box-shadow: 0 5px 18px rgba(15,23,42,.045);
+            transform: translateY(-1px);
+        }
+        .gastro-slot-action {
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 999px !important;
+            background: rgba(255,255,255,.92) !important;
+            border: 1px solid rgba(15,23,42,.07) !important;
+            color: #475569 !important;
+        }
+        .gastro-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: .075em;
+            text-transform: uppercase;
+        }
+
+        /* Floating edit/delete actions */
+        #dishesList .absolute {
+            top: 50% !important;
+            right: 12px !important;
+            transform: translateY(-50%);
+        }
+        #dishesList .absolute button {
+            width: 32px !important;
+            height: 32px !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px !important;
+            transition: transform .15s ease, background .15s ease !important;
+        }
+        #dishesList .absolute button:first-child {
+            background: #eaf4ff !important;
+            color: #0071e3 !important;
+        }
+        #dishesList .absolute button:last-child {
+            background: #fff1f2 !important;
+            color: #ef4444 !important;
+        }
+        #dishesList .absolute button:active { transform: scale(.95); }
+
+        /* Bottom navigation: translucent floating native feel */
+        body > nav,
+        nav.fixed {
+            height: 80px !important;
+            box-sizing: border-box !important;
+            background: rgba(255,255,255,.76) !important;
+            border-top: 1px solid rgba(15,23,42,.075) !important;
+            box-shadow: 0 -8px 25px rgba(15,23,42,.035) !important;
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            padding-top: 7px !important;
+            padding-bottom: max(env(safe-area-inset-bottom), 4px) !important;
+        }
+        html.dark body > nav,
+        html.dark nav.fixed {
+            background: rgba(28,28,30,.78) !important;
+            border-top-color: rgba(255,255,255,.08) !important;
+        }
+        .nav-btn {
+            height: calc(100% - 7px) !important;
+            color: #94a3b8 !important;
+            transition: color .18s ease, transform .18s ease !important;
+        }
+        .nav-btn.active,
+        .nav-btn.text-indigo-600,
+        .nav-btn.text-indigo-400 {
+            color: var(--g-accent) !important;
+        }
+        .nav-btn:active { transform: scale(.96); }
+        .nav-btn span { font-size: 9px !important; letter-spacing: .035em; }
+
+        /* Modal */
+        #modalChangeDish { background: rgba(15,23,42,.20) !important; backdrop-filter: blur(10px) !important; z-index: 60 !important; }
+        #modalChangeDish > div {
+            border-radius: 22px !important;
+            overflow: hidden;
+            min-height: 0;
+            animation: gastroModalIn .2s ease-out both;
+        }
+        #modalChangeDish #modalDishList {
+            min-height: 0 !important;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 1rem;
+        }
+        #modalChangeDish .modal-close-btn {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #334155 !important;
+            background: rgba(15,23,42,.08) !important;
+        }
+        #modalChangeDish .modal-close-btn:hover {
+            background: rgba(15,23,42,.14) !important;
+        }
+        #modalChangeDish > div > div:first-child {
+            background: rgba(255,255,255,.82) !important;
+            color: var(--g-text) !important;
+            border-bottom: 1px solid var(--g-border);
+        }
+        #modalChangeDish #modalSearchInput { min-height: 42px; }
+
+        /* Dark mode: generator and dish-swap modal */
+        html.dark #btnSaveToHistory,
+        html.dark #btnDownloadMenuTxt {
+            background: rgba(39,39,42,.92) !important;
+            color: #f5f5f7 !important;
+            border-color: rgba(255,255,255,.09) !important;
+        }
+        html.dark .gastro-slot {
+            background: rgba(39,39,42,.88) !important;
+            border-color: rgba(255,255,255,.09) !important;
+            color: var(--g-text) !important;
+        }
+        html.dark .gastro-slot:hover {
+            background: rgba(52,52,55,.94) !important;
+            box-shadow: 0 5px 18px rgba(0,0,0,.20);
+        }
+        html.dark .gastro-slot-action {
+            background: rgba(245,245,247,.96) !important;
+            border-color: rgba(255,255,255,.12) !important;
+            color: #334155 !important;
+        }
+
+        html.dark #modalChangeDish {
+            background: rgba(0,0,0,.56) !important;
+        }
+        html.dark #modalChangeDish > div {
+            background: rgba(28,28,30,.98) !important;
+            border-color: rgba(255,255,255,.10) !important;
+            color: #f5f5f7 !important;
+        }
+        html.dark #modalChangeDish > div > div:first-child {
+            background: rgba(28,28,30,.98) !important;
+            color: #f5f5f7 !important;
+            border-bottom-color: rgba(255,255,255,.09) !important;
+        }
+        html.dark #modalChangeDish .modal-close-btn {
+            color: #f5f5f7 !important;
+            background: rgba(255,255,255,.08) !important;
+        }
+        html.dark #modalChangeDish .modal-close-btn:hover {
+            background: rgba(255,255,255,.15) !important;
+        }
+        html.dark #modalChangeDish #modalSwapSubtitle {
+            color: #a9cfff !important;
+        }
+        html.dark #modalChangeDish > div > div:nth-child(2) {
+            background: rgba(39,39,42,.92) !important;
+            border-bottom-color: rgba(255,255,255,.08) !important;
+        }
+        html.dark #modalChangeDish #modalSearchInput {
+            background: rgba(39,39,42,.98) !important;
+            color: #f5f5f7 !important;
+            border-color: rgba(255,255,255,.10) !important;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.03) !important;
+        }
+        html.dark #modalChangeDish #modalSearchInput::placeholder {
+            color: #a1a1aa !important;
+        }
+        html.dark #modalChangeDish #modalDishList {
+            background: rgba(18,18,20,.98) !important;
+        }
+        html.dark #modalChangeDish #modalDishList > div {
+            background: rgba(39,39,42,.96) !important;
+            border-color: rgba(255,255,255,.10) !important;
+            color: #f5f5f7 !important;
+        }
+        html.dark #modalChangeDish #modalDishList > div:hover {
+            background: rgba(52,52,55,.98) !important;
+        }
+        html.dark #modalChangeDish #modalDishList h4 {
+            color: #f5f5f7 !important;
+        }
+
+        @keyframes gastroModalIn {
+            from { opacity: 0; transform: translateY(8px) scale(.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Accessibility / motion */
+        :focus-visible {
+            outline: 3px solid rgba(0,113,227,.18);
+            outline-offset: 2px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+                animation-duration: .01ms !important;
+            }
+        }
+        @media (min-width: 768px) {
+            main { max-width: 1100px; margin-inline: auto; }
+            #dishesList { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+            #dishesList > div { height: 100%; }
+            #generatedMenuContainer { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+            #generatedMenuContainer > div { margin: 0 !important; }
+        }
+    
+
+/* ===== Bloque CSS original 3 ===== */
+:root {
+    --accent: #007AFF;
+    --accent-soft: #F2F2F7;
+    --bg-main: #F2F2F7;
+    --bg-card: #FFFFFF;
+    --text-main: #111113;
+    --text-secondary: #6E6E73;
+    --border-soft: #E5E5EA;
+    --inactive: #8E8E93;
+    --radius-card: 16px;
+    --control-h: 40px;
+}
 html.dark {
     --accent: #2997FF;
     --accent-soft: #2C2C2E;
@@ -460,7 +727,52 @@ html.dark #allergensContainer > label:has(input:checked) {
     color: #fff !important;
 }
 
-
+/* Stock / forecast */
+#view-stock { gap: 10px !important; }
+#view-stock > section { padding: 11px !important; }
+#view-stock > section:first-child > div.grid {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
+    gap: 8px !important;
+    align-items: center !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child {
+    min-width: 0;
+}
+#inputComensales {
+    height: 38px !important;
+    min-height: 38px !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    height: 38px !important;
+    padding: 8px 10px !important;
+    margin: 0 !important;
+    border-radius: 11px !important;
+    gap: 8px;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) span { font-size: 10px !important; }
+#view-stock > section:first-child > div.grid > div:nth-child(2) input { width: 18px !important; height: 18px !important; }
+#view-stock > section:first-child > div.grid > div:nth-child(3) {
+    grid-column: 1 / -1;
+    display: flex !important;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    text-align: left !important;
+    padding: 8px 11px !important;
+    min-height: 42px;
+    border-radius: 11px !important;
+}
+#totalRacionesDisplay {
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+    color: #fff !important;
+    white-space: nowrap;
+}
+#totalRacionesSubtext {
+    font-size: 10px !important;
+    color: #D1D1D6 !important;
+}
 #rawStockForm, #prepStockForm {
     display: grid !important;
     grid-template-columns: repeat(2,minmax(0,1fr)) !important;
@@ -566,6 +878,7 @@ body > nav, nav.fixed {
     #recipeDiagnostics { gap: 4px !important; }
     #recipeDiagnostics > div { padding: 7px 5px !important; }
     #recipeDiagnostics > div .text-lg { font-size: 14px !important; }
+    #totalRacionesDisplay { font-size: 14px !important; }
 }
 @media (min-width: 768px) {
     main { padding: 16px !important; }
@@ -677,6 +990,30 @@ html.dark #dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:last-child {
     margin-bottom:30px !important;
 }
 
+/* STOCK / PREVISIÓN — ambos controles comparten exactamente la misma altura y eje */
+#view-stock > section:first-child > div.grid {
+    align-items:stretch !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child,
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    height:38px !important;
+    min-height:38px !important;
+    align-self:stretch !important;
+    margin:0 !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child {
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:flex-end !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child label {
+    margin-bottom:2px !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+}
 
 /* MATERIA PRIMA — grid compacto y limpio */
 #rawStockForm, #prepStockForm {
@@ -820,6 +1157,35 @@ body > nav, nav.fixed {
     margin-bottom:30px !important;
 }
 
+/* 3. STOCK — previsión perfectamente alineada */
+#view-stock > section:first-child > div.grid {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    align-items:end !important;
+    gap:10px !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(1),
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    height:38px !important;
+    align-self:end !important;
+    box-sizing:border-box !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(1) label {
+    display:block !important;
+    height:14px !important;
+    line-height:14px !important;
+    margin-bottom:4px !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(1) input {
+    height:38px !important;
+    box-sizing:border-box !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    padding:0 12px !important;
+}
 
 /* Materia prima / elaborados: grid compacto */
 #rawStockForm, #prepStockForm { gap:10px !important; }
@@ -982,6 +1348,29 @@ body > nav, nav.fixed {
     display: none !important;
 }
 
+/* ===== Bloque CSS original 7 ===== */
+/* PREVISIÓN DE COMENSALES — separar ligeramente los textos y controles */
+#view-stock > section:first-child > div:first-child {
+    margin-bottom: 20px !important;
+    align-items: flex-start !important;
+}
+#view-stock > section:first-child > div:first-child h2 {
+    line-height: 1.25 !important;
+    margin-bottom: 4px !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child label {
+    margin-top: 2px !important;
+}
+#view-stock > section:first-child > div.grid {
+    gap: 12px !important;
+}
+#view-stock > section:first-child > div.grid > div:first-child label {
+    margin-bottom: 6px !important;
+    line-height: 1.25 !important;
+}
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+    line-height: 1.35 !important;
+}
 
 /* AÑADIR PLATO — toda la tarjeta de estado es clicable */
 #dishForm > div.grid.grid-cols-1.gap-2.mt-2 > label {
@@ -1137,6 +1526,19 @@ html.dark #btnBulkEdit {
     border-color: rgba(255,255,255,.12) !important;
 }
 
+/* Stock / previsión */
+html.dark #view-stock > section:first-child > div.grid > div:nth-child(2),
+html.dark #view-stock > section:first-child > div.grid > div:nth-child(3) {
+    background: #1c1c1e !important;
+    border-color: rgba(255,255,255,.10) !important;
+    color: #f5f5f7 !important;
+}
+html.dark #totalRacionesDisplay {
+    color: #fff !important;
+}
+html.dark #totalRacionesSubtext {
+    color: #c7c7cc !important;
+}
 html.dark #rawStockForm,
 html.dark #prepStockForm {
     color: #f5f5f7 !important;
@@ -1485,7 +1887,15 @@ html.dark .generator-diagnostic { background: rgba(124,45,18,.18); border-color:
 }
 
 /* Generador: jerarquía clara, aire y lectura rápida. */
-
+.gastro-generator-kitchen-name {
+    margin: 0 0 2px !important;
+    text-align: center !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase !important;
+    color: rgba(255,255,255,.72) !important;
+}
 .gastro-generator-title {
     text-align: center !important;
     letter-spacing: .04em !important;
@@ -1628,39 +2038,23 @@ html.dark .generator-rules-details {
 .day-regeneration-dish strong { min-width:0; font-size:10px; overflow-wrap:anywhere; }
 @media (max-width:640px) { .day-regeneration-dish { grid-template-columns:92px minmax(0,1fr); } }
 
-
-.protein-catalog-add-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px;
-    margin-top: 10px;
-}
-.protein-catalog-add-row .secondary-action {
-    white-space: nowrap;
-    padding: 0 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 800;
-}
-.dark .protein-catalog-add-row .secondary-action { border-color: #374151; }
-@media (max-width: 520px) {
-    .protein-catalog-add-row { grid-template-columns: 1fr; }
-    .protein-catalog-add-row .secondary-action { min-height: 38px; }
+/* GastroOS · corrección puntual de alternativas del menú: misma estética, sin sobredimensionar. */
+.day-regeneration-modal { z-index: 75; }
+.day-regeneration-modal-panel { width: min(100%, 560px); }
+.day-regeneration-modal-panel #dayRegenerationList { padding: 12px; }
+.day-regeneration-modal .day-regeneration-option { border-radius: 12px; padding: 10px; background: var(--g-surface, #fff); border: 1px solid var(--g-border, rgba(15,23,42,.08)); }
+.day-regeneration-modal .day-regeneration-option + .day-regeneration-option { margin-top: 8px; }
+.day-regeneration-modal .day-regeneration-dish { grid-template-columns: 96px minmax(0,1fr); padding: 5px 6px; border-radius: 8px; }
+.day-regeneration-modal .day-regeneration-select { padding: 6px 9px !important; border-radius: 8px !important; }
+@media (max-width:640px) {
+  .day-regeneration-modal-panel { width: 100%; max-height: 82vh; }
+  .day-regeneration-modal .day-regeneration-dish { grid-template-columns: 82px minmax(0,1fr); }
 }
 
-
-/* Fase final — modales y estados de menú cohesionados */
-.gastro-modal-panel { max-height: min(82vh, 720px); }
-.gastro-modal-header { min-height: 64px; }
-.product-allergen-modal-panel #productAllergenList { background: var(--g-surface, #f7f7f9); }
-.product-allergen-modal-panel #productAllergenList > div { border-radius: 14px !important; border: 1px solid var(--border-soft, #e5e5ea) !important; background: var(--card-bg, #fff) !important; box-shadow: 0 1px 2px rgba(0,0,0,.03); }
-html.dark .product-allergen-modal-panel #productAllergenList { background: #161618; }
-html.dark .product-allergen-modal-panel #productAllergenList > div { background: #1c1c1e !important; border-color: #38383a !important; }
+/* Etiquetas de estado del menú: visibles también cuando el plato procede de stock o de una receta antigua. */
 .menu-status-badges { display:flex; flex-wrap:wrap; gap:4px; margin-top:5px; }
 .menu-status-badge { display:inline-flex; align-items:center; width:max-content; padding:2px 6px; border-radius:999px; font-size:9px; line-height:1.15; font-weight:800; border:1px solid transparent; }
 .menu-status-badge.prepared { background:#f3e8ff; color:#7e22ce; border-color:#e9d5ff; }
 .menu-status-badge.precooked { background:#fce7f3; color:#be185d; border-color:#fbcfe8; }
 html.dark .menu-status-badge.prepared { background:#2e1065; color:#d8b4fe; border-color:#581c87; }
 html.dark .menu-status-badge.precooked { background:#500724; color:#f9a8d4; border-color:#831843; }
-.modal-day-regeneration .gastro-modal-panel { max-height:min(78vh, 680px); }
