@@ -4037,51 +4037,51 @@
             }
 
             const safeFilename = String(filename || 'gastroos.txt').replace(/[^a-zA-Z0-9._-]/g, '_');
+            const utf8Content = '\ufeff' + content;
             const isIOS = typeof navigator !== 'undefined' && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
 
-            // iOS/PWA: el gesto del botón es especialmente importante. Probamos
-            // primero el Web Share de archivos, que permite guardar el .txt en Archivos.
+            // iOS/iPadOS: compartir SOLO el archivo. WebKit ha tenido problemas
+            // cuando navigator.share() recibe files junto con title/text; eso puede
+            // provocar que el archivo llegue con nombre pero sin contenido. 
+            // No hacemos un segundo navigator.share(): una segunda llamada consume
+            // la activación del gesto y también puede quedar bloqueada en Safari.
             if (isIOS && typeof navigator.share === 'function' && typeof File !== 'undefined') {
                 try {
-                    const file = new File([content], safeFilename, { type: 'text/plain' });
-                    const canShareFile = typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] });
+                    const file = new File([utf8Content], safeFilename, { type: 'text/plain;charset=utf-8' });
+                    const shareData = { files: [file] };
+                    const canShareFile = typeof navigator.canShare !== 'function' || navigator.canShare(shareData);
                     if (canShareFile) {
-                        await navigator.share({ files: [file], title: safeFilename });
+                        const shareResult = navigator.share(shareData);
+                        if (shareResult && typeof shareResult.then === 'function') {
+                            await shareResult;
+                        }
                         return true;
                     }
                 } catch (error) {
                     if (error?.name === 'AbortError') return false;
-                    console.warn('Web Share de archivo no disponible; se prueba el texto.', error);
+                    console.warn('Web Share de archivo no disponible en iOS; se abre el TXT.', error);
                 }
 
-                // Segundo intento nativo de iOS: compartir el contenido directamente.
-                // No depende de que Safari acepte un File .txt en modo PWA.
+                // Fallback iOS: el Blob contiene el texto real y se abre de forma
+                // directa para que el usuario pueda verlo/guardarlo aunque WebKit
+                // no admita compartir archivos desde la PWA en ese contexto.
                 try {
-                    await navigator.share({ title: safeFilename, text: content });
-                    return true;
-                } catch (error) {
-                    if (error?.name === 'AbortError') return false;
-                    console.warn('Web Share de texto no disponible; se abre una vista de exportación.', error);
-                }
-
-                // Último recurso iOS: se abre inmediatamente una ventana con el TXT.
-                // Como se ejecuta desde el mismo gesto, no pierde la activación del usuario.
-                try {
-                    const popup = window.open('', '_blank');
+                    const blob = new Blob([utf8Content], { type: 'text/plain;charset=utf-8' });
+                    const objectUrl = URL.createObjectURL(blob);
+                    const popup = window.open(objectUrl, '_blank');
                     if (popup) {
-                        popup.document.open();
-                        popup.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escapeHtml(safeFilename) + '</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:20px;background:#f5f5f7;color:#111827}pre{white-space:pre-wrap;word-break:break-word;line-height:1.5;background:#fff;padding:16px;border-radius:14px;border:1px solid #e5e7eb}</style></head><body><pre>' + escapeHtml(content) + '</pre></body></html>');
-                        popup.document.close();
+                        window.setTimeout(() => URL.revokeObjectURL(objectUrl), 30000);
                         return true;
                     }
+                    URL.revokeObjectURL(objectUrl);
                 } catch (error) {
-                    console.warn('No se pudo abrir la vista de exportación en iOS.', error);
+                    console.warn('No se pudo abrir el TXT en iOS.', error);
                 }
             }
 
             // Escritorio/Android: descarga estándar mediante Blob.
             try {
-                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const blob = new Blob([utf8Content], { type: 'text/plain;charset=utf-8' });
                 const objectUrl = URL.createObjectURL(blob);
                 const anchor = document.createElement('a');
                 anchor.href = objectUrl;
@@ -4099,15 +4099,16 @@
                 console.warn('La descarga Blob ha fallado; se intenta abrir el TXT.', error);
             }
 
-            // Fallback universal si el navegador no permite la descarga.
+            // Fallback universal: abre el contenido real del TXT, no solo el nombre.
             try {
-                const popup = window.open('', '_blank');
+                const blob = new Blob([utf8Content], { type: 'text/plain;charset=utf-8' });
+                const objectUrl = URL.createObjectURL(blob);
+                const popup = window.open(objectUrl, '_blank');
                 if (popup) {
-                    popup.document.open();
-                    popup.document.write('<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + escapeHtml(safeFilename) + '</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:20px;white-space:pre-wrap;line-height:1.5}pre{white-space:pre-wrap;word-break:break-word}</style></head><body><pre>' + escapeHtml(content) + '</pre></body></html>');
-                    popup.document.close();
+                    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 30000);
                     return true;
                 }
+                URL.revokeObjectURL(objectUrl);
             } catch (error) {
                 console.warn('No se pudo abrir la vista alternativa de exportación.', error);
             }
