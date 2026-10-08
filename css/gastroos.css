@@ -2008,11 +2008,16 @@ html.dark .generator-rules-details {
 .shopping-stock { color:#059669; }
 .shopping-buy { font-weight:900; white-space:nowrap; }
 .shopping-grid-list { margin:0; padding:0; list-style:none; }
-.app-splash { position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; background:#f5f5f7; color:#111827; animation:gastroSplash .62s cubic-bezier(.22,1,.36,1) forwards; pointer-events:none; }
+.app-splash { position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; background:#f5f5f7; color:#111827; opacity:1; pointer-events:none; transition:opacity .28s ease, visibility .28s ease; }
+.app-splash.is-ready { opacity:0; visibility:hidden; }
 .dark .app-splash { background:#0b0b0d; color:#f5f5f7; }
-.app-splash-mark { width:42px; height:42px; border-radius:13px; display:grid; place-items:center; font-size:22px; font-weight:900; background:#111827; color:#fff; box-shadow:0 8px 24px rgba(15,23,42,.16); animation:gastroMark .52s ease-out; }
+.app-splash-mark { width:62px; height:62px; border-radius:18px; display:grid; place-items:center; font-size:31px; font-weight:900; background:#111827; color:#fff; box-shadow:0 10px 30px rgba(15,23,42,.16); animation:gastroMark .9s ease-out; }
 .dark .app-splash-mark { background:#f5f5f7; color:#111827; }
-.app-splash-name { font-size:13px; font-weight:800; letter-spacing:.08em; }
+.app-splash-name { font-size:16px; font-weight:800; letter-spacing:.08em; }
+.app-splash-loading { font-size:10px; color:#9ca3af; letter-spacing:.04em; }
+.shopping-manual-stock { display:flex; align-items:center; gap:4px; margin-top:4px; font-size:9px; font-weight:700; color:#64748b; cursor:pointer; }
+.shopping-manual-stock input { width:13px; height:13px; accent-color:#4f46e5; }
+.shopping-stock.is-manual { font-weight:800; }
 @keyframes gastroMark { from { transform:scale(.82); opacity:0 } to { transform:scale(1); opacity:1 } }
 @keyframes gastroSplash { 0%,68% { opacity:1 } 100% { opacity:0; visibility:hidden } }
 @media (max-width:640px) { .shopping-grid { grid-template-columns:minmax(0,1fr) 65px 58px 72px; column-gap:7px; } .settings-forecast-grid, .weekly-limit-grid { grid-template-columns:1fr 1fr; } .recetario-search-actions { gap:7px !important; } #btnBulkEdit { padding-left:10px !important; padding-right:10px !important; } }
