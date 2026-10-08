@@ -5,7 +5,7 @@
  * No hay usuarios, roles ni cuentas dentro de este perfil.
  */
 (function () {
-    const VERSION = 5;
+    const VERSION = 6;
     const DAYS = Object.freeze(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']);
     const FISH_SPECIES = Object.freeze(['trucha','caella','bacalao','merluza','calamares','bacaladilla','panga','atun','perca','chicharro','cabracho','tintorera']);
     const MEAT_ANIMALS = Object.freeze(['carne_pollo','carne_pavo','carne_cerdo','carne_ternera','carne_conejo','carne_cordero']);

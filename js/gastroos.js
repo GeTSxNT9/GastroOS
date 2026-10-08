@@ -28,6 +28,7 @@
             kitchenProfile: { ...window.GastroOSKitchenRules.DEFAULT_RULES }
         };
         let productAllergenMap = {};
+        let recipeProteinCatalog = { fish: [], meat: [] };
         // Marcas temporales de la lista de compra: no modifican el stock real ni se guardan.
         let shoppingManualStockKeys = new Set();
         const proveedorCategorias = ["Carne", "Pescado", "Lácteos", "Verduras y frutas", "Secos", "Congelados"];
@@ -48,6 +49,36 @@
             carne_pollo: "Pollo", carne_pavo: "Pavo", carne_cerdo: "Cerdo",
             carne_ternera: "Ternera", carne_conejo: "Conejo", carne_cordero: "Cordero"
         };
+
+        function normalizeRecipeProteinCatalog(value = {}) {
+            const normalize = (list, prefix) => (Array.isArray(list) ? list : []).map(item => {
+                const label = String(item?.label ?? item ?? '').replace(/\s+/g, ' ').trim();
+                const rawId = String(item?.id ?? '').trim();
+                const id = rawId || `${prefix}_${label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')}`;
+                return { id, label };
+            }).filter(item => item.id && item.label);
+            return { fish: normalize(value?.fish, 'custom_pescado'), meat: normalize(value?.meat, 'custom_carne') };
+        }
+
+        function getRecipeProteinCatalog() {
+            return normalizeRecipeProteinCatalog(recipeProteinCatalog);
+        }
+
+        function mergeRecipeProteinCatalogIntoProfile(catalog = recipeProteinCatalog) {
+            const normalized = normalizeRecipeProteinCatalog(catalog);
+            recipeProteinCatalog = normalized;
+            const profile = getKitchenProfile();
+            const merge = (existing, incoming) => {
+                const map = new Map((Array.isArray(existing) ? existing : []).map(item => [String(item.id), item]));
+                incoming.forEach(item => map.set(item.id, item));
+                return [...map.values()];
+            };
+            settings.kitchenProfile = window.GastroOSKitchenRules.normalize({
+                ...profile,
+                especiesPescadoPersonalizadas: merge(profile.especiesPescadoPersonalizadas, normalized.fish),
+                animalesCarnePersonalizados: merge(profile.animalesCarnePersonalizados, normalized.meat)
+            });
+        }
 
         function getProteinCatalog(type) {
             const catalog = window.GastroOSKitchenRules.getProteinCatalog(getKitchenProfile());
@@ -77,7 +108,7 @@
             }
         }
 
-        function addCustomProtein(type) {
+        async function addCustomProtein(type) {
             const inputId = type === 'fish' ? 'newKitchenFish' : 'newKitchenMeat';
             const input = document.getElementById(inputId);
             const label = String(input?.value || '').replace(/\s+/g, ' ').trim();
@@ -100,7 +131,14 @@
             if (input) input.value = '';
             renderKitchenRules();
             renderProteinFormOptions();
-            alert(`${label} se ha añadido y queda permitido para el generador.`);
+            const synced = await syncProteinCatalogToGitHub();
+            if (synced.skipped) {
+                alert(`${label} se ha añadido y queda permitido para el generador. El catálogo se guardará en recipes.json cuando conectes/sincronices GitHub.`);
+            } else if (synced.success) {
+                alert(`${label} se ha añadido y se ha actualizado el catálogo compartido de recipes.json.`);
+            } else {
+                alert(`${label} se ha añadido localmente, pero no se pudo actualizar recipes.json en GitHub. El catálogo local sigue funcionando.`);
+            }
         }
         const FIRST_LABELS = {
             legumbres: "Cuchara · Legumbres", guisos: "Cuchara · Guisos",
@@ -581,7 +619,7 @@
                     preparedStock: Array.isArray(preparedStock) ? preparedStock.length : 0,
                     historyMenus: Array.isArray(historyMenus) ? historyMenus.length : 0
                 },
-                dishes, settings: { ...settings }, productAllergenMap, rawStock, preparedStock, currentMenu, previousWeekMenu, historyMenus, recipeChangeHistory
+                dishes, settings: { ...settings }, proteinCatalog: getRecipeProteinCatalog(), productAllergenMap, rawStock, preparedStock, currentMenu, previousWeekMenu, historyMenus, recipeChangeHistory
             };
         }
 
@@ -718,6 +756,8 @@
             }
             settings.margenActivo = Number(settings.margenSeguridadPorcentaje) > 0;
             settings.kitchenProfile = window.GastroOSKitchenRules.normalize(settings.kitchenProfile);
+            recipeProteinCatalog = normalizeRecipeProteinCatalog({ fish: settings.kitchenProfile.especiesPescadoPersonalizadas, meat: settings.kitchenProfile.animalesCarnePersonalizados });
+            mergeRecipeProteinCatalogIntoProfile(recipeProteinCatalog);
             if (settings.darkMode === undefined) settings.darkMode = false;
             const storedRawSafe = safeLoadJSON('chefTrack_rawStock', []);
             rawStock = Array.isArray(storedRawSafe) ? storedRawSafe.map(item => {
@@ -787,6 +827,8 @@
 
         function saveAll() {
             settings.kitchenProfile = window.GastroOSKitchenRules.normalize(settings.kitchenProfile);
+            recipeProteinCatalog = normalizeRecipeProteinCatalog({ fish: settings.kitchenProfile.especiesPescadoPersonalizadas, meat: settings.kitchenProfile.animalesCarnePersonalizados });
+            mergeRecipeProteinCatalogIntoProfile(recipeProteinCatalog);
             try {
                 localStorage.setItem('chefTrack_dishes', JSON.stringify(dishes));
                 localStorage.setItem('chefTrack_settings', JSON.stringify(settings));
@@ -926,8 +968,6 @@
                 restoreRecipeListScroll();
             });
 
-            document.getElementById('inputComensales')?.addEventListener('input', updateCalculatedRaciones);
-            document.getElementById('checkMargen')?.addEventListener('change', updateCalculatedRaciones);
             document.getElementById('rawStockForm').addEventListener('submit', handleAddRawStock);
             document.getElementById('prepStockForm').addEventListener('submit', handleAddPrepStock);
             document.getElementById('prepName').addEventListener('change', () => {
@@ -1339,6 +1379,7 @@
                     throw new Error('recipes.json no contiene recetas.');
                 }
                 dishes = parsedFile.recipes.map(normalizeDishData);
+                mergeRecipeProteinCatalogIntoProfile(parsedFile.proteinCatalog);
                 localStorage.setItem('chefTrack_dishes', JSON.stringify(dishes));
                 refreshStockReferenceSelectors();
                 githubLastLoadIssue = 'local-seed';
@@ -1396,6 +1437,7 @@
                 // Al cargar, también migramos los antiguos identificadores técnicos
                 // para que el archivo compartido quede alineado con los textos visibles.
                 const originalSerialized = JSON.stringify(parsedFile.recipes);
+                mergeRecipeProteinCatalogIntoProfile(parsedFile.proteinCatalog);
                 dishes = parsedFile.recipes.map(normalizeDishData);
                 const normalizedSerialized = JSON.stringify(dishes);
 
@@ -1613,13 +1655,13 @@
             try {
                 const parsed = JSON.parse(trimmed);
                 if (Array.isArray(parsed)) {
-                    return { recipes: parsed, format: 'json-array' };
+                    return { recipes: parsed, format: 'json-array', proteinCatalog: { fish: [], meat: [] } };
                 }
                 if (parsed && Array.isArray(parsed.dishes)) {
-                    return { recipes: parsed.dishes, format: 'json-dishes', wrapper: parsed };
+                    return { recipes: parsed.dishes, format: 'json-dishes', wrapper: parsed, proteinCatalog: normalizeRecipeProteinCatalog(parsed.proteinCatalog || parsed.catalogosProteinas || {}) };
                 }
                 if (parsed && Array.isArray(parsed.recipes)) {
-                    return { recipes: parsed.recipes, format: 'json-recipes', wrapper: parsed };
+                    return { recipes: parsed.recipes, format: 'json-recipes', wrapper: parsed, proteinCatalog: normalizeRecipeProteinCatalog(parsed.proteinCatalog || parsed.catalogosProteinas || {}) };
                 }
                 throw new Error("El JSON del recetario no contiene un listado de recetas válido.");
             } catch {
@@ -1655,19 +1697,22 @@
             }
         }
 
-        function buildGitHubRecipeFile(parsedFile, newDish = null, recipesOverride = null) {
+        function buildGitHubRecipeFile(parsedFile, newDish = null, recipesOverride = null, proteinCatalogOverride = null) {
+            const updatedProteinCatalog = normalizeRecipeProteinCatalog(proteinCatalogOverride || parsedFile.proteinCatalog || {});
             const updatedRecipes = Array.isArray(recipesOverride)
                 ? [...recipesOverride]
                 : (newDish === null
                     ? [...parsedFile.recipes]
                     : [...parsedFile.recipes, newDish]);
             if (parsedFile.format === 'json-array') {
-                return JSON.stringify(updatedRecipes, null, 2) + "\n";
+                if (!updatedProteinCatalog.fish.length && !updatedProteinCatalog.meat.length) return JSON.stringify(updatedRecipes, null, 2) + "\n";
+                return JSON.stringify({ app: 'GastroOS', schemaVersion: 2, proteinCatalog: updatedProteinCatalog, recipes: updatedRecipes }, null, 2) + "\n";
             }
             if (parsedFile.format === 'json-dishes' || parsedFile.format === 'json-recipes') {
                 const wrapper = JSON.parse(JSON.stringify(parsedFile.wrapper));
                 if (parsedFile.format === 'json-dishes') wrapper.dishes = updatedRecipes;
                 else wrapper.recipes = updatedRecipes;
+                wrapper.proteinCatalog = updatedProteinCatalog;
                 return JSON.stringify(wrapper, null, 2) + "\n";
             }
             if (parsedFile.format === 'js-array') {
@@ -1675,6 +1720,37 @@
                 return parsedFile.originalContent.slice(0, parsedFile.arrayStart) + replacement + parsedFile.originalContent.slice(parsedFile.arrayEnd + 1);
             }
             throw new Error("Formato de recetario no compatible.");
+        }
+
+        async function syncProteinCatalogToGitHub() {
+            const github = getGitHubSettings();
+            if (!github.token || !github.owner || !github.repo || !github.path) return { success: false, skipped: true };
+            try {
+                const apiUrl = `https://api.github.com/repos/${encodeURIComponent(github.owner)}/${encodeURIComponent(github.repo)}/contents/${github.path.split('/').map(encodeURIComponent).join('/')}`;
+                const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${github.token}`, 'X-GitHub-Api-Version': '2022-11-28' };
+                const response = await fetch(apiUrl, { method: 'GET', headers });
+                const data = await response.json().catch(() => ({}));
+                let parsedFile;
+                let sha = null;
+                if (response.status === 404) {
+                    parsedFile = { recipes: dishes.map(normalizeDishData), format: 'json-recipes', wrapper: { app: 'GastroOS', schemaVersion: 2 }, proteinCatalog: getRecipeProteinCatalog() };
+                } else {
+                    if (!response.ok || typeof data.content !== 'string') throw new Error(data.message || `HTTP ${response.status}`);
+                    sha = data.sha;
+                    parsedFile = parseGitHubRecipeFile(base64ToUtf8(data.content), github.path);
+                }
+                parsedFile.proteinCatalog = getRecipeProteinCatalog();
+                const content = buildGitHubRecipeFile(parsedFile, null, parsedFile.recipes, parsedFile.proteinCatalog);
+                const payload = { message: 'Actualizado catálogo de carnes y pescados desde GastroOS', content: utf8ToBase64(content) };
+                if (sha) payload.sha = sha;
+                const put = await fetch(apiUrl, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!put.ok) { const body = await put.json().catch(() => ({})); throw new Error(body.message || `HTTP ${put.status}`); }
+                markGitHubSyncSuccess('Catálogo de carnes y pescados actualizado en recipes.json.');
+                return { success: true, skipped: false };
+            } catch (error) {
+                console.warn('No se pudo sincronizar el catálogo de proteínas:', error);
+                return { success: false, skipped: false, message: error?.message || 'Error desconocido' };
+            }
         }
 
         async function syncDishToGitHub(dish, isNewDish) {
@@ -1792,7 +1868,7 @@
 
                 if (getResponse.status === 404) {
                     // Si el archivo no existe, lo creamos directamente con todas las recetas importadas.
-                    updatedContent = JSON.stringify(normalizedRecipes, null, 2) + "\n";
+                    updatedContent = JSON.stringify({ app: 'GastroOS', schemaVersion: 2, proteinCatalog: getRecipeProteinCatalog(), recipes: normalizedRecipes }, null, 2) + "\n";
                     creatingFile = true;
                 } else {
                     if (!getResponse.ok) {
@@ -2374,23 +2450,16 @@
         }
 
         function updateCalculatedRaciones(shouldSave = true) {
-            const dinersInput = document.getElementById('settingsComensales') || document.getElementById('inputComensales');
+            const dinersInput = document.getElementById('settingsComensales');
             const marginInput = document.getElementById('settingsMargenSeguridad');
-            const legacyMarginToggle = document.getElementById('checkMargen');
             const base = Math.max(1, parseInt(dinersInput?.value || settings.comensales, 10) || 1);
             const margin = marginInput ? Math.min(100, Math.max(0, Number(marginInput.value) || 0)) : (Number(settings.margenSeguridadPorcentaje) || 0);
-            const margen = legacyMarginToggle ? legacyMarginToggle.checked : margin > 0;
+            const margen = margin > 0;
             settings.comensales = base;
             settings.margenSeguridadPorcentaje = margin;
             settings.margenActivo = margen;
             if (shouldSave) saveAll();
 
-            const total = getTotalRaciones();
-            const infoText = margen && margin > 0 ? `${base} base + ${margin}% de margen de seguridad` : `${base} raciones base`;
-            const display = document.getElementById('totalRacionesDisplay');
-            const subtext = document.getElementById('totalRacionesSubtext');
-            if (display) display.innerText = `${total} raciones`;
-            if (subtext) subtext.innerText = infoText;
         }
 
         function getRawStockServings(item) {
@@ -3904,6 +3973,10 @@
             const allergenLine = allergenNames.length
                 ? `<div class="text-[9px] text-gray-500 dark:text-gray-400 mt-1 leading-tight">Alérgenos: ${allergenNames.map(escapeHtml).join(' · ')}</div>`
                 : '';
+            const proteinBadges = [
+                slot.dish?.plato_elaborado ? '<span class="menu-status-badge prepared">Plato elaborado</span>' : '',
+                slot.dish?.precocinado ? '<span class="menu-status-badge precooked">Precocinado</span>' : ''
+            ].filter(Boolean).join('');
 
             const safeDay = escapeJsArg(dayName);
             const safeCat = escapeJsArg(slot.cat);
@@ -3914,7 +3987,7 @@
                     <div class="flex items-center gap-2 flex-1">
                         <div>
                             <div class="text-[10px] font-bold text-gray-500 uppercase">${escapeHtml(slot.slotLabel)}</div>
-                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">${escapeHtml(dishName)} ${warningBadge}</div>
+                            <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">${escapeHtml(dishName)} ${warningBadge}</div>${proteinBadges ? `<div class="menu-status-badges">${proteinBadges}</div>` : ''}
                             ${allergenLine}
                         </div>
                     </div>
@@ -3940,6 +4013,22 @@
             });
         }
 
+        function downloadTextFile(text, filename) {
+            const blob = new Blob([String(text ?? '')], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = filename;
+            anchor.rel = 'noopener';
+            anchor.style.display = 'none';
+            document.body.appendChild(anchor);
+            try { anchor.click(); } catch (error) {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }
+            window.setTimeout(() => { anchor.remove(); URL.revokeObjectURL(url); }, 1500);
+            return true;
+        }
+
         function downloadWeeklyMenuTxt() {
             if (!currentMenu || !currentMenu.days) {
                 alert("No hay ningún menú generado para exportar.");
@@ -3954,15 +4043,7 @@
                 return `${dateLabel} / ${dayName.toUpperCase()}\n\nPrimeros:\n\n${primeros.join('\n')}\n\nSegundos:\n\n${segundos.join('\n')}`;
             });
             const text = blocks.join('\n\n');
-            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `menu_semanal_${new Date().toISOString().slice(0,10)}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            downloadTextFile(text, `menu_semanal_${new Date().toISOString().slice(0,10)}.txt`);
         }
 
         // --- LISTA DE COMPRA CON REDONDEO ESTRICTO HACIA ARRIBA ---
@@ -4095,7 +4176,7 @@
                 hasItems = true;
                 const section = document.createElement('div');
                 section.className = "bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-2";
-                section.innerHTML = `<h4 class="font-bold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-1">${escapeHtml(cat)}</h4><div class="shopping-grid shopping-grid-header"><span>Producto</span><span>Necesario</span><span>Stock</span><span>Comprar</span></div><ul class="shopping-grid-list">${items.map(i => { const fmt = n => n > 0 ? `${Math.ceil(n/1000)} ${i.dimension}` : '—'; const stockText = i.manualStock ? '✓ Manual' : fmt(i.disponible); const buyText = i.manualStock ? '0' : (i.comprar > 0 ? `${i.cantidad} ${i.unidad}` : '0'); return `<li class="shopping-grid shopping-grid-row"><span class="shopping-product-name"><span>${escapeHtml(i.nombre)}</span><label class="shopping-manual-stock"><input type="checkbox" data-shopping-stock-key="${escapeHtml(normalizeFoodKey(i.nombre))}" ${i.manualStock ? 'checked' : ''}> <span>Ya tengo</span></label></span><span class="shopping-number">${escapeHtml(fmt(i.necesario))}</span><span class="shopping-number shopping-stock ${i.manualStock ? 'is-manual' : ''}">${escapeHtml(stockText)}</span><span class="shopping-buy">${escapeHtml(buyText)}</span></li>`; }).join('')}</ul>`;
+                section.innerHTML = `<h4 class="font-bold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-1">${escapeHtml(cat)}</h4><div class="shopping-grid shopping-grid-header"><span>Producto</span><span>Necesario</span><span>Stock</span><span>Comprar</span></div><ul class="shopping-grid-list">${items.map(i => { const fmt = n => n > 0 ? `${Math.ceil(n/1000)} ${i.dimension}` : '—'; const stockText = i.manualStock ? '✓ Manual' : fmt(i.disponible); const buyText = i.manualStock ? '0' : (i.comprar > 0 ? `${i.cantidad} ${i.unidad}` : '0'); return `<li class="shopping-grid shopping-grid-row"><span class="shopping-product-name"><span>${escapeHtml(i.nombre)}</span><label class="shopping-manual-stock"><input type="checkbox" data-shopping-stock-key="${escapeHtml(normalizeFoodKey(i.nombre))}" ${i.manualStock ? 'checked' : ''}> <span>Stock</span></label></span><span class="shopping-number">${escapeHtml(fmt(i.necesario))}</span><span class="shopping-number shopping-stock ${i.manualStock ? 'is-manual' : ''}">${escapeHtml(stockText)}</span><span class="shopping-buy">${escapeHtml(buyText)}</span></li>`; }).join('')}</ul>`;
                 container.appendChild(section);
             });
             if (!hasItems) container.innerHTML = '<p class="text-center text-gray-500 text-xs py-4">No hay ingredientes necesarios en el menú actual.</p>';
@@ -4116,15 +4197,12 @@
                 exportItems.forEach(i => { text += `${i.nombre}: ${i.cantidad} ${i.unidad}\n`; });
                 text += '\n';
             });
-            const blob = new Blob([text.trim()], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `lista_compra_${new Date().toISOString().slice(0,10)}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            const cleanText = text.trim();
+            if (!cleanText) {
+                alert('No hay productos para exportar: todos están marcados como Stock.');
+                return;
+            }
+            downloadTextFile(cleanText, `lista_compra_${new Date().toISOString().slice(0,10)}.txt`);
         }
 
         // --- 7. MODAL DE CAMBIO DE PLATO ---
@@ -4178,7 +4256,7 @@
                         <h4 class="font-bold text-gray-800 dark:text-gray-100 text-xs mb-1">${escapeHtml(d.nombre)}</h4>
                         <div class="flex gap-1.5">
                             <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">${escapeHtml(d.categoria)}</span>
-                            ${d.precocinado ? '<span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300">Precocinado</span>' : ''}
+                            ${d.plato_elaborado ? '<span class="menu-status-badge prepared">Plato elaborado</span>' : ''}${d.precocinado ? '<span class="menu-status-badge precooked">Precocinado</span>' : ''}
                         </div>
                     </div>
                     <button onclick="confirmSwap(decodeURIComponent('${escapeJsArg(d.id)}'))" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">Seleccionar</button>
@@ -4285,6 +4363,7 @@
                 app: "GastroOS",
                 type: "recipes-only",
                 exportedAt: new Date().toISOString(),
+                proteinCatalog: getRecipeProteinCatalog(),
                 dishes: dishes.map(normalizeDishData)
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
@@ -4355,6 +4434,7 @@
             createAutoBackup(`antes de restaurar ${pendingImportData.fileName || 'una copia JSON'}`);
             if (summary.full && data.settings && typeof data.settings === 'object') settings = { ...defaultSettings, ...data.settings };
             if (summary.full && data.productAllergenMap && typeof data.productAllergenMap === 'object') productAllergenMap = data.productAllergenMap;
+            if (summary.full && data.proteinCatalog) mergeRecipeProteinCatalogIntoProfile(data.proteinCatalog);
             const importedDishes = summary.importedDishes;
             if (importedDishes) {
                 dishes = importedDishes.map(normalizeDishData);
