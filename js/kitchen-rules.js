@@ -5,10 +5,12 @@
  * No hay usuarios, roles ni cuentas dentro de este perfil.
  */
 (function () {
-    const VERSION = 4;
+    const VERSION = 5;
     const DAYS = Object.freeze(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']);
     const FISH_SPECIES = Object.freeze(['trucha','caella','bacalao','merluza','calamares','bacaladilla','panga','atun','perca','chicharro','cabracho','tintorera']);
     const MEAT_ANIMALS = Object.freeze(['carne_pollo','carne_pavo','carne_cerdo','carne_ternera','carne_conejo','carne_cordero']);
+    const FISH_LABELS = Object.freeze({ trucha:'Trucha', caella:'Caella', bacalao:'Bacalao', merluza:'Merluza', calamares:'Calamares', bacaladilla:'Bacaladilla', panga:'Panga', atun:'Atún', perca:'Perca', chicharro:'Chicharro', cabracho:'Cabracho', tintorera:'Tintorera' });
+    const MEAT_LABELS = Object.freeze({ carne_pollo:'Pollo', carne_pavo:'Pavo', carne_cerdo:'Cerdo', carne_ternera:'Ternera', carne_conejo:'Conejo', carne_cordero:'Cordero' });
 
     const DEFAULT_RULES = Object.freeze({
         version: VERSION,
@@ -33,6 +35,8 @@
         ajusteCompraPorcentaje: 80,
         especiesPescadoPermitidas: Object.freeze([...FISH_SPECIES]),
         animalesCarnePermitidos: Object.freeze([...MEAT_ANIMALS]),
+        especiesPescadoPersonalizadas: Object.freeze([]),
+        animalesCarnePersonalizados: Object.freeze([]),
         prioridadStock: 'alta',
         permitirPrecocinados: true,
         permitirPlatosElaboradosSinStock: false,
@@ -50,6 +54,43 @@
     function normalizeList(value) {
         if (Array.isArray(value)) return [...new Set(value.map(v => String(v ?? '').trim()).filter(Boolean))];
         return String(value ?? '').split(/[,\n;]/).map(v => v.trim()).filter(Boolean).filter((v, i, a) => a.indexOf(v) === i);
+    }
+
+
+    function normalizeCustomCatalog(value, prefix) {
+        const source = Array.isArray(value) ? value : [];
+        const seen = new Set();
+        return source.map(item => {
+            if (typeof item === 'string') return { id: String(item).trim(), label: String(item).trim() };
+            return { id: String(item?.id ?? '').trim(), label: String(item?.label ?? '').trim() };
+        }).map(item => {
+            const label = item.label.replace(/\s+/g, ' ').trim();
+            const id = item.id || `${prefix}_${label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')}`;
+            return { id, label };
+        }).filter(item => item.id && item.label).filter(item => {
+            if (seen.has(item.id.toLowerCase())) return false;
+            seen.add(item.id.toLowerCase());
+            return true;
+        });
+    }
+
+    function getProteinCatalog(value = {}) {
+        const profile = normalize(value);
+        return {
+            fish: [
+                ...FISH_SPECIES.map(id => ({ id, label: FISH_LABELS[id] || id })),
+                ...profile.especiesPescadoPersonalizadas
+            ],
+            meat: [
+                ...MEAT_ANIMALS.map(id => ({ id, label: MEAT_LABELS[id] || id })),
+                ...profile.animalesCarnePersonalizados
+            ]
+        };
+    }
+
+    function getProteinLabel(type, id, value = {}) {
+        const catalog = getProteinCatalog(value)[type === 'Pescado' ? 'fish' : 'meat'];
+        return catalog.find(item => item.id === id)?.label || id;
     }
 
     function normalize(value = {}) {
@@ -70,14 +111,18 @@
             segundosCarne: source.segundosCarne,
             segundosPescado: source.segundosPescado
         } : {};
-        const rawFish = normalizeList(source.especiesPescadoPermitidas).map(v => v.toLowerCase()).filter(v => FISH_SPECIES.includes(v));
-        const rawAnimals = normalizeList(source.animalesCarnePermitidos).map(v => v.toLowerCase()).filter(v => MEAT_ANIMALS.includes(v));
+        const customFish = normalizeCustomCatalog(source.especiesPescadoPersonalizadas, 'custom_pescado');
+        const customMeat = normalizeCustomCatalog(source.animalesCarnePersonalizados, 'custom_carne');
+        const validFishIds = new Set([...FISH_SPECIES, ...customFish.map(item => item.id)]);
+        const validMeatIds = new Set([...MEAT_ANIMALS, ...customMeat.map(item => item.id)]);
+        const rawFish = normalizeList(source.especiesPescadoPermitidas).map(v => v.toLowerCase()).filter(v => validFishIds.has(v));
+        const rawAnimals = normalizeList(source.animalesCarnePermitidos).map(v => v.toLowerCase()).filter(v => validMeatIds.has(v));
         const previousFish = ['trucha','caella','bacalao','merluza','calamares','bacaladilla','panga','atun','perca','chicharro'];
         if (source.version === 2 && previousFish.every(v => rawFish.includes(v))) {
             ['cabracho','tintorera'].forEach(v => { if (!rawFish.includes(v)) rawFish.push(v); });
         }
-        const fish = isLegacyProfile && rawFish.length === 0 ? [...FISH_SPECIES] : rawFish;
-        const animals = isLegacyProfile && rawAnimals.length === 0 ? [...MEAT_ANIMALS] : rawAnimals;
+        const fish = isLegacyProfile && rawFish.length === 0 ? [...FISH_SPECIES, ...customFish.map(item => item.id)] : rawFish;
+        const animals = isLegacyProfile && rawAnimals.length === 0 ? [...MEAT_ANIMALS, ...customMeat.map(item => item.id)] : rawAnimals;
 
         let prioridadStock = String(source.prioridadStock || '').toLowerCase();
         if (!['alta', 'normal', 'ninguna'].includes(prioridadStock)) {
@@ -119,6 +164,8 @@
             ajusteCompraPorcentaje: clampInt(source.ajusteCompraPorcentaje, 1, 150, DEFAULT_RULES.ajusteCompraPorcentaje),
             especiesPescadoPermitidas: fish,
             animalesCarnePermitidos: animals,
+            especiesPescadoPersonalizadas: customFish,
+            animalesCarnePersonalizados: customMeat,
             prioridadStock,
             permitirPrecocinados: source.permitirPrecocinados !== false,
             permitirPlatosElaboradosSinStock: source.permitirPlatosElaboradosSinStock === true,
@@ -143,7 +190,7 @@
     }
 
     window.GastroOSKitchenRules = Object.freeze({
-        VERSION, DEFAULT_RULES, DAYS, FISH_SPECIES, MEAT_ANIMALS,
-        normalize, getGuisoDays, normalizeDishName, isFishAllowed, isMeatAnimalAllowed
+        VERSION, DEFAULT_RULES, DAYS, FISH_SPECIES, MEAT_ANIMALS, FISH_LABELS, MEAT_LABELS,
+        normalize, getGuisoDays, normalizeDishName, isFishAllowed, isMeatAnimalAllowed, getProteinCatalog, getProteinLabel
     });
 })();

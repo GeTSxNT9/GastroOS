@@ -48,6 +48,60 @@
             carne_pollo: "Pollo", carne_pavo: "Pavo", carne_cerdo: "Cerdo",
             carne_ternera: "Ternera", carne_conejo: "Conejo", carne_cordero: "Cordero"
         };
+
+        function getProteinCatalog(type) {
+            const catalog = window.GastroOSKitchenRules.getProteinCatalog(getKitchenProfile());
+            return type === 'fish' ? catalog.fish : catalog.meat;
+        }
+
+        function getProteinLabel(type, id) {
+            return window.GastroOSKitchenRules.getProteinLabel(type === 'fish' ? 'Pescado' : 'Carne', id, getKitchenProfile());
+        }
+
+        function renderProteinFormOptions(selectedMeat = '', selectedFish = '') {
+            const meatSelect = document.getElementById('dishSpecies');
+            const fishSelect = document.getElementById('dishFishSpecies');
+            if (meatSelect) meatSelect.innerHTML = '<option value="">Seleccionar...</option>' + getProteinCatalog('meat').map(item => `<option value="${escapeHtml(item.id)}" ${item.id === selectedMeat ? 'selected' : ''}>${escapeHtml(item.label)}</option>`).join('');
+            if (fishSelect) fishSelect.innerHTML = '<option value="">Seleccionar...</option>' + getProteinCatalog('fish').map(item => `<option value="${escapeHtml(item.id)}" ${item.id === selectedFish ? 'selected' : ''}>${escapeHtml(item.label)}</option>`).join('');
+        }
+
+        function renderProteinCatalogSettings() {
+            const profile = getKitchenProfile();
+            const meatContainer = document.getElementById('kitchenMeatCatalog');
+            const fishContainer = document.getElementById('kitchenFishCatalog');
+            if (meatContainer) {
+                meatContainer.innerHTML = getProteinCatalog('meat').map(item => `<label title="${escapeHtml(item.label)}"><input type="checkbox" class="kitchen-meat-animal" value="${escapeHtml(item.id)}" ${profile.animalesCarnePermitidos.includes(item.id) ? 'checked' : ''}> ${escapeHtml(item.label)}${item.id.startsWith('custom_') ? ' <span class="text-[10px] text-gray-400">· añadida</span>' : ''}</label>`).join('');
+            }
+            if (fishContainer) {
+                fishContainer.innerHTML = getProteinCatalog('fish').map(item => `<label title="${escapeHtml(item.label)}"><input type="checkbox" class="kitchen-fish-species" value="${escapeHtml(item.id)}" ${profile.especiesPescadoPermitidas.includes(item.id) ? 'checked' : ''}> ${escapeHtml(item.label)}${item.id.startsWith('custom_') ? ' <span class="text-[10px] text-gray-400">· añadida</span>' : ''}</label>`).join('');
+            }
+        }
+
+        function addCustomProtein(type) {
+            const inputId = type === 'fish' ? 'newKitchenFish' : 'newKitchenMeat';
+            const input = document.getElementById(inputId);
+            const label = String(input?.value || '').replace(/\s+/g, ' ').trim();
+            if (!label) return;
+            const profile = getKitchenProfile();
+            const catalogKey = type === 'fish' ? 'especiesPescadoPersonalizadas' : 'animalesCarnePersonalizados';
+            const allowedKey = type === 'fish' ? 'especiesPescadoPermitidas' : 'animalesCarnePermitidos';
+            const existing = window.GastroOSKitchenRules.getProteinCatalog(profile).find(item => item.label.toLowerCase() === label.toLowerCase());
+            if (existing) {
+                alert(`“${label}” ya está registrada.`);
+                return;
+            }
+            const base = type === 'fish' ? 'custom_pescado' : 'custom_carne';
+            let id = `${base}_${label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')}`;
+            const used = new Set(window.GastroOSKitchenRules.getProteinCatalog(profile).map(item => item.id));
+            let n = 2; const original = id; while (used.has(id)) id = `${original}_${n++}`;
+            const next = window.GastroOSKitchenRules.normalize({ ...profile, [catalogKey]: [...(profile[catalogKey] || []), { id, label }], [allowedKey]: [...new Set([...(profile[allowedKey] || []), id])] });
+            settings.kitchenProfile = next;
+            saveAll();
+            if (input) input.value = '';
+            renderKitchenRules();
+            renderProteinFormOptions();
+            alert(`${label} se ha añadido y queda permitido para el generador.`);
+        }
         const FIRST_LABELS = {
             legumbres: "Cuchara · Legumbres", guisos: "Cuchara · Guisos",
             sopas_o_caldos: "Cuchara · Sopas o caldos", cremas: "Verdura · Crema",
@@ -235,15 +289,20 @@
         }
 
         function normalizeFishSpecies(value) {
-            const v = String(value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            const match = FISH_SPECIES.find(x => v.includes(x));
-            return match || "";
+            const raw = String(value || '').trim();
+            const v = raw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const catalog = getProteinCatalog('fish');
+            const match = catalog.find(item => v === String(item.id).toLowerCase() || v === item.label.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") || v.includes(String(item.id).toLowerCase()));
+            if (match) return match.id;
+            if (!raw) return '';
+            const slug = v.replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+            return slug ? `custom_pescado_${slug}` : '';
         }
 
         function hasCompleteTechnicalTags(d) {
             if (!d || !d.categoria) return false;
             if (d.categoria === "Primero") return !!d.subtipo_primero;
-            if (d.proteina_segundo === "Carne") return MEAT_ANIMALS.includes(d.animal_carne) && ["tecnica_guiso", "tecnica_seco_asado", "tecnica_frito_rebozado"].includes(d.tecnica_cocina);
+            if (d.proteina_segundo === "Carne") return getProteinCatalog('meat').some(item => item.id === d.animal_carne) && ["tecnica_guiso", "tecnica_seco_asado", "tecnica_frito_rebozado"].includes(d.tecnica_cocina);
             if (d.proteina_segundo === "Pescado") return !!d.especie_pescado;
             return false;
         }
@@ -410,8 +469,7 @@
             if (vegetableRule) vegetableRule.checked = profile.evitarVerduraRepetida;
             if (presentationRule) presentationRule.checked = profile.evitarPresentacionSegundoRepetida;
             document.querySelectorAll('.kitchen-guiso-day').forEach(cb => { cb.checked = profile.guisoDays.includes(Number(cb.dataset.dayIndex)); });
-            document.querySelectorAll('.kitchen-fish-species').forEach(cb => { cb.checked = profile.especiesPescadoPermitidas.includes(cb.value); });
-            document.querySelectorAll('.kitchen-meat-animal').forEach(cb => { cb.checked = profile.animalesCarnePermitidos.includes(cb.value); });
+            renderProteinCatalogSettings();
         }
 
         function saveKitchenRules() {
@@ -455,6 +513,8 @@
                 ajusteCompraPorcentaje: document.getElementById('kitchenPurchaseAdjustPercent')?.value,
                 especiesPescadoPermitidas: selectedFish,
                 animalesCarnePermitidos: selectedAnimals,
+                especiesPescadoPersonalizadas: getKitchenProfile().especiesPescadoPersonalizadas,
+                animalesCarnePersonalizados: getKitchenProfile().animalesCarnePersonalizados,
                 permitirPrecocinados: document.getElementById('kitchenAllowPrecooked')?.checked,
                 permitirPlatosElaboradosSinStock: document.getElementById('kitchenAllowPreparedWithoutStock')?.checked,
                 prioridadStock: document.getElementById('kitchenStockPriority')?.value,
@@ -703,6 +763,7 @@
 
             saveAll();
             setupEventListeners();
+            renderProteinFormOptions();
             updateFormVisibility();
             renderDishes();
             renderStockView();
@@ -780,6 +841,10 @@
             });
             document.getElementById('btnQuickAddRecipe')?.addEventListener('click', () => switchView('view-form'));
             document.getElementById('btnSaveKitchenRules')?.addEventListener('click', saveKitchenRules);
+            document.getElementById('btnAddKitchenFish')?.addEventListener('click', () => addCustomProtein('fish'));
+            document.getElementById('btnAddKitchenMeat')?.addEventListener('click', () => addCustomProtein('meat'));
+            document.getElementById('newKitchenFish')?.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addCustomProtein('fish'); } });
+            document.getElementById('newKitchenMeat')?.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addCustomProtein('meat'); } });
             document.getElementById('settingsComensales')?.addEventListener('input', () => updateCalculatedRaciones(false));
             document.getElementById('settingsMargenSeguridad')?.addEventListener('input', () => updateCalculatedRaciones(false));
             document.getElementById('btnOpenProductAllergens')?.addEventListener('click', openProductAllergenManager);
@@ -1793,7 +1858,7 @@
             let fishSpecies = "";
             if (isPescado) {
                 fishSpecies = document.getElementById('dishFishSpecies').value;
-                if (!fishSpecies || !FISH_SPECIES.includes(fishSpecies)) {
+                if (!fishSpecies || !getProteinCatalog('fish').some(item => item.id === fishSpecies)) {
                     alert("El pescado debe tener registrada la especie exacta.");
                     return;
                 }
@@ -1896,8 +1961,7 @@
                 document.getElementById('dishProtein').value = d.proteina_segundo || "Carne";
                 document.getElementById('dishSpecies').value = d.animal_carne || "";
                 const fish = d.especie_pescado || "";
-                const known = FISH_SPECIES.includes(fish);
-                document.getElementById('dishFishSpecies').value = known ? fish : "";
+                renderProteinFormOptions(d.animal_carne || '', fish);
                 document.getElementById('dishTechnique').value = d.tecnica_cocina || "";
             }
 
@@ -2060,7 +2124,7 @@
                             <div class="grid grid-cols-2 gap-2 mb-2">
                                 <select id="mig-animal-${escapeHtml(d.id)}" class="p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
                                     <option value="">Animal...</option>
-                                    ${MEAT_ANIMALS.map(a => `<option value="${a}" ${d.animal_carne===a?'selected':''}>${MEAT_LABELS[a]}</option>`).join("")}
+                                    ${getProteinCatalog('meat').map(a => `<option value="${escapeHtml(a.id)}" ${d.animal_carne===a.id?'selected':''}>${escapeHtml(a.label)}</option>`).join("")}
                                 </select>
                                 <select id="mig-tech-${escapeHtml(d.id)}" class="p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
                                     <option value="">Técnica...</option>
@@ -2072,7 +2136,7 @@
                         ${fish ? `
                             <select id="mig-fish-${escapeHtml(d.id)}" class="w-full p-2 mb-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
                                 <option value="">Seleccionar…</option>
-                                ${FISH_SPECIES.map(a => `<option value="${a}" ${d.especie_pescado===a?'selected':''}>${FISH_LABELS[a]}</option>`).join("")}
+                                ${getProteinCatalog('fish').map(a => `<option value="${escapeHtml(a.id)}" ${d.especie_pescado===a.id?'selected':''}>${escapeHtml(a.label)}</option>`).join("")}
                             </select>` : ''}
                         <button onclick="saveMigrationTag(decodeURIComponent('${escapeJsArg(d.id)}'))" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold">Guardar etiqueta</button>
                     </div>`;
@@ -2099,7 +2163,7 @@
                 nd.tecnica = technique;
             } else if (nd.proteina_segundo === "Pescado") {
                 const species = document.getElementById(`mig-fish-${id}`)?.value || "";
-                if (!species || !FISH_SPECIES.includes(species)) return alert("Registra la especie exacta.");
+                if (!species || !getProteinCatalog('fish').some(item => item.id === species)) return alert("Registra la especie exacta.");
                 nd.especie_pescado = species;
                 nd.especie_animal = "Pescado";
             }
@@ -3714,7 +3778,7 @@
 
                     meats.forEach(m => {
                         if (m?.animal_carne && previousTwoAnimals.filter(a => a === m.animal_carne).length >= 2) {
-                            errors.push(`${dayName}: ${MEAT_LABELS[m.animal_carne] || m.animal_carne} aparece 3 días consecutivos.`);
+                            errors.push(`${dayName}: ${getProteinLabel('meat', m.animal_carne)} aparece 3 días consecutivos.`);
                         }
                     });
                 }
@@ -3763,8 +3827,8 @@
         function getKitchenRulesSummary() {
             const p = getKitchenProfile();
             const guiso = p.guisoDays.map(i => window.GastroOSKitchenRules.DAYS[i]).join(', ') || 'ningún día';
-            const fish = p.especiesPescadoPermitidas.map(v => FISH_LABELS[v] || v).join(', ') || 'ninguna seleccionada';
-            const meats = p.animalesCarnePermitidos.map(v => MEAT_LABELS[v] || v).join(', ') || 'ninguno seleccionado';
+            const fish = p.especiesPescadoPermitidas.map(v => getProteinLabel('fish', v)).join(', ') || 'ninguna seleccionada';
+            const meats = p.animalesCarnePermitidos.map(v => getProteinLabel('meat', v)).join(', ') || 'ninguno seleccionado';
             return { p, guiso, fish, meats };
         }
 
