@@ -100,11 +100,25 @@
             const profile = getKitchenProfile();
             const meatContainer = document.getElementById('kitchenMeatCatalog');
             const fishContainer = document.getElementById('kitchenFishCatalog');
+            const uniqueCatalog = (items) => {
+                const seenIds = new Set();
+                const seenLabels = new Set();
+                return (Array.isArray(items) ? items : []).filter(item => {
+                    const id = String(item?.id ?? '').trim().toLowerCase();
+                    const label = String(item?.label ?? '').replace(/\\s+/g, ' ').trim().toLowerCase();
+                    if (!id || !label || seenIds.has(id) || seenLabels.has(label)) return false;
+                    seenIds.add(id);
+                    seenLabels.add(label);
+                    return true;
+                });
+            };
+            const meatCatalog = uniqueCatalog(getProteinCatalog('meat'));
+            const fishCatalog = uniqueCatalog(getProteinCatalog('fish'));
             if (meatContainer) {
-                meatContainer.innerHTML = getProteinCatalog('meat').map(item => `<label title="${escapeHtml(item.label)}"><input type="checkbox" class="kitchen-meat-animal" value="${escapeHtml(item.id)}" ${profile.animalesCarnePermitidos.includes(item.id) ? 'checked' : ''}> ${escapeHtml(item.label)}${item.id.startsWith('custom_') ? ' <span class="text-[10px] text-gray-400">· añadida</span>' : ''}</label>`).join('');
+                meatContainer.innerHTML = meatCatalog.map(item => `<label title="${escapeHtml(item.label)}"><input type="checkbox" class="kitchen-meat-animal" value="${escapeHtml(item.id)}" ${profile.animalesCarnePermitidos.includes(item.id) ? 'checked' : ''}> ${escapeHtml(item.label)}${item.id.startsWith('custom_') ? ' <span class="text-[10px] text-gray-400">· añadida</span>' : ''}</label>`).join('');
             }
             if (fishContainer) {
-                fishContainer.innerHTML = getProteinCatalog('fish').map(item => `<label title="${escapeHtml(item.label)}"><input type="checkbox" class="kitchen-fish-species" value="${escapeHtml(item.id)}" ${profile.especiesPescadoPermitidas.includes(item.id) ? 'checked' : ''}> ${escapeHtml(item.label)}${item.id.startsWith('custom_') ? ' <span class="text-[10px] text-gray-400">· añadida</span>' : ''}</label>`).join('');
+                fishContainer.innerHTML = fishCatalog.map(item => `<label title="${escapeHtml(item.label)}"><input type="checkbox" class="kitchen-fish-species" value="${escapeHtml(item.id)}" ${profile.especiesPescadoPermitidas.includes(item.id) ? 'checked' : ''}> ${escapeHtml(item.label)}${item.id.startsWith('custom_') ? ' <span class="text-[10px] text-gray-400">· añadida</span>' : ''}</label>`).join('');
             }
         }
 
@@ -1121,8 +1135,8 @@
                 const demObj = demandMap[d.demanda || "Media"];
                 const missing = !hasCompleteTechnicalTags(d);
                 const missingBadge = missing ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800">Etiquetado pendiente ☓</span>' : '';
-                const precookedBadge = d.precocinado ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Precocinado</span>' : '';
-                const preparedDishBadge = d.plato_elaborado ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Plato elaborado</span>' : '';
+                const precookedBadge = d.precocinado ? '<span class="px-2.5 py-1 rounded-md text-xs font-medium bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Precocinado</span>' : '';
+                const preparedDishBadge = d.plato_elaborado ? '<span class="px-2.5 py-1 rounded-md text-xs font-medium bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Plato elaborado</span>' : '';
 
                 const card = document.createElement('div');
                 card.className = "bg-white/80 p-4 rounded-2xl relative transition-all";
@@ -3700,8 +3714,8 @@
                 list.innerHTML = alternatives.map((alternative, index) => {
                     const primeros = alternative.day.filter(s => s.cat === 'Primero');
                     const segundos = alternative.day.filter(s => s.cat === 'Segundo');
-                    const renderGroup = (label, slots) => `<div class="day-regeneration-group"><b>${label}</b>${slots.map(s => { const status = getMenuDishStatusFlags(s.dish, s); const badges = [status.platoElaborado ? '<span class="menu-status-badge prepared">Plato elaborado</span>' : '', status.precocinado ? '<span class="menu-status-badge precooked">Precocinado</span>' : ''].filter(Boolean).join(''); return `<div class="day-regeneration-dish"><span>${escapeHtml(s.slotLabel)}</span><strong>${escapeHtml(s.dish?.nombre || 'Sin asignar')}${badges ? `<div class="menu-status-badges">${badges}</div>` : ''}</strong></div>`; }).join('')}</div>`;
-                    return `<div class="day-regeneration-option"><div class="day-regeneration-option-head"><div><span class="day-regeneration-option-number">OPCIÓN ${index + 1}</span><span class="day-regeneration-option-note">Cumple todas las normas</span></div><button type="button" class="primary-action day-regeneration-select" onclick="confirmIntelligentDayRegeneration(${index})">ELEGIR</button></div>${renderGroup('PRIMEROS', primeros)}${renderGroup('SEGUNDOS', segundos)}</div>`;
+                    const renderGroup = (label, slots) => `<div class="day-regeneration-group"><div class="day-regeneration-group-label">${label}</div>${slots.map(s => { const status = getMenuDishStatusFlags(s.dish, s); const badges = [status.platoElaborado ? '<span class="menu-status-badge prepared">Plato elaborado</span>' : '', status.precocinado ? '<span class="menu-status-badge precooked">Precocinado</span>' : ''].filter(Boolean).join(''); return `<div class="day-regeneration-dish"><span>${escapeHtml(s.slotLabel)}</span><div class="day-regeneration-dish-content"><strong>${escapeHtml(s.dish?.nombre || 'Sin asignar')}</strong>${badges ? `<div class="menu-status-badges">${badges}</div>` : ''}</div></div>`; }).join('')}</div>`;
+                    return `<div class="day-regeneration-option"><div class="day-regeneration-option-head"><div><span class="day-regeneration-option-number">OPCIÓN ${index + 1}</span><span class="day-regeneration-option-note">Cumple todas las normas</span></div><button type="button" class="primary-action day-regeneration-select" onclick="confirmIntelligentDayRegeneration(${index})">Elegir esta alternativa</button></div>${renderGroup('PRIMEROS', primeros)}${renderGroup('SEGUNDOS', segundos)}</div>`;
                 }).join('');
                 modal._alternatives = alternatives;
             }, 30);
@@ -4029,60 +4043,37 @@
             });
         }
 
-        async function downloadTextFile(text, filename) {
+        function downloadTextFile(text, filename) {
             const content = String(text ?? '');
             if (!content.trim()) {
                 alert('No hay contenido para exportar.');
                 return false;
             }
-
             const safeFilename = String(filename || 'gastroos.txt').replace(/[^a-zA-Z0-9._-]/g, '_');
-            const utf8Content = '\ufeff' + content;
-            const isIOS = typeof navigator !== 'undefined' && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+            const blob = new Blob(['\\ufeff', content], { type: 'text/plain;charset=utf-8' });
+            const objectUrl = URL.createObjectURL(blob);
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-            // iOS/iPadOS: compartir SOLO el archivo. WebKit ha tenido problemas
-            // cuando navigator.share() recibe files junto con title/text; eso puede
-            // provocar que el archivo llegue con nombre pero sin contenido. 
-            // No hacemos un segundo navigator.share(): una segunda llamada consume
-            // la activación del gesto y también puede quedar bloqueada en Safari.
-            if (isIOS && typeof navigator.share === 'function' && typeof File !== 'undefined') {
+            // iOS/WebKit: abrir directamente el Blob de texto en una pestaña.
+            // Así se evita cualquier diálogo/overlay de imagen y el contenido queda
+            // visible para guardar o compartir desde el propio visor del sistema.
+            if (isIOS) {
                 try {
-                    const file = new File([utf8Content], safeFilename, { type: 'text/plain;charset=utf-8' });
-                    const shareData = { files: [file] };
-                    const canShareFile = typeof navigator.canShare !== 'function' || navigator.canShare(shareData);
-                    if (canShareFile) {
-                        const shareResult = navigator.share(shareData);
-                        if (shareResult && typeof shareResult.then === 'function') {
-                            await shareResult;
-                        }
-                        return true;
-                    }
-                } catch (error) {
-                    if (error?.name === 'AbortError') return false;
-                    console.warn('Web Share de archivo no disponible en iOS; se abre el TXT.', error);
-                }
-
-                // Fallback iOS: el Blob contiene el texto real y se abre de forma
-                // directa para que el usuario pueda verlo/guardarlo aunque WebKit
-                // no admita compartir archivos desde la PWA en ese contexto.
-                try {
-                    const blob = new Blob([utf8Content], { type: 'text/plain;charset=utf-8' });
-                    const objectUrl = URL.createObjectURL(blob);
                     const popup = window.open(objectUrl, '_blank');
                     if (popup) {
                         window.setTimeout(() => URL.revokeObjectURL(objectUrl), 30000);
                         return true;
                     }
-                    URL.revokeObjectURL(objectUrl);
                 } catch (error) {
                     console.warn('No se pudo abrir el TXT en iOS.', error);
                 }
+                URL.revokeObjectURL(objectUrl);
+                return false;
             }
 
-            // Escritorio/Android: descarga estándar mediante Blob.
+            // Escritorio/Android: descarga estándar mediante Blob + enlace temporal.
             try {
-                const blob = new Blob([utf8Content], { type: 'text/plain;charset=utf-8' });
-                const objectUrl = URL.createObjectURL(blob);
                 const anchor = document.createElement('a');
                 anchor.href = objectUrl;
                 anchor.download = safeFilename;
@@ -4090,31 +4081,22 @@
                 anchor.style.display = 'none';
                 document.body.appendChild(anchor);
                 anchor.click();
-                window.setTimeout(() => {
-                    anchor.remove();
-                    URL.revokeObjectURL(objectUrl);
-                }, 1500);
+                anchor.remove();
+                window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
                 return true;
             } catch (error) {
-                console.warn('La descarga Blob ha fallado; se intenta abrir el TXT.', error);
-            }
-
-            // Fallback universal: abre el contenido real del TXT, no solo el nombre.
-            try {
-                const blob = new Blob([utf8Content], { type: 'text/plain;charset=utf-8' });
-                const objectUrl = URL.createObjectURL(blob);
-                const popup = window.open(objectUrl, '_blank');
-                if (popup) {
-                    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 30000);
-                    return true;
-                }
+                console.warn('No se pudo descargar el TXT mediante Blob.', error);
+                try {
+                    const popup = window.open(objectUrl, '_blank');
+                    if (popup) {
+                        window.setTimeout(() => URL.revokeObjectURL(objectUrl), 30000);
+                        return true;
+                    }
+                } catch (_) {}
                 URL.revokeObjectURL(objectUrl);
-            } catch (error) {
-                console.warn('No se pudo abrir la vista alternativa de exportación.', error);
+                alert('No se ha podido preparar el archivo para exportar.');
+                return false;
             }
-
-            alert('No se ha podido preparar el archivo para exportar.');
-            return false;
         }
 
         function downloadWeeklyMenuTxt() {
