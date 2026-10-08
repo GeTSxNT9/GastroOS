@@ -846,7 +846,11 @@
     "tecnica_cocina": "",
     "tecnica": "",
     "precocinado": false,
+    "plato_elaborado": false,
     "demanda": "Media",
+    "alergenosManuales": [
+      "moluscos"
+    ],
     "alergenos": [
       "moluscos"
     ],
@@ -870,7 +874,7 @@
         "categoria_proveedor": "Congelados"
       },
       {
-        "nombre": "Pimiento verde picada",
+        "nombre": "Pimiento verde picado",
         "cantidad": "",
         "unidad": "g",
         "categoria_proveedor": "Congelados"
@@ -887,10 +891,6 @@
         "unidad": "",
         "categoria_proveedor": "Secos"
       }
-    ],
-    "plato_elaborado": false,
-    "alergenosManuales": [
-      "moluscos"
     ]
   },
   {
