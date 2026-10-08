@@ -1,6 +1,6 @@
 # 📖 GastroOS
 
-**A client-side Progressive Web App for recipe management, menu planning, stock control, and production workflows.**
+**A client-side Progressive Web App for recipe management, menu planning, stock control, shopping, and day-to-day kitchen rules.**
 
 <p align="center">
   <img src="https://img.shields.io/badge/Architecture-PWA-000000?style=flat-square" alt="Architecture">
@@ -12,11 +12,11 @@
 
 ## 🧭 Overview
 
-GastroOS is a lightweight, backend-free application designed to centralize kitchen operations in a single interface.
+GastroOS is a lightweight, backend-free application designed for **one concrete self-service kitchen/autoservice**. It centralizes recipes, menu planning, stock, shopping, production references, kitchen rules, backups, diagnostics, and optional GitHub recipe synchronization.
 
-**Recipes · Menu Planning · Prepared Dishes · Stock · Shopping · History · Backups · Diagnostics · GitHub Sync**
+**Recipes · Weekly Menu · Stock · Shopping · Kitchen Rules · Allergens · History · Backups · Diagnostics · GitHub Sync**
 
-The application runs primarily in the browser, with **local persistence, PWA installation, offline caching, and optional GitHub synchronization**.
+The application runs primarily in the browser, with **local persistence, PWA installation, offline caching, and optional GitHub synchronization**. There is no user-management or multi-tenant layer.
 
 ---
 
@@ -25,58 +25,82 @@ The application runs primarily in the browser, with **local persistence, PWA ins
 ### 📚 Recipe Management
 
 - Create, edit, delete, filter, and bulk-edit recipes.
-- Manage ingredients, quantities, units, allergens, classifications, and cooking techniques.
-- Classify recipes as **Precocinado** and/or **Plato elaborado**.
-- Run data diagnostics and maintain local recipe history.
+- Manage ingredients, quantities, units, supplier categories, allergens, classifications, demand, and cooking techniques.
+- Classify recipes as **Precooked** and/or **Prepared Dish**.
+- Product-level allergen mapping can be maintained separately; mapped allergens are automatically applied to recipes that use those products.
+- Run recipe diagnostics and maintain local recipe history.
 
 ### 📅 Menu Planning
 
-A **constraint-based engine** generates and validates Monday–Friday menus.
+A **constraint-based engine** generates and validates Monday–Friday menus with the fixed self-service structure:
 
-**Recipes → Eligible Candidates → Constraints → Validation → Weekly Menu**
+1. Vegetable first
+2. Spoon first
+3. Starch first
+4. Meat
+5. Meat
+6. Fish
 
-It supports randomized generation, menu rotation, day regeneration, manual replacements, prepared-dish assignments, and repetition control.
+The engine supports randomized generation, day regeneration, manual dish replacement, prepared-dish assignments, stock awareness, fish/meat allow-lists, guiso days, repetition control, and weekly family limits.
 
-**Current engine:** `menu-rules-v10-constraint-retry`
+**Current engine:** `menu-rules-v11-stock-prepared-guiso-rations`
 
 ### 🍽️ Prepared Dishes
 
 Prepared dishes can be managed independently through stock and incorporated into compatible menu slots.
 
-**Plato elaborado → Prepared Stock → Assignment → Menu Validation**
+**Prepared Dish → Prepared Stock → Assignment → Menu Validation**
 
 ### 🛒 Stock & Shopping
 
 Separate management of **raw ingredients** and **prepared dishes**, including:
 
 - Automatic shopping-list generation.
-- Ingredient aggregation.
-- Supplier and category organization.
+- Ingredient aggregation by supplier category.
+- Clear **Required / Stock / Buy** columns.
 - Stock deduction and availability.
 - Demand-based quantity calculations.
+- Purchase adjustment percentage.
 - Prepared-dish planning assignments.
+
+### 🧮 Kitchen Rules & Forecast
+
+The local kitchen profile controls how the generator should behave without introducing users or roles. It includes:
+
+- Guiso days.
+- Allowed meat animals and fish species.
+- Weekly limits for fried/reboiled dishes, creams, pasta, legumes, rice, whole vegetables, and soups/broths.
+- Stock priority and prepared-food availability.
+- Menu variety rules.
+- Estimated diners and safety margin for reference portions and shopping calculations.
+
+### 🧾 Allergens by Product
+
+Allergens can be assigned once per ingredient/product from a dedicated management window. GastroOS combines those product allergens with recipe-level allergens so the information follows the ingredient into the recipe automatically.
 
 ### 💾 Persistence & Backup
 
 Browser `localStorage` provides local persistence and supports:
 
-- JSON export and import.
+- Full JSON export/import.
+- Recipe-only export.
 - Automatic backups.
 - Restore and recovery.
 - Saved menu history.
+- Product allergen mappings.
 
 ### ☁️ GitHub Integration
 
 Optional synchronization of the recipe collection with a configured GitHub repository.
 
-Supports repository configuration, recipe upload/download, and synchronization status.
+Supports repository configuration, recipe upload/download, bulk recipe synchronization, and synchronization status.
 
 ### 📡 PWA & Offline
 
 - Installable Progressive Web App.
-- Service Worker caching.
-- Offline fallback for cached application resources.
-- No dedicated backend required.
+- Versioned Service Worker caching.
+- Network-first updates with offline fallback for cached resources.
+- No dedicated backend required for the core application.
 
 ---
 
@@ -90,6 +114,14 @@ GastroOS/
 ├── recipes.json
 ├── manifest.json
 ├── sw.js
+├── css/
+│   └── gastroos.css
+├── js/
+│   ├── gastroos.js
+│   ├── kitchen-rules.js
+│   ├── menu-engine-facade.js
+│   ├── github-facade.js
+│   └── data-store-facade.js
 ├── favicon-32.png
 ├── apple-touch-icon.png
 ├── icon-192.png
@@ -99,13 +131,17 @@ GastroOS/
 
 **Stack:** HTML5 · CSS · JavaScript · PWA · Web Storage · GitHub API
 
+The application deliberately keeps the generator logic in the main client runtime while using small facades for storage, GitHub, and engine integration.
+
 ---
 
 ## 🎨 Design
 
 GastroOS follows a restrained, Apple-inspired design focused on:
 
-**Clarity · Information Density · Consistency · Responsiveness · Minimal Visual Clutter**
+**Clarity · Information Hierarchy · Consistency · Responsiveness · Minimal Visual Clutter**
+
+The interface keeps advanced configuration inside accordions and prioritizes the information needed for the current task.
 
 ---
 
@@ -133,4 +169,4 @@ Because authentication is client-side, credentials stored in `localStorage` are 
 
 GastroOS aims to automate repetitive weekly kitchen planning **without hiding the logic behind it**.
 
-It combines structured recipes, constraint-based planning, stock awareness, production calculations, and local persistence while keeping final decisions under user control.
+It combines structured recipes, configurable kitchen rules, stock awareness, production calculations, allergen mapping, and local persistence while keeping final decisions under user control.

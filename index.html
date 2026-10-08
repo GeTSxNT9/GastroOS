@@ -20,6 +20,7 @@
         <link rel="stylesheet" href="css/gastroos.css">
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
+    <div id="appSplash" class="app-splash" aria-hidden="true"><div class="app-splash-mark">G</div><div class="app-splash-name">GastroOS</div></div>
 
     <!-- CABECERA PRINCIPAL -->
     <header class="sticky top-0 z-40 flex-shrink-0 flex items-center justify-between px-4">
@@ -180,7 +181,7 @@
                         <option value="panga">Panga</option>
                         <option value="atun">Atún</option>
                         <option value="perca">Perca</option>
-                        <option value="chicharro">Chicharro</option>
+                        <option value="chicharro">Chicharro</option><option value="cabracho">Cabracho</option><option value="tintorera">Tintorera</option>
                     </select>
 
                 </div>
@@ -297,27 +298,6 @@
         <!-- VISTA 3: STOCK Y PREVISIÓN -->
         <main id="view-stock" class="p-4 hidden space-y-5">
             <section class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
-                <div class="flex items-center gap-2 mb-3">
-                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    <h2 class="text-base font-bold text-gray-800 dark:text-gray-100">PREVISIÓN DE COMENSALES</h2>
-                </div>
-                <div class="grid grid-cols-1 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Comensales Estimados</label>
-                        <input type="number" id="inputComensales" min="1" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/50 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900">
-                        <span class="text-xs font-bold text-indigo-900 dark:text-indigo-300">Margen de seguridad (+30%)</span>
-                        <input type="checkbox" id="checkMargen" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
-                    </div>
-                    <div class="bg-gray-900 dark:bg-gray-950 text-white p-3.5 rounded-lg text-center shadow-inner border border-gray-800">
-                        <div class="text-2xl font-black text-amber-400" id="totalRacionesDisplay">130 raciones</div>
-                        <div class="text-[11px] text-gray-300 dark:text-gray-400 font-medium" id="totalRacionesSubtext">100 base + 30% margen</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <div class="flex justify-between items-center mb-3">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
@@ -398,7 +378,6 @@
 
             <div id="subtab-menu-content" class="space-y-4">
                 <div class="bg-indigo-900 dark:bg-indigo-950 text-white p-4 rounded-xl shadow-lg border border-indigo-800 dark:border-indigo-900 text-center">
-                    <p class="gastro-generator-kitchen-name" id="generatorKitchenName">Autoservicio</p>
                     <h2 class="gastro-generator-title">GENERADOR SEMANAL</h2>
                     <p class="gastro-generator-description text-[11px] text-indigo-200 mb-3">Crea una propuesta equilibrada según las normas de esta cocina, el stock disponible y la variedad del menú.</p>
                     <div class="flex flex-col gap-2">
@@ -410,7 +389,7 @@
                                 <span>💾</span> Historial
                             </button>
                             <button id="btnDownloadMenuTxt" class="flex-1 bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-1 border border-indigo-600 shadow-sm">
-                                <span>📋</span> Exportar .txt
+                                <span>📋</span> Exportar
                             </button>
                         </div>
                     </div>
@@ -478,11 +457,33 @@
                 </div>
 
                 <div class="settings-metric-grid">
-                    <div><label class="field-label" for="kitchenMaxFritos">Máx. fritos / rebozados</label><div class="input-suffix"><input id="kitchenMaxFritos" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
+                    <div><label class="field-label" for="kitchenMaxFritos">Máx. días de fritos / rebozados</label><div class="input-suffix"><input id="kitchenMaxFritos" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
                     <div><label class="field-label" for="kitchenMaxCreams">Máx. días de crema</label><div class="input-suffix"><input id="kitchenMaxCreams" type="number" min="0" max="10" class="settings-input"><span>/sem</span></div></div>
-                    <div><label class="field-label" for="kitchenMarginPercent">Margen de raciones</label><div class="input-suffix"><input id="kitchenMarginPercent" type="number" min="0" max="100" class="settings-input"><span>%</span></div></div>
                     <div><label class="field-label" for="kitchenPurchaseAdjustPercent">Ajuste de compra</label><div class="input-suffix"><input id="kitchenPurchaseAdjustPercent" type="number" min="1" max="150" class="settings-input"><span>%</span></div></div>
                 </div>
+
+                <div class="settings-forecast-card">
+                    <div class="settings-section-kicker">PREVISIÓN DE COMENSALES</div>
+                    <div class="settings-forecast-grid">
+                        <div><label class="field-label" for="settingsComensales">Comensales estimados</label><input id="settingsComensales" type="number" min="1" max="5000" class="settings-input" placeholder="100"></div>
+                        <div><label class="field-label" for="settingsMargenSeguridad">Margen de seguridad</label><div class="input-suffix"><input id="settingsMargenSeguridad" type="number" min="0" max="100" class="settings-input"><span>%</span></div></div>
+                    </div>
+                    <p class="setting-help">Estas cifras determinan las raciones de referencia para el menú y la lista de compra.</p>
+                </div>
+
+                <details class="settings-accordion">
+                    <summary><span><b>LÍMITES SEMANALES</b><small>Controla cuántos días puede aparecer cada familia de primeros.</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <div class="settings-accordion-body">
+                        <div class="weekly-limit-grid">
+                            <div><label class="field-label" for="kitchenMaxPasta">Pasta</label><div class="input-suffix"><input id="kitchenMaxPasta" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
+                            <div><label class="field-label" for="kitchenMaxLegumes">Legumbres</label><div class="input-suffix"><input id="kitchenMaxLegumes" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
+                            <div><label class="field-label" for="kitchenMaxRice">Arroz</label><div class="input-suffix"><input id="kitchenMaxRice" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
+                            <div><label class="field-label" for="kitchenMaxVegetableWhole">Verdura entera</label><div class="input-suffix"><input id="kitchenMaxVegetableWhole" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
+                            <div><label class="field-label" for="kitchenMaxSoups">Sopas y caldos</label><div class="input-suffix"><input id="kitchenMaxSoups" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
+                        </div>
+                        <p class="setting-help">El primer plato de verdura sigue siendo obligatorio cada día. El límite de «Verdura entera» se aplica a esa familia concreta, no al conjunto de verduras.</p>
+                    </div>
+                </details>
 
                 <details class="settings-accordion">
                     <summary><span><b>PROTEÍNAS PERMITIDAS</b><small>Marca las carnes y pescados que utiliza esta cocina.</small></span><span class="accordion-chevron">⌄</span></summary>
@@ -498,7 +499,7 @@
                             <p class="setting-group-title">PESCADOS PERMITIDOS</p>
                             <p class="setting-help">Solo se generarán platos con los pescados marcados.</p>
                             <div class="compact-check-grid">
-                                <label><input type="checkbox" class="kitchen-fish-species" value="trucha"> Trucha</label><label><input type="checkbox" class="kitchen-fish-species" value="caella"> Caella</label><label><input type="checkbox" class="kitchen-fish-species" value="bacalao"> Bacalao</label><label><input type="checkbox" class="kitchen-fish-species" value="merluza"> Merluza</label><label><input type="checkbox" class="kitchen-fish-species" value="calamares"> Calamares</label><label><input type="checkbox" class="kitchen-fish-species" value="bacaladilla"> Bacaladilla</label><label><input type="checkbox" class="kitchen-fish-species" value="panga"> Panga</label><label><input type="checkbox" class="kitchen-fish-species" value="atun"> Atún</label><label><input type="checkbox" class="kitchen-fish-species" value="perca"> Perca</label><label><input type="checkbox" class="kitchen-fish-species" value="chicharro"> Chicharro</label>
+                                <label><input type="checkbox" class="kitchen-fish-species" value="trucha"> Trucha</label><label><input type="checkbox" class="kitchen-fish-species" value="caella"> Caella</label><label><input type="checkbox" class="kitchen-fish-species" value="bacalao"> Bacalao</label><label><input type="checkbox" class="kitchen-fish-species" value="merluza"> Merluza</label><label><input type="checkbox" class="kitchen-fish-species" value="calamares"> Calamares</label><label><input type="checkbox" class="kitchen-fish-species" value="bacaladilla"> Bacaladilla</label><label><input type="checkbox" class="kitchen-fish-species" value="panga"> Panga</label><label><input type="checkbox" class="kitchen-fish-species" value="atun"> Atún</label><label><input type="checkbox" class="kitchen-fish-species" value="perca"> Perca</label><label><input type="checkbox" class="kitchen-fish-species" value="chicharro"> Chicharro</label><label><input type="checkbox" class="kitchen-fish-species" value="cabracho"> Cabracho</label><label><input type="checkbox" class="kitchen-fish-species" value="tintorera"> Tintorera</label>
                             </div>
                         </div>
                     </div>
@@ -535,6 +536,15 @@
                     <p id="kitchenRulesStatus" class="save-status" aria-live="polite"></p>
                 </div>
             </section>
+            <section class="settings-card product-allergen-card">
+                <div class="settings-card-heading">
+                    <h3 class="settings-card-title">ALÉRGENOS POR PRODUCTO</h3>
+                    <p class="settings-card-description">Define los alérgenos de cada ingrediente una sola vez. GastroOS los aplicará automáticamente a las recetas que lo utilicen.</p>
+                </div>
+                <button type="button" id="btnOpenProductAllergens" class="primary-action secondary-action">GESTIONAR ALÉRGENOS</button>
+                <p id="productAllergenStatus" class="save-status" aria-live="polite"></p>
+            </section>
+
             <details id="githubSettingsDetails" class="gastro-settings-details bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <summary class="gastro-settings-summary">
                     <div class="flex items-center gap-2 min-w-0">
@@ -645,6 +655,25 @@
         </main>
     </div>
 
+    <!-- MODAL ALÉRGENOS POR PRODUCTO -->
+    <div id="modalProductAllergens" class="hidden fixed inset-0 bg-black/60 z-[80] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-gray-900 w-full max-w-3xl rounded-t-2xl sm:rounded-2xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800">
+            <div class="p-4 bg-indigo-600 dark:bg-indigo-950 text-white flex justify-between items-center">
+                <div><h3 class="font-bold text-sm">ALÉRGENOS POR PRODUCTO</h3><p class="text-[11px] text-indigo-200">Marca los alérgenos de cada producto. Se aplicarán automáticamente a las recetas.</p></div>
+                <button type="button" id="btnCloseProductAllergens" aria-label="Cerrar" class="text-white hover:bg-indigo-700 rounded-lg p-1.5">✕</button>
+            </div>
+            <div class="p-4 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/60 space-y-2">
+                <input type="text" id="productAllergenSearch" placeholder="Buscar producto..." class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-xs bg-white dark:bg-gray-900">
+                <p class="text-[10px] text-gray-500 dark:text-gray-400">Se muestran los ingredientes del recetario y los productos registrados en stock.</p>
+            </div>
+            <div id="productAllergenList" class="p-4 overflow-y-auto space-y-2 flex-1"></div>
+            <div class="p-4 border-t border-gray-200 dark:border-gray-800 flex gap-2">
+                <button type="button" id="btnCancelProductAllergens" class="flex-1 border border-gray-300 dark:border-gray-700 py-2.5 rounded-lg font-bold text-xs">Cancelar</button>
+                <button type="button" id="btnSaveProductAllergens" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold text-xs">GUARDAR ALÉRGENOS</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL PREVISUALIZACIÓN DE IMPORTACIÓN -->
     <div id="modalImportPreview" class="hidden fixed inset-0 bg-black/60 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
         <div class="bg-white dark:bg-gray-900 w-full max-w-lg rounded-t-2xl sm:rounded-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800">
@@ -698,7 +727,7 @@
         </button>
         <button class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400 dark:text-gray-500" data-target="view-stock">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7l8-4 8 4v10l-8 4-8-4V7zm0 0l8 4 8-4M12 11v10"></path></svg>
-            <span class="text-[9px] font-semibold">STOCK/PREV.</span>
+            <span class="text-[9px] font-semibold">STOCK</span>
         </button>
         <button class="nav-btn flex flex-col items-center justify-center w-full h-full text-gray-400 dark:text-gray-500" data-target="view-settings">
             <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
