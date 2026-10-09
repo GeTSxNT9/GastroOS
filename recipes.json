@@ -2677,60 +2677,6 @@
       ]
     },
     {
-      "id": "1790940000004",
-      "nombre": "Migas aragonesas",
-      "categoria": "Primero",
-      "subcategoria_primero": "Tenedor",
-      "subtipo_primero": "otros_hidratos",
-      "proteina_segundo": "",
-      "animal_carne": "",
-      "especie_pescado": "",
-      "especie_animal": "",
-      "tecnica_cocina": "",
-      "tecnica": "",
-      "precocinado": false,
-      "demanda": "Media",
-      "alergenos": [
-        "gluten"
-      ],
-      "ingredientes": [
-        {
-          "nombre": "Pan para migas",
-          "cantidad": 120,
-          "unidad": "g",
-          "categoria_proveedor": "Secos"
-        },
-        {
-          "nombre": "Chorizo",
-          "cantidad": 40,
-          "unidad": "g",
-          "categoria_proveedor": "Carne"
-        },
-        {
-          "nombre": "Bacon",
-          "cantidad": 30,
-          "unidad": "g",
-          "categoria_proveedor": "Carne"
-        },
-        {
-          "nombre": "Ajo",
-          "cantidad": "",
-          "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
-        },
-        {
-          "nombre": "Pimentón dulce",
-          "cantidad": "",
-          "unidad": "",
-          "categoria_proveedor": "Secos"
-        }
-      ],
-      "plato_elaborado": false,
-      "alergenosManuales": [
-        "gluten"
-      ]
-    },
-    {
       "id": "1790940000005",
       "nombre": "Pimientos del piquillo rellenos de bacalao",
       "categoria": "Segundo",
