@@ -2113,13 +2113,17 @@
       "tecnica_cocina": "",
       "tecnica": "",
       "precocinado": false,
+      "plato_elaborado": false,
       "demanda": "Media",
+      "alergenosManuales": [
+        "huevos"
+      ],
       "alergenos": [
         "huevos"
       ],
       "ingredientes": [
         {
-          "nombre": "Arroz",
+          "nombre": "Arroz largo",
           "cantidad": 100,
           "unidad": "g",
           "categoria_proveedor": "Secos"
@@ -2142,10 +2146,6 @@
           "unidad": "g",
           "categoria_proveedor": "Congelados"
         }
-      ],
-      "plato_elaborado": false,
-      "alergenosManuales": [
-        "huevos"
       ]
     },
     {
