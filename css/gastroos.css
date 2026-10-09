@@ -1934,7 +1934,7 @@ html.dark .generator-rules-details {
 .settings-forecast-card { margin-top:14px; padding:14px; border-radius:16px; background:rgba(99,102,241,.055); border:1px solid rgba(99,102,241,.12); }
 .settings-section-kicker { font-size:10px; font-weight:900; letter-spacing:.12em; color:#64748b; margin-bottom:10px; text-align:center; }
 .settings-forecast-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.weekly-limit-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.weekly-limit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .product-allergen-card .primary-action { width:100%; }
 .secondary-action { background:rgba(99,102,241,.08) !important; color:#4338ca !important; border:1px solid rgba(99,102,241,.18) !important; box-shadow:none !important; }
 .product-allergen-row { padding:12px; border:1px solid rgba(148,163,184,.18); border-radius:14px; background:rgba(248,250,252,.72); }
@@ -1945,11 +1945,12 @@ html.dark .generator-rules-details {
 .dark .product-allergen-chip { background:#18181b; border-color:#3f3f46; }
 .product-allergen-chip.is-selected { background:rgba(79,70,229,.1); border-color:rgba(79,70,229,.28); color:#4338ca; }
 .product-allergen-chip input { width:13px; height:13px; }
-.shopping-grid { display:grid; grid-template-columns:minmax(0,1fr) 78px 86px; column-gap:10px; align-items:center; min-width:0; }
+.shopping-grid { display:grid; grid-template-columns:minmax(0,1fr) 78px 68px 86px; column-gap:10px; align-items:center; min-width:0; }
 .shopping-grid-header { padding:0 4px 5px; font-size:9px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; color:#94a3b8; }
 .shopping-grid-header span:not(:first-child), .shopping-number, .shopping-buy { text-align:right; }
 .shopping-grid-row { padding:7px 4px 0; border-top:1px solid rgba(148,163,184,.16); font-size:11px; min-height:31px; }
-.shopping-product-name { min-width:0; overflow-wrap:anywhere; display:flex; align-items:center; gap:8px; }
+.shopping-product-name { display:flex; align-items:center; gap:8px; min-width:0; overflow-wrap:anywhere; }
+.shopping-product-label { display:block; min-width:0; overflow-wrap:anywhere; }
 .shopping-number { color:#64748b; font-size:10px; white-space:nowrap; }
 .shopping-stock { color:#059669; }
 .shopping-buy { font-weight:900; white-space:nowrap; }
@@ -1961,12 +1962,12 @@ html.dark .generator-rules-details {
 .dark .app-splash-mark { background:#f5f5f7; color:#111827; }
 .app-splash-name { font-size:16px; font-weight:800; letter-spacing:.08em; }
 .app-splash-loading { font-size:10px; color:#9ca3af; letter-spacing:.04em; }
-.shopping-manual-stock { display:inline-flex; flex:0 0 auto; align-items:center; justify-content:center; margin:0; cursor:pointer; min-width:28px; min-height:30px; }
-.shopping-manual-stock input { width:20px; height:20px; min-width:20px; accent-color:#4f46e5; cursor:pointer; }
-
+.shopping-manual-stock { display:flex; flex:0 0 24px; align-items:center; justify-content:center; width:24px; height:30px; margin:0; cursor:pointer; }
+.shopping-manual-stock input { appearance:auto; -webkit-appearance:checkbox; width:21px; height:21px; margin:0; accent-color:#4f46e5; cursor:pointer; }
+.shopping-stock.is-manual { font-weight:800; }
 @keyframes gastroMark { from { transform:scale(.82); opacity:0 } to { transform:scale(1); opacity:1 } }
 @keyframes gastroSplash { 0%,68% { opacity:1 } 100% { opacity:0; visibility:hidden } }
-@media (max-width:640px) { .shopping-grid { grid-template-columns:minmax(0,1fr) 65px 72px; column-gap:7px; } .settings-forecast-grid, .weekly-limit-grid { grid-template-columns:1fr 1fr; } .recetario-search-actions { gap:7px !important; } #btnBulkEdit { padding-left:10px !important; padding-right:10px !important; } }
+@media (max-width:640px) { .shopping-grid { grid-template-columns:minmax(0,1fr) 65px 58px 72px; column-gap:7px; } .shopping-product-name { gap:6px; } .shopping-manual-stock { flex-basis:25px; width:25px; height:34px; } .shopping-manual-stock input { width:22px; height:22px; } .settings-forecast-grid, .weekly-limit-grid { grid-template-columns:1fr 1fr; } .recetario-search-actions { gap:7px !important; } #btnBulkEdit { padding-left:10px !important; padding-right:10px !important; } }
 
 /* GastroOS · regeneración inteligente */
 .day-regeneration-loading,.day-regeneration-empty { padding:24px 16px; text-align:center; color:#64748b; font-size:11px; line-height:1.5; }
@@ -2166,11 +2167,3 @@ html.dark .day-regeneration-modal-header p{color:#a1a1aa!important}
 html.dark .day-regeneration-close{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.10)!important;color:#d4d4d8!important}
 html.dark .day-regeneration-option{background:#232326!important;border-color:rgba(255,255,255,.09)!important}.dark .day-regeneration-dish{background:#18181b!important}
 @media(max-width:640px){.protein-catalog-add-row{gap:8px}.protein-catalog-add-row .secondary-action{padding:9px 12px!important}.day-regeneration-modal{padding:12px!important}.day-regeneration-modal-panel{width:100%!important;max-height:82vh;border-radius:16px!important}.day-regeneration-dish{grid-template-columns:82px minmax(0,1fr)}.day-regeneration-select{padding:8px 9px!important;font-size:9px!important}}
-
-/* Ajustes solicitados · lista de compra y configuración compacta */
-.day-choice-grid { margin-top:12px !important; margin-bottom:12px !important; gap:12px !important; }
-.day-choice-grid label { gap:7px !important; padding:5px 2px !important; }
-.ingredient-row { gap:5px !important; }
-.ingredient-row input:first-child { flex:4 1 0% !important; }
-.ingredient-row select:last-of-type { flex:0 0 5rem !important; width:5rem !important; min-width:5rem !important; font-size:10px !important; padding:6px !important; }
-@media (max-width:640px) { .weekly-limit-grid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; gap:7px !important; } .weekly-limit-grid .field-label { font-size:10px !important; } }
