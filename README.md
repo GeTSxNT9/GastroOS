@@ -39,9 +39,9 @@ A **constraint-based engine** generates and validates Monday–Friday menus usin
 
 In the kitchen rules, **“Guiso” means “stew”**: selected stew days must contain exactly one stew among the two meat main courses. The default configuration selects Monday, Wednesday, and Friday; these days can be changed in Settings.
 
-Both groups are configurable from Settings: a kitchen can, for example, offer 2 platos de cuchara + 1 tenedor, or 1 carne + 2 pescados, without changing the code.
+Both groups are configurable from Settings: a kitchen can, for example, offer 2 spoon dishes + 1 fork dish, or 1 meat dish + 2 fish dishes, without changing the code.
 
-The engine supports randomized generation, intelligent day alternatives, manual dish replacement, prepared-dish assignments, stock awareness, fish/meat allow-lists, guiso days, configurable weekly limits and repetition controls, consecutive-day rules by first-course subfamily, and menu validation.
+The engine supports randomized generation, intelligent day alternatives, manual dish replacement, prepared-dish assignments, stock awareness, fish/meat allow-lists, stew days, configurable weekly limits and repetition controls, consecutive-day rules by first-course subfamily, and menu validation.
 
 **Current engine:** `menu-rules-v11-stock-prepared-guiso-rations` (with configurable offer structure and weekly-family repetition rules)
 
@@ -159,48 +159,3 @@ GastroOS/
 ├── icon-192.png
 ├── icon-512.png
 └── README.md
-```
-
-**Stack:** HTML5 · CSS · JavaScript · PWA · Web Storage · GitHub API
-
-The application deliberately keeps the generator logic in the main client runtime while using small facades for storage, GitHub, and engine integration. `menu-engine-facade.js` is an integration layer; it does not duplicate the generator.
-
----
-
-## 🎨 Design
-
-GastroOS follows a restrained, Apple-inspired design focused on:
-
-**Clarity · Information Hierarchy · Consistency · Responsiveness · Minimal Visual Clutter**
-
-The interface keeps advanced configuration inside accordions and uses compact, cohesive modals for tasks such as intelligent day alternatives and product allergen management.
-
----
-
-## 🚀 Deployment
-
-GastroOS can be deployed as a static application through **GitHub Pages**.
-
-**Repository → GitHub Pages → PWA**
-
-No backend is required for the core application.
-
-If a shared recipe repository is configured, the existing GitHub connection can also synchronize recipe changes and the editable protein catalog metadata.
-
----
-
-## 🔐 Security
-
-GitHub tokens are sensitive credentials.
-
-Use a **fine-grained token** with the minimum required permissions. Never commit credentials to the repository or expose them in documentation.
-
-Because authentication is client-side, credentials stored in `localStorage` are accessible to JavaScript running on the same origin. **Only trusted code should therefore be deployed to that origin.**
-
----
-
-## 🎯 Project Goal
-
-GastroOS aims to automate repetitive weekly kitchen planning **without hiding the logic behind it**.
-
-It combines structured recipes, configurable kitchen rules, editable protein catalogs, stock awareness, production calculations, allergen mapping, shopping control, and local persistence while keeping final decisions under user control.
