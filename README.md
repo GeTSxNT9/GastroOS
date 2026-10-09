@@ -34,8 +34,10 @@ The application runs primarily in the browser, with **local persistence, PWA ins
 
 A **constraint-based engine** generates and validates Monday–Friday menus using a configurable self-service structure. The default offer is:
 
-- 3 primeros: 1 verdura + 1 cuchara + 1 tenedor/hidrato.
-- 3 segundos: 2 carnes + 1 pescado.
+- **3 first courses:** 1 vegetable dish + 1 spoon dish (soup/stew/legumes) + 1 fork/carbohydrate dish.
+- **3 main courses:** 2 meat dishes + 1 fish dish.
+
+In the kitchen rules, **“Guiso” means “stew”**: selected stew days must contain exactly one stew among the two meat main courses. The default configuration selects Monday, Wednesday, and Friday; these days can be changed in Settings.
 
 Both groups are configurable from Settings: a kitchen can, for example, offer 2 platos de cuchara + 1 tenedor, or 1 carne + 2 pescados, without changing the code.
 
@@ -43,17 +45,20 @@ The engine supports randomized generation, intelligent day alternatives, manual 
 
 **Current engine:** `menu-rules-v11-stock-prepared-guiso-rations` (with configurable offer structure and weekly-family repetition rules)
 
-### 🍽️ Prepared Dishes
+### 🍽️ Prepared Dishes & Precooked Products
 
-Prepared dishes can be managed independently through stock and incorporated into compatible menu slots.
+GastroOS keeps these two recipe classifications separate in stock:
 
-**Prepared Dish → Prepared Stock → Assignment → Menu Validation**
+- **Prepared Dish** recipes are managed in **Prepared Dishes Stock** and can be assigned to compatible menu slots.
+- **Precooked** products belong in **Raw Materials Stock** (the raw-stock area), not in Prepared Dishes Stock. They are available from the raw-stock product selector.
 
-The generated menu visibly marks both **Plato elaborado** and **Precocinado** when those recipe properties apply.
+**Prepared Dish → Prepared Dishes Stock → Assignment → Menu Validation**
+
+The generated menu visibly marks both **Prepared Dish** and **Precooked** when those recipe properties apply.
 
 ### 🛒 Stock & Shopping
 
-Separate management of **raw ingredients** and **prepared dishes**, including:
+Separate management of **raw ingredients and precooked products** versus **prepared dishes**, including:
 
 - Automatic shopping-list generation.
 - Ingredient aggregation by supplier category.
@@ -62,6 +67,7 @@ Separate management of **raw ingredients** and **prepared dishes**, including:
 - Demand-based quantity calculations.
 - Purchase adjustment percentage.
 - Prepared-dish planning assignments.
+- Precooked products listed in Raw Materials Stock, separately from Prepared Dishes Stock.
 - TXT export for both the weekly menu and the shopping list.
 
 ### 🧮 Kitchen Rules & Forecast
