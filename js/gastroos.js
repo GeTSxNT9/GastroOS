@@ -266,8 +266,9 @@
         function normalizeDishData(d) {
             const dish = { ...d };
             dish.demanda = dish.demanda || "Media";
-            dish.precocinado = !!dish.precocinado;
-            dish.plato_elaborado = !!dish.plato_elaborado;
+            const flagIsEnabled = value => value === true || ["true", "1", "si", "sí"].includes(String(value ?? "").trim().toLowerCase());
+            dish.precocinado = flagIsEnabled(dish.precocinado);
+            dish.plato_elaborado = flagIsEnabled(dish.plato_elaborado);
             dish.subcategoria_primero = dish.subcategoria_primero || "";
             dish.subtipo_primero = dish.subtipo_primero || "";
             dish.proteina_segundo = dish.proteina_segundo || "";
@@ -1135,8 +1136,8 @@
                 const demObj = demandMap[d.demanda || "Media"];
                 const missing = !hasCompleteTechnicalTags(d);
                 const missingBadge = missing ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800">Etiquetado pendiente ☓</span>' : '';
-                const precookedBadge = d.precocinado ? '<span class="px-2.5 py-1 rounded-md text-xs font-medium bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Precocinado</span>' : '';
-                const preparedDishBadge = d.plato_elaborado ? '<span class="px-2.5 py-1 rounded-md text-xs font-medium bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Plato elaborado</span>' : '';
+                const precookedBadge = d.precocinado ? '<span class="px-1.5 py-0.5 rounded text-[9px] leading-tight font-semibold bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Precocinado</span>' : '';
+                const preparedDishBadge = d.plato_elaborado ? '<span class="px-1.5 py-0.5 rounded text-[9px] leading-tight font-semibold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Plato elaborado</span>' : '';
 
                 const card = document.createElement('div');
                 card.className = "bg-white/80 p-4 rounded-2xl relative transition-all";
@@ -2319,7 +2320,9 @@
             const unique = new Map();
             dishes
                 .map(normalizeDishData)
-                .filter(d => d?.plato_elaborado || d?.precocinado)
+                // El stock preparado admite platos elaborados y recetas precocinadas.
+                // La normalización también acepta flags booleanos y cadenas de importaciones antiguas.
+                .filter(d => d && (d.plato_elaborado === true || d.precocinado === true))
                 .forEach(d => {
                     const name = String(d.nombre || "").trim();
                     if (!name) return;
@@ -2712,13 +2715,28 @@
 
         function handleAddPrepStock(e) {
             e.preventDefault();
-            const cantStr = document.getElementById('prepCantidad').value.toString().replace(',', '.');
+            const nameSelect = document.getElementById('prepName');
+            const quantityInput = document.getElementById('prepCantidad');
+            const selectedName = String(nameSelect?.value || '').trim();
+            const quantityText = String(quantityInput?.value || '').trim().replace(',', '.');
+            const quantity = Number(quantityText);
+
+            if (!selectedName || !getPreparedDishByName(selectedName)) {
+                alert('Selecciona una receta marcada como «Precocinado» o «Plato elaborado».');
+                return;
+            }
+            if (!quantityText || !Number.isFinite(quantity) || quantity <= 0) {
+                alert('Introduce una cantidad mayor que cero.');
+                quantityInput?.focus();
+                return;
+            }
+
             const item = {
                 id: Date.now().toString(),
-                nombre: document.getElementById('prepName').value.trim(),
-                cantidadTotal: parseFloat(cantStr) || 0,
+                nombre: selectedName,
+                cantidadTotal: quantity,
                 unidad: document.getElementById('prepUnidad').value,
-                asignacion: document.getElementById('prepAsignacion').value
+                asignacion: document.getElementById('prepAsignacion').value || 'Sin asignar'
             };
             preparedStock.unshift(item);
             saveAll();
