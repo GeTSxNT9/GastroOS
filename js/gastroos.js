@@ -31,7 +31,7 @@
         let recipeProteinCatalog = { fish: [], meat: [] };
         // Marcas temporales de la lista de compra: no modifican el stock real ni se guardan.
         let shoppingManualStockKeys = new Set();
-        const proveedorCategorias = ["Carne", "Pescado", "Lácteos", "Verduras", "Secos", "Congelados"];
+        const proveedorCategorias = ["Carne", "Pescado", "Lácteos", "Verduras y frutas", "Secos", "Congelados"];
         const daysList = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
         const FIRST_SUBCATEGORIES = {
             cuchara: ["legumbres", "guisos", "sopas_o_caldos"],
@@ -476,11 +476,17 @@
             const maxRice = document.getElementById('kitchenMaxRice');
             const maxVegetableWhole = document.getElementById('kitchenMaxVegetableWhole');
             const maxSoups = document.getElementById('kitchenMaxSoups');
+            const pastaConsecutive = document.getElementById('kitchenAllowPastaConsecutive');
+            const legumesConsecutive = document.getElementById('kitchenAllowLegumesConsecutive');
+            const riceConsecutive = document.getElementById('kitchenAllowRiceConsecutive');
+            const soupsConsecutive = document.getElementById('kitchenAllowSoupsConsecutive');
             const firstVeg = document.getElementById('kitchenFirstVegetableCount');
             const firstSpoon = document.getElementById('kitchenFirstSpoonCount');
             const firstFork = document.getElementById('kitchenFirstForkCount');
             const secondMeat = document.getElementById('kitchenSecondMeatCount');
             const secondFish = document.getElementById('kitchenSecondFishCount');
+            const allowPrecooked = document.getElementById('kitchenAllowPrecooked');
+            const allowPrepared = document.getElementById('kitchenAllowPreparedWithoutStock');
             const stockPriority = document.getElementById('kitchenStockPriority');
             const liquidRule = document.getElementById('kitchenAvoidLiquidFirsts');
             const consecutiveRule = document.getElementById('kitchenAvoidConsecutiveFirsts');
@@ -497,12 +503,18 @@
             if (maxRice) maxRice.value = profile.maxWeeklyRice;
             if (maxVegetableWhole) maxVegetableWhole.value = profile.maxWeeklyVegetableWhole;
             if (maxSoups) maxSoups.value = profile.maxWeeklySoups;
+            if (pastaConsecutive) pastaConsecutive.checked = profile.permitirPastaConsecutiva;
+            if (legumesConsecutive) legumesConsecutive.checked = profile.permitirLegumbresConsecutivas;
+            if (riceConsecutive) riceConsecutive.checked = profile.permitirArrozConsecutivo;
+            if (soupsConsecutive) soupsConsecutive.checked = profile.permitirSopasConsecutivas;
             if (firstVeg) firstVeg.value = profile.primerosVerdura;
             if (firstSpoon) firstSpoon.value = profile.primerosCuchara;
             if (firstFork) firstFork.value = profile.primerosTenedor;
             if (secondMeat) secondMeat.value = profile.segundosCarne;
             if (secondFish) secondFish.value = profile.segundosPescado;
             if (purchaseAdjust) purchaseAdjust.value = profile.ajusteCompraPorcentaje;
+            if (allowPrecooked) allowPrecooked.checked = profile.permitirPrecocinados;
+            if (allowPrepared) allowPrepared.checked = profile.permitirPlatosElaboradosSinStock;
             if (stockPriority) stockPriority.value = profile.prioridadStock;
             if (liquidRule) liquidRule.checked = profile.evitarLiquidosEnPrimeros;
             if (consecutiveRule) consecutiveRule.checked = profile.evitarRepeticionPrimeroConsecutivo;
@@ -541,6 +553,10 @@
                 maxWeeklyRice: document.getElementById('kitchenMaxRice')?.value,
                 maxWeeklyVegetableWhole: document.getElementById('kitchenMaxVegetableWhole')?.value,
                 maxWeeklySoups: document.getElementById('kitchenMaxSoups')?.value,
+                permitirPastaConsecutiva: document.getElementById('kitchenAllowPastaConsecutive')?.checked,
+                permitirLegumbresConsecutivas: document.getElementById('kitchenAllowLegumesConsecutive')?.checked,
+                permitirArrozConsecutivo: document.getElementById('kitchenAllowRiceConsecutive')?.checked,
+                permitirSopasConsecutivas: document.getElementById('kitchenAllowSoupsConsecutive')?.checked,
                 primerosVerdura: document.getElementById('kitchenFirstVegetableCount')?.value,
                 primerosCuchara: document.getElementById('kitchenFirstSpoonCount')?.value,
                 primerosTenedor: document.getElementById('kitchenFirstForkCount')?.value,
@@ -551,6 +567,8 @@
                 animalesCarnePermitidos: selectedAnimals,
                 especiesPescadoPersonalizadas: getKitchenProfile().especiesPescadoPersonalizadas,
                 animalesCarnePersonalizados: getKitchenProfile().animalesCarnePersonalizados,
+                permitirPrecocinados: document.getElementById('kitchenAllowPrecooked')?.checked,
+                permitirPlatosElaboradosSinStock: document.getElementById('kitchenAllowPreparedWithoutStock')?.checked,
                 prioridadStock: document.getElementById('kitchenStockPriority')?.value,
                 evitarLiquidosEnPrimeros: document.getElementById('kitchenAvoidLiquidFirsts')?.checked,
                 evitarRepeticionPrimeroConsecutivo: document.getElementById('kitchenAvoidConsecutiveFirsts')?.checked,
@@ -1315,19 +1333,18 @@
             row.className = 'ingredient-row flex gap-2 items-center';
             const legacyUnit = ['kg', 'L'].includes(String(unidad)) ? String(unidad) : '';
             row.dataset.originalUnidad = unidad ?? '';
-            if (categoria === 'Verduras y frutas') categoria = 'Verduras';
             row.dataset.originalCategoria = categoria ?? '';
             row.dataset.unidadTouched = 'false';
             row.dataset.categoriaTouched = 'false';
             row.innerHTML = `
-                <input type="text" placeholder="Ingrediente..." value="${escapeHtml(nombre)}" required class="flex-[4] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <input type="text" placeholder="Ingrediente..." value="${escapeHtml(nombre)}" required class="flex-[3] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                 <input type="text" inputmode="decimal" placeholder="Cant." value="${cantidad !== '' && cantidad !== undefined ? cantidad : ''}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                 <select class="w-14 min-w-[3.5rem] flex-[0_0_3.5rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                     ${legacyUnit ? `<option value="${legacyUnit}" selected>${legacyUnit}</option>` : ''}
                     <option value="g" ${unidad==='g'?'selected':''}>g</option>
                     <option value="ml" ${unidad==='ml'?'selected':''}>ml</option>
                 </select>
-                <select class="w-20 min-w-[5rem] flex-[0_0_5rem] p-1.5 border border-gray-300 dark:border-gray-700 rounded text-[10px] bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <select class="flex-2 p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                     ${proveedorCategorias.map(c => `<option value="${c}" ${categoria===c?'selected':''}>${c}</option>`).join('')}
                 </select>
                 <button type="button" class="text-red-500 font-bold px-1" onclick="this.parentElement.remove()">×</button>
@@ -3247,7 +3264,7 @@
         function isDishActiveForGenerator(dish) {
             if (!dish) return false;
             const profile = getKitchenProfile();
-            /* Los precocinados siempre están permitidos en esta cocina. */
+            if (!profile.permitirPrecocinados && dish.precocinado) return false;
             if (!window.GastroOSKitchenRules.isFishAllowed(dish, profile)) return false;
             if (!window.GastroOSKitchenRules.isMeatAnimalAllowed(dish, profile)) return false;
             // Un plato elaborado solo entra si existe físicamente en stock, salvo que
@@ -3451,7 +3468,7 @@
                     // globales ya se validan al construir el menú y en validateWeeklyMenu;
                     // aquí no dejamos que un criterio blando (ni la semana anterior, ni
                     // la puntuación, ni el orden de candidatos) lo sustituya.
-                    if (isStructuralMatch(candidate, spec) && window.GastroOSKitchenRules.isFishAllowed(candidate, getKitchenProfile()) && window.GastroOSKitchenRules.isMeatAnimalAllowed(candidate, getKitchenProfile()) && true) {
+                    if (isStructuralMatch(candidate, spec) && window.GastroOSKitchenRules.isFishAllowed(candidate, getKitchenProfile()) && window.GastroOSKitchenRules.isMeatAnimalAllowed(candidate, getKitchenProfile()) && (getKitchenProfile().permitirPrecocinados || !candidate.precocinado)) {
                         const isGuisoDay = getGuisoDays().has(dayIndex);
                         if (spec.cat === 'Segundo' && spec.protein === 'Pescado' && candidate.especie_pescado && chosenFishSpecies.includes(String(candidate.especie_pescado).toLowerCase())) continue;
                         const isMeatSecond = spec.cat === "Segundo" && spec.protein === "Carne";
@@ -3924,8 +3941,8 @@
             const structure = getMenuStructure();
             const firstSummary = `Verdura ${p.primerosVerdura} · Cuchara ${p.primerosCuchara} · Tenedor ${p.primerosTenedor}`;
             const secondSummary = `Carne ${p.segundosCarne} · Pescado ${p.segundosPescado}`;
-            const consecutiveLabel = () => 'No';
-            rulesBox.innerHTML = `<details class="generator-rules-details"><summary><span><b>NORMAS APLICADAS</b><small>Ver configuración de esta cocina</small></span><span class="accordion-chevron">⌄</span></summary><div class="generator-rules-body"><div class="generator-rule-grid"><div><b>Primeros</b><span>${escapeHtml(firstSummary)} · ${structure.firstSpecs.length} total</span></div><div><b>Segundos</b><span>${escapeHtml(secondSummary)} · ${structure.secondSpecs.length} total</span></div><div><b>Guisos</b><span>${escapeHtml(guisoText)}</span></div><div><b>Fritos</b><span>Máx. ${p.maxWeeklyFritos} por semana</span></div><div><b>Cremas</b><span>Máx. ${p.maxWeeklyCreams} por semana</span></div><div><b>Pasta</b><span>Máx. ${p.maxWeeklyPasta} días · sin días consecutivos</span></div><div><b>Legumbres</b><span>Máx. ${p.maxWeeklyLegumes} días · sin días consecutivos</span></div><div><b>Arroz</b><span>Máx. ${p.maxWeeklyRice} días · sin días consecutivos</span></div><div><b>Verdura entera</b><span>Máx. ${p.maxWeeklyVegetableWhole} días</span></div><div><b>Sopas y caldos</b><span>Máx. ${p.maxWeeklySoups} días · sin días consecutivos</span></div><div><b>Carnes</b><span>${escapeHtml(meats)}</span></div><div><b>Pescados</b><span>${escapeHtml(fish)}</span></div><div><b>Stock</b><span>${escapeHtml(stockPriorityLabels[p.prioridadStock] || p.prioridadStock)}</span></div></div></div></details>${diagnostics}`;
+            const consecutiveLabel = (value) => value ? 'Sí' : 'No';
+            rulesBox.innerHTML = `<details class="generator-rules-details"><summary><span><b>NORMAS APLICADAS</b><small>Ver configuración de esta cocina</small></span><span class="accordion-chevron">⌄</span></summary><div class="generator-rules-body"><div class="generator-rule-grid"><div><b>Primeros</b><span>${escapeHtml(firstSummary)} · ${structure.firstSpecs.length} total</span></div><div><b>Segundos</b><span>${escapeHtml(secondSummary)} · ${structure.secondSpecs.length} total</span></div><div><b>Guisos</b><span>${escapeHtml(guisoText)}</span></div><div><b>Fritos</b><span>Máx. ${p.maxWeeklyFritos} por semana</span></div><div><b>Cremas</b><span>Máx. ${p.maxWeeklyCreams} por semana</span></div><div><b>Pasta</b><span>Máx. ${p.maxWeeklyPasta} días · consecutiva: ${consecutiveLabel(p.permitirPastaConsecutiva)}</span></div><div><b>Legumbres</b><span>Máx. ${p.maxWeeklyLegumes} días · consecutiva: ${consecutiveLabel(p.permitirLegumbresConsecutivas)}</span></div><div><b>Arroz</b><span>Máx. ${p.maxWeeklyRice} días · consecutivo: ${consecutiveLabel(p.permitirArrozConsecutivo)}</span></div><div><b>Verdura entera</b><span>Máx. ${p.maxWeeklyVegetableWhole} días</span></div><div><b>Sopas y caldos</b><span>Máx. ${p.maxWeeklySoups} días · consecutivos: ${consecutiveLabel(p.permitirSopasConsecutivas)}</span></div><div><b>Carnes</b><span>${escapeHtml(meats)}</span></div><div><b>Pescados</b><span>${escapeHtml(fish)}</span></div><div><b>Stock</b><span>${escapeHtml(stockPriorityLabels[p.prioridadStock] || p.prioridadStock)}</span></div></div></div></details>${diagnostics}`;
             container.appendChild(rulesBox);
 
             const daysToRender = selectedGeneratorDay === 'Todos' ? daysList : [selectedGeneratorDay];
@@ -4105,7 +4122,7 @@
                 const unit = String(stock?.unidad || '').toLowerCase();
                 const dimension = ['kg', 'g'].includes(unit) ? 'weight' : (['l', 'ml'].includes(unit) ? 'volume' : null);
                 const baseQty = dimension ? ((unit === 'kg' || unit === 'l') ? Number(stock.cantidad) * 1000 : Number(stock.cantidad)) : 0;
-                return { stock, key: normalizeFoodKey(stock?.nombre), category: (String(stock?.categoria_proveedor || '') === 'Verduras y frutas' ? 'Verduras' : String(stock?.categoria_proveedor || '')), dimension, remaining: Math.max(0, baseQty) };
+                return { stock, key: normalizeFoodKey(stock?.nombre), category: String(stock?.categoria_proveedor || ''), dimension, remaining: Math.max(0, baseQty) };
             });
         }
 
@@ -4143,8 +4160,7 @@
                         const isWeight = ['kg', 'g'].includes(unit);
                         const isVolume = ['l', 'ml'].includes(unit);
                         const hasCalculableQuantity = rawQuantityText !== '' && Number.isFinite(rawQty) && rawQty > 0 && (isWeight || isVolume);
-                        const rawCategory = String(ing?.categoria_proveedor || '').trim();
-                        const category = rawCategory === 'Verduras y frutas' ? 'Verduras' : (proveedorCategorias.includes(rawCategory) ? rawCategory : 'Secos');
+                        const category = proveedorCategorias.includes(ing?.categoria_proveedor) ? ing.categoria_proveedor : 'Secos';
                         const key = normalizeFoodKey(rawName);
                         if (!key) return;
 
@@ -4189,7 +4205,7 @@
             const groupedByCategory = {};
             proveedorCategorias.forEach(cat => groupedByCategory[cat] = []);
             Object.values(aggregated).forEach(item => {
-                if (item.totalBaseQty <= 0 && !item.needsManualPurchase) return;
+                if (item.totalBaseQty <= 0 && !item.needsManualPurchase && !item.manualStock) return;
                 let cantidad = '';
                 let unidad = '';
                 if (item.totalBaseQty > 0) {
@@ -4230,7 +4246,7 @@
                 hasItems = true;
                 const section = document.createElement('div');
                 section.className = "bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 space-y-2";
-                section.innerHTML = `<h4 class="font-bold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-1">${escapeHtml(cat)}</h4><div class="shopping-grid shopping-grid-header"><span>Producto</span><span>Necesario</span><span>Comprar</span></div><ul class="shopping-grid-list">${items.map(i => { const fmt = n => n > 0 ? `${Math.ceil(n/1000)} ${i.dimension}` : '—'; const buyText = i.manualStock ? '0' : (i.comprar > 0 ? `${i.cantidad} ${i.unidad}` : '0'); return `<li class="shopping-grid shopping-grid-row"><span class="shopping-product-name"><label class="shopping-manual-stock" aria-label="Marcar ${escapeHtml(i.nombre)} como disponible en stock"><input type="checkbox" data-shopping-stock-key="${escapeHtml(normalizeFoodKey(i.nombre))}" ${i.manualStock ? 'checked' : ''}></label><span>${escapeHtml(i.nombre)}</span></span><span class="shopping-number">${escapeHtml(fmt(i.necesario))}</span><span class="shopping-buy">${escapeHtml(buyText)}</span></li>`; }).join('')}</ul>`;
+                section.innerHTML = `<h4 class="font-bold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800 pb-1">${escapeHtml(cat)}</h4><div class="shopping-grid shopping-grid-header"><span>Producto</span><span>Necesario</span><span>Stock</span><span>Comprar</span></div><ul class="shopping-grid-list">${items.map(i => { const fmt = n => n > 0 ? `${Math.ceil(n/1000)} ${i.dimension}` : '—'; const stockText = i.manualStock ? '✓ Manual' : fmt(i.disponible); const buyText = i.manualStock ? '0' : (i.comprar > 0 ? `${i.cantidad} ${i.unidad}` : '0'); return `<li class="shopping-grid shopping-grid-row"><span class="shopping-product-name"><label class="shopping-manual-stock" aria-label="Marcar ${escapeHtml(i.nombre)} como disponible en stock"><input type="checkbox" data-shopping-stock-key="${escapeHtml(normalizeFoodKey(i.nombre))}" ${i.manualStock ? 'checked' : ''}><span class="sr-only">En stock</span></label><span class="shopping-product-label">${escapeHtml(i.nombre)}</span></span><span class="shopping-number">${escapeHtml(fmt(i.necesario))}</span><span class="shopping-number shopping-stock ${i.manualStock ? 'is-manual' : ''}">${escapeHtml(stockText)}</span><span class="shopping-buy">${escapeHtml(buyText)}</span></li>`; }).join('')}</ul>`;
                 container.appendChild(section);
             });
             if (!hasItems) container.innerHTML = '<p class="text-center text-gray-500 text-xs py-4">No hay ingredientes necesarios en el menú actual.</p>';
@@ -4287,7 +4303,7 @@
                 if (String(d.id) === String(currentMenu?.days?.[swapTarget.dayName]?.[swapTarget.slotIndex]?.dish?.id)) return false;
                 if (!window.GastroOSKitchenRules.isFishAllowed(d, getKitchenProfile())) return false;
                 if (!window.GastroOSKitchenRules.isMeatAnimalAllowed(d, getKitchenProfile())) return false;
-                /* Los precocinados siempre están permitidos en esta cocina. */
+                if (!getKitchenProfile().permitirPrecocinados && d.precocinado) return false;
                 if (searchVal && !String(d.nombre || '').toLowerCase().includes(searchVal)) return false;
 
                 // Solo mostramos candidatos que, si se colocan en este hueco,
