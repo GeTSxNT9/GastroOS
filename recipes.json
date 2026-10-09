@@ -5052,6 +5052,44 @@
         "frutos_cascara",
         "sulfitos"
       ]
+    },
+    {
+      "id": "1791542320628",
+      "nombre": "Tintorera en salsa de ajo y limón",
+      "categoria": "Segundo",
+      "subcategoria_primero": "",
+      "subtipo_primero": "",
+      "proteina_segundo": "Pescado",
+      "animal_carne": "",
+      "especie_pescado": "tintorera",
+      "especie_animal": "Pescado",
+      "tecnica_cocina": "tecnica_seco_asado",
+      "tecnica": "tecnica_seco_asado",
+      "precocinado": false,
+      "plato_elaborado": false,
+      "demanda": "Media",
+      "alergenosManuales": [],
+      "alergenos": [],
+      "ingredientes": [
+        {
+          "nombre": "Tintorera",
+          "cantidad": 200,
+          "unidad": "g",
+          "categoria_proveedor": "Congelados"
+        },
+        {
+          "nombre": "Ajo",
+          "cantidad": "",
+          "unidad": "g",
+          "categoria_proveedor": "Verduras"
+        },
+        {
+          "nombre": "Limón",
+          "cantidad": "",
+          "unidad": "g",
+          "categoria_proveedor": "Verduras"
+        }
+      ]
     }
   ]
 }
