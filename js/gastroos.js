@@ -266,9 +266,8 @@
         function normalizeDishData(d) {
             const dish = { ...d };
             dish.demanda = dish.demanda || "Media";
-            const flagIsEnabled = value => value === true || ["true", "1", "si", "sí"].includes(String(value ?? "").trim().toLowerCase());
-            dish.precocinado = flagIsEnabled(dish.precocinado);
-            dish.plato_elaborado = flagIsEnabled(dish.plato_elaborado);
+            dish.precocinado = !!dish.precocinado;
+            dish.plato_elaborado = !!dish.plato_elaborado;
             dish.subcategoria_primero = dish.subcategoria_primero || "";
             dish.subtipo_primero = dish.subtipo_primero || "";
             dish.proteina_segundo = dish.proteina_segundo || "";
@@ -816,6 +815,8 @@
                 }
             }
 
+            // Reubica registros antiguos: precocinados guardados en platos elaborados pasan a materia prima.
+            migratePrecookedStockToRawStock();
             saveAll();
             setupEventListeners();
             renderProteinFormOptions();
@@ -1136,8 +1137,8 @@
                 const demObj = demandMap[d.demanda || "Media"];
                 const missing = !hasCompleteTechnicalTags(d);
                 const missingBadge = missing ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800">Etiquetado pendiente ☓</span>' : '';
-                const precookedBadge = d.precocinado ? '<span class="px-1.5 py-0.5 rounded text-[9px] leading-tight font-semibold bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Precocinado</span>' : '';
-                const preparedDishBadge = d.plato_elaborado ? '<span class="px-1.5 py-0.5 rounded text-[9px] leading-tight font-semibold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Plato elaborado</span>' : '';
+                const precookedBadge = d.precocinado ? '<span class="px-1.5 py-0.5 rounded-md text-[10px] leading-tight font-medium bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Precocinado</span>' : '';
+                const preparedDishBadge = d.plato_elaborado ? '<span class="px-1.5 py-0.5 rounded-md text-[10px] leading-tight font-medium bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Plato elaborado</span>' : '';
 
                 const card = document.createElement('div');
                 card.className = "bg-white/80 p-4 rounded-2xl relative transition-all";
@@ -2301,28 +2302,12 @@
             return [...unique.values()].sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
         }
 
-        function renderRawIngredientOptions(selectedValue = "") {
-            const select = document.getElementById("rawName");
-            if (!select) return;
-            const ingredients = getSecondProteinIngredients();
-            const current = String(selectedValue || select.value || "");
-            select.innerHTML = '<option value="">Seleccionar...</option>';
-            ingredients.forEach(name => {
-                const option = document.createElement("option");
-                option.value = name;
-                option.textContent = name;
-                select.appendChild(option);
-            });
-            if (current && ingredients.includes(current)) select.value = current;
-        }
-
-        function getPreparedDishRecipes() {
+        function getPrecookedRecipes() {
             const unique = new Map();
             dishes
                 .map(normalizeDishData)
-                // El stock preparado admite platos elaborados y recetas precocinadas.
-                // La normalización también acepta flags booleanos y cadenas de importaciones antiguas.
-                .filter(d => d && (d.plato_elaborado === true || d.precocinado === true))
+                // Los precocinados se gestionan como materia prima, no como platos elaborados.
+                .filter(d => d?.precocinado)
                 .forEach(d => {
                     const name = String(d.nombre || "").trim();
                     if (!name) return;
@@ -2330,6 +2315,106 @@
                     if (!unique.has(key)) unique.set(key, d);
                 });
             return [...unique.values()].sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), "es", { sensitivity: "base" }));
+        }
+
+        function getPrecookedStockCategory(dish) {
+            if (dish?.proteina_segundo === "Carne") return "Carne";
+            if (dish?.proteina_segundo === "Pescado") return "Pescado";
+            return "Congelados";
+        }
+
+        function renderRawIngredientOptions(selectedValue = "") {
+            const select = document.getElementById("rawName");
+            if (!select) return;
+            const ingredients = getSecondProteinIngredients();
+            const precooked = getPrecookedRecipes();
+            const precookedKeys = new Set(precooked.map(d => normalizeFoodKey(d.nombre)));
+            const current = String(selectedValue || select.value || "");
+            select.innerHTML = '<option value="">Seleccionar...</option>';
+
+            const ingredientGroup = document.createElement("optgroup");
+            ingredientGroup.label = "Ingredientes de carne y pescado";
+            ingredients.filter(name => !precookedKeys.has(normalizeFoodKey(name))).forEach(name => {
+                const option = document.createElement("option");
+                option.value = name;
+                option.textContent = name;
+                ingredientGroup.appendChild(option);
+            });
+            if (ingredientGroup.children.length) select.appendChild(ingredientGroup);
+
+            if (precooked.length) {
+                const precookedGroup = document.createElement("optgroup");
+                precookedGroup.label = "Productos precocinados";
+                precooked.forEach(dish => {
+                    const option = document.createElement("option");
+                    option.value = dish.nombre;
+                    option.textContent = dish.nombre;
+                    option.dataset.stockType = "precocinado";
+                    precookedGroup.appendChild(option);
+                });
+                select.appendChild(precookedGroup);
+            }
+            if (current && [...select.options].some(option => option.value === current)) select.value = current;
+        }
+
+        function getPreparedDishRecipes() {
+            const unique = new Map();
+            dishes
+                .map(normalizeDishData)
+                // Este selector es exclusivamente para platos elaborados; si es precocinado, va a materia prima.
+                .filter(d => d?.plato_elaborado && !d?.precocinado)
+                .forEach(d => {
+                    const name = String(d.nombre || "").trim();
+                    if (!name) return;
+                    const key = normalizeFoodKey(name);
+                    if (!unique.has(key)) unique.set(key, d);
+                });
+            return [...unique.values()].sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), "es", { sensitivity: "base" }));
+        }
+
+        function migratePrecookedStockToRawStock() {
+            const precookedByName = new Map(getPrecookedRecipes().map(d => [normalizeFoodKey(d.nombre), d]));
+            if (!precookedByName.size || !Array.isArray(preparedStock) || !preparedStock.length) return false;
+
+            const keepPrepared = [];
+            let changed = false;
+            preparedStock.forEach(item => {
+                const key = normalizeFoodKey(item?.nombre || "");
+                const dish = precookedByName.get(key);
+                if (!dish) {
+                    keepPrepared.push(item);
+                    return;
+                }
+                const hasTotal = item?.cantidadTotal !== undefined && item?.cantidadTotal !== null && item?.cantidadTotal !== "";
+                const quantity = Number(hasTotal ? item.cantidadTotal : item?.raciones);
+                const unit = hasTotal ? String(item?.unidad || "kg") : "raciones";
+                if (!Number.isFinite(quantity) || quantity < 0) {
+                    keepPrepared.push(item);
+                    return;
+                }
+                const existing = rawStock.find(stock =>
+                    normalizeFoodKey(stock?.nombre || "") === key &&
+                    String(stock?.unidad || "kg") === unit
+                );
+                if (existing) {
+                    existing.cantidad = (Number(existing.cantidad) || 0) + quantity;
+                    existing.tipo_stock = "precocinado";
+                    if (!existing.categoria_proveedor) existing.categoria_proveedor = getPrecookedStockCategory(dish);
+                } else {
+                    rawStock.unshift({
+                        id: String(item?.id || `precocinado-${Date.now()}-${rawStock.length}`),
+                        nombre: String(item.nombre).trim(),
+                        cantidad: quantity,
+                        unidad: unit,
+                        categoria_proveedor: getPrecookedStockCategory(dish),
+                        conservacion: "Congelado",
+                        tipo_stock: "precocinado"
+                    });
+                }
+                changed = true;
+            });
+            if (changed) preparedStock = keepPrepared;
+            return changed;
         }
 
         function getPreparedDishByName(name) {
@@ -2518,19 +2603,28 @@
 
         function handleAddRawStock(e) {
             e.preventDefault();
-            const cantStr = document.getElementById('rawQty').value.toString().replace(',', '.');
+            const select = document.getElementById('rawName');
+            const nombre = String(select?.value || '').trim();
+            const cantidad = Number(String(document.getElementById('rawQty')?.value || '').replace(',', '.'));
+            if (!nombre || !Number.isFinite(cantidad) || cantidad <= 0) {
+                alert('Selecciona un producto e indica una cantidad mayor que cero.');
+                return;
+            }
+            const precookedDish = getPrecookedRecipes().find(d => normalizeFoodKey(d.nombre) === normalizeFoodKey(nombre));
             const item = {
                 id: Date.now().toString(),
-                nombre: document.getElementById('rawName').value.trim(),
-                cantidad: parseFloat(cantStr) || 0,
+                nombre,
+                cantidad,
                 unidad: document.getElementById('rawUnit').value,
-                categoria_proveedor: document.getElementById('rawCategory').value,
-                conservacion: document.getElementById('rawConserv').value === 'Refrigerado' ? 'Refrigerado' : 'Congelado'
+                categoria_proveedor: precookedDish ? getPrecookedStockCategory(precookedDish) : document.getElementById('rawCategory').value,
+                conservacion: document.getElementById('rawConserv').value === 'Refrigerado' ? 'Refrigerado' : 'Congelado',
+                ...(precookedDish ? { tipo_stock: 'precocinado' } : {})
             };
             rawStock.unshift(item);
             saveAll();
             renderRawStock();
             document.getElementById('rawStockForm').reset();
+            refreshStockReferenceSelectors();
         }
 
         function renderRawStock() {
@@ -2715,28 +2809,13 @@
 
         function handleAddPrepStock(e) {
             e.preventDefault();
-            const nameSelect = document.getElementById('prepName');
-            const quantityInput = document.getElementById('prepCantidad');
-            const selectedName = String(nameSelect?.value || '').trim();
-            const quantityText = String(quantityInput?.value || '').trim().replace(',', '.');
-            const quantity = Number(quantityText);
-
-            if (!selectedName || !getPreparedDishByName(selectedName)) {
-                alert('Selecciona una receta marcada como «Precocinado» o «Plato elaborado».');
-                return;
-            }
-            if (!quantityText || !Number.isFinite(quantity) || quantity <= 0) {
-                alert('Introduce una cantidad mayor que cero.');
-                quantityInput?.focus();
-                return;
-            }
-
+            const cantStr = document.getElementById('prepCantidad').value.toString().replace(',', '.');
             const item = {
                 id: Date.now().toString(),
-                nombre: selectedName,
-                cantidadTotal: quantity,
+                nombre: document.getElementById('prepName').value.trim(),
+                cantidadTotal: parseFloat(cantStr) || 0,
                 unidad: document.getElementById('prepUnidad').value,
-                asignacion: document.getElementById('prepAsignacion').value || 'Sin asignar'
+                asignacion: document.getElementById('prepAsignacion').value
             };
             preparedStock.unshift(item);
             saveAll();
