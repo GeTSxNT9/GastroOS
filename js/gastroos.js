@@ -2319,7 +2319,7 @@
             const unique = new Map();
             dishes
                 .map(normalizeDishData)
-                .filter(d => d?.plato_elaborado)
+                .filter(d => d?.plato_elaborado || d?.precocinado)
                 .forEach(d => {
                     const name = String(d.nombre || "").trim();
                     if (!name) return;
