@@ -302,7 +302,7 @@
                             <option value="Carne">Carne</option>
                             <option value="Pescado">Pescado</option>
                             <option value="Lácteos">Lácteos</option>
-                            <option value="Verduras y frutas">Verduras y frutas</option>
+                            <option value="Verduras">Verduras</option>
                             <option value="Secos">Secos</option>
                             <option value="Congelados">Congelados</option>
                         </select>
@@ -465,7 +465,7 @@
                 </details>
 
                 <details class="settings-accordion">
-                    <summary><span><b>LÍMITES Y REPETICIÓN SEMANAL</b><small>Controla la frecuencia de las familias y si pueden repetirse en días consecutivos.</small></span><span class="accordion-chevron">⌄</span></summary>
+                    <summary><span><b>LÍMITES Y REPETICIÓN SEMANAL</b><small>Controla la frecuencia semanal de las familias y los días con guiso.</small></span><span class="accordion-chevron">⌄</span></summary>
                     <div class="settings-accordion-body">
                         <div class="setting-group">
                             <p class="setting-group-title">DÍAS CON GUISO</p>
@@ -487,14 +487,6 @@
                             <div><label class="field-label" for="kitchenMaxVegetableWhole">Verdura entera</label><div class="input-suffix"><input id="kitchenMaxVegetableWhole" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
                             <div><label class="field-label" for="kitchenMaxSoups">Sopas y caldos</label><div class="input-suffix"><input id="kitchenMaxSoups" type="number" min="0" max="5" class="settings-input"><span>/sem</span></div></div>
                         </div>
-                        <div class="setting-group mt-4">
-                            <p class="setting-group-title">PERMITIR DÍAS CONSECUTIVOS</p>
-                            <label class="setting-toggle"><input id="kitchenAllowPastaConsecutive" type="checkbox"><span><b>Pasta</b><small>Permite pasta en días consecutivos solo si cambia la subfamilia: pasta seca → rellena sí; seca → seca no.</small></span></label>
-                            <label class="setting-toggle"><input id="kitchenAllowLegumesConsecutive" type="checkbox"><span><b>Legumbres</b><small>Permite repetir legumbres en días consecutivos.</small></span></label>
-                            <label class="setting-toggle"><input id="kitchenAllowRiceConsecutive" type="checkbox"><span><b>Arroz</b><small>Permite repetir arroz en días consecutivos.</small></span></label>
-                            <label class="setting-toggle"><input id="kitchenAllowSoupsConsecutive" type="checkbox"><span><b>Sopas y caldos</b><small>Permite repetir esta subfamilia en días consecutivos.</small></span></label>
-                        </div>
-                        <p class="setting-help">En pasta, el límite semanal se aplica a toda la familia. Por ejemplo, pasta seca lunes + pasta rellena martes + pasta seca miércoles son 3 días de pasta y no se añadirá un cuarto día si el máximo es 3.</p>
                         <p class="setting-help">La verdura entera mantiene un máximo semanal independiente. El primer plato de verdura puede seguir siendo obligatorio cada día si la estructura lo configura así.</p>
                     </div>
                 </details>
@@ -534,8 +526,6 @@
                                 <option value="ninguna">Ninguna · Priorizar variedad</option>
                             </select>
                         </div>
-                        <label class="setting-toggle"><input id="kitchenAllowPrecooked" type="checkbox"><span><b>Permitir precocinados</b><small>Si se desactiva, el generador los descarta.</small></span></label>
-                        <label class="setting-toggle"><input id="kitchenAllowPreparedWithoutStock" type="checkbox"><span><b>Permitir elaborados sin stock</b><small>Si se desactiva, un plato elaborado necesita stock preparado registrado.</small></span></label>
                     </div>
                 </details>
 
