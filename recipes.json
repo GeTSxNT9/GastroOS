@@ -2281,13 +2281,17 @@
       "tecnica_cocina": "",
       "tecnica": "",
       "precocinado": false,
+      "plato_elaborado": false,
       "demanda": "Media",
+      "alergenosManuales": [
+        "lacteo"
+      ],
       "alergenos": [
         "lacteo"
       ],
       "ingredientes": [
         {
-          "nombre": "Arroz",
+          "nombre": "Arroz redondo",
           "cantidad": 100,
           "unidad": "g",
           "categoria_proveedor": "Secos"
@@ -2322,10 +2326,6 @@
           "unidad": "",
           "categoria_proveedor": "Secos"
         }
-      ],
-      "plato_elaborado": false,
-      "alergenosManuales": [
-        "lacteo"
       ]
     },
     {
