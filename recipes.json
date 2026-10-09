@@ -2217,7 +2217,13 @@
       "tecnica_cocina": "",
       "tecnica": "",
       "precocinado": false,
+      "plato_elaborado": false,
       "demanda": "Media",
+      "alergenosManuales": [
+        "crustaceos",
+        "pescado",
+        "moluscos"
+      ],
       "alergenos": [
         "crustaceos",
         "pescado",
@@ -2225,7 +2231,7 @@
       ],
       "ingredientes": [
         {
-          "nombre": "Arroz",
+          "nombre": "Arroz redondo",
           "cantidad": 80,
           "unidad": "g",
           "categoria_proveedor": "Secos"
@@ -2260,12 +2266,6 @@
           "unidad": "",
           "categoria_proveedor": "Secos"
         }
-      ],
-      "plato_elaborado": false,
-      "alergenosManuales": [
-        "crustaceos",
-        "pescado",
-        "moluscos"
       ]
     },
     {
