@@ -74,7 +74,7 @@ Separate management of **raw ingredients and precooked products** versus **prepa
 
 The local kitchen profile controls how the generator should behave without introducing users or roles. It includes:
 
-- Guiso days.
+- Stew days.
 - Allowed meat animals and fish species.
 - Editable meat and fish catalogs directly from the application.
 - Weekly limits for fried/reboiled dishes, creams, pasta, legumes, rice, whole vegetables, and soups/broths.
