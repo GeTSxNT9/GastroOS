@@ -5090,6 +5090,38 @@
           "categoria_proveedor": "Verduras"
         }
       ]
+    },
+    {
+      "id": "1791542654907",
+      "nombre": "Cabracho encebollado",
+      "categoria": "Segundo",
+      "subcategoria_primero": "",
+      "subtipo_primero": "",
+      "proteina_segundo": "Pescado",
+      "animal_carne": "",
+      "especie_pescado": "cabracho",
+      "especie_animal": "Pescado",
+      "tecnica_cocina": "tecnica_seco_asado",
+      "tecnica": "tecnica_seco_asado",
+      "precocinado": false,
+      "plato_elaborado": false,
+      "demanda": "Media",
+      "alergenosManuales": [],
+      "alergenos": [],
+      "ingredientes": [
+        {
+          "nombre": "Cabracho",
+          "cantidad": 200,
+          "unidad": "g",
+          "categoria_proveedor": "Pescado"
+        },
+        {
+          "nombre": "Cebolla",
+          "cantidad": "",
+          "unidad": "g",
+          "categoria_proveedor": "Verduras"
+        }
+      ]
     }
   ]
 }
