@@ -4146,8 +4146,8 @@
                     <div class="flex items-center gap-2 flex-1 min-w-0">
                         <div class="min-w-0 w-full">
                             <div class="text-[10px] font-bold text-gray-500 uppercase">${escapeHtml(slot.slotLabel)}</div>
-                            <div class="gastro-slot-title-row">
-                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight min-w-0">${escapeHtml(dishName)} ${warningBadge}</div>
+                            <div class="gastro-slot-title-row ${proteinBadges ? 'has-badges' : 'no-badges'}">
+                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight min-w-0">${escapeHtml(dishName)}${warningBadge ? ` ${warningBadge}` : ''}</div>
                                 ${proteinBadges ? `<div class="menu-status-badges-inline">${proteinBadges}</div>` : ''}
                             </div>
                             ${allergenLine}
