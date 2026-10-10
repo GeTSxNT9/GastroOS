@@ -4242,7 +4242,7 @@
     },
     {
       "id": "1790940000040",
-      "nombre": "Calamares guisados a la americana",
+      "nombre": "Calamares a la americana",
       "categoria": "Segundo",
       "subcategoria_primero": "",
       "subtipo_primero": "",
@@ -4253,7 +4253,12 @@
       "tecnica_cocina": "tecnica_guiso",
       "tecnica": "tecnica_guiso",
       "precocinado": false,
+      "plato_elaborado": false,
       "demanda": "Media",
+      "alergenosManuales": [
+        "sulfitos",
+        "moluscos"
+      ],
       "alergenos": [
         "sulfitos",
         "moluscos"
@@ -4295,11 +4300,6 @@
           "unidad": "",
           "categoria_proveedor": "Secos"
         }
-      ],
-      "plato_elaborado": false,
-      "alergenosManuales": [
-        "sulfitos",
-        "moluscos"
       ]
     },
     {
