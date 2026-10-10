@@ -334,7 +334,7 @@
           "nombre": "Cebolla picada",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Pimentón dulce",
@@ -734,7 +734,7 @@
           "nombre": "Cebolla picada",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Pimentón dulce",
@@ -822,7 +822,7 @@
           "nombre": "Patata corte brava",
           "cantidad": 250,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Chorizo",
@@ -878,7 +878,7 @@
           "nombre": "Patata corte brava",
           "cantidad": 200,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Costilla de cerdo",
@@ -936,7 +936,7 @@
           "nombre": "Patata corte brava",
           "cantidad": 200,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Mejillones",
@@ -1008,7 +1008,7 @@
           "nombre": "Puerro",
           "cantidad": 20,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Cebolla picada",
@@ -1045,7 +1045,7 @@
           "nombre": "Cebolla",
           "cantidad": 150,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Queso rallado",
@@ -1141,7 +1141,7 @@
           "nombre": "Ajo",
           "cantidad": 15,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Huevo",
@@ -1190,19 +1190,19 @@
           "nombre": "Calabacín",
           "cantidad": 200,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Patata",
           "cantidad": 100,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Cebolla",
           "cantidad": 40,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Nata",
@@ -1238,19 +1238,19 @@
           "nombre": "Zanahoria",
           "cantidad": 150,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Patata",
           "cantidad": 100,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Puerro",
           "cantidad": 40,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Nata",
@@ -1286,13 +1286,13 @@
           "nombre": "Puerro",
           "cantidad": 200,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Patata",
           "cantidad": 150,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Nata",
@@ -1326,13 +1326,13 @@
           "nombre": "Zanahoria",
           "cantidad": 50,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Calabacín",
           "cantidad": 50,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Judías verdes",
@@ -1344,13 +1344,13 @@
           "nombre": "Patata",
           "cantidad": 100,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Cebolla",
           "cantidad": 30,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         }
       ],
       "plato_elaborado": false,
@@ -1378,19 +1378,19 @@
           "nombre": "Champiñones",
           "cantidad": 150,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Patata",
           "cantidad": 150,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Cebolla",
           "cantidad": 40,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Nata",
@@ -1426,7 +1426,7 @@
           "nombre": "Patata",
           "cantidad": 250,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Leche",
@@ -1498,7 +1498,7 @@
           "nombre": "Patata corte brava",
           "cantidad": 100,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         }
       ],
       "plato_elaborado": false,
@@ -1524,13 +1524,13 @@
           "nombre": "Acelgas",
           "cantidad": 200,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Patata corte brava",
           "cantidad": 100,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         }
       ],
       "plato_elaborado": false,
@@ -1556,13 +1556,13 @@
           "nombre": "Coliflor",
           "cantidad": 250,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         }
       ],
       "plato_elaborado": false,
@@ -1588,13 +1588,13 @@
           "nombre": "Brócoli",
           "cantidad": 250,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         }
       ],
       "plato_elaborado": false,
@@ -1626,7 +1626,7 @@
           "nombre": "Patata corte brava",
           "cantidad": 100,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Jamón",
@@ -1661,7 +1661,7 @@
           "nombre": "Espinacas",
           "cantidad": 200,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         }
       ],
       "plato_elaborado": false,
@@ -2023,7 +2023,7 @@
           "nombre": "Champiñones",
           "cantidad": 80,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Nata",
@@ -2300,7 +2300,7 @@
           "nombre": "Champiñones",
           "cantidad": 80,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Nata",
@@ -2380,13 +2380,13 @@
           "nombre": "Limón",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -2452,7 +2452,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         }
       ],
       "plato_elaborado": false,
@@ -2514,7 +2514,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         }
       ],
       "plato_elaborado": false,
@@ -2570,7 +2570,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Pimentón dulce",
@@ -3374,7 +3374,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Laurel",
@@ -3626,7 +3626,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -3702,7 +3702,7 @@
           "nombre": "Limón",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -3765,7 +3765,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -3809,7 +3809,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -3852,7 +3852,7 @@
           "nombre": "Calabacín",
           "cantidad": 50,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Zanahoria picada",
@@ -3906,7 +3906,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -3950,7 +3950,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -4008,7 +4008,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         }
       ],
       "plato_elaborado": false,
@@ -4047,7 +4047,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -4096,7 +4096,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -4140,7 +4140,7 @@
           "nombre": "Limón",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -4184,7 +4184,7 @@
           "nombre": "Calabacín",
           "cantidad": 50,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Zanahoria picada",
@@ -4242,7 +4242,7 @@
     },
     {
       "id": "1790940000040",
-      "nombre": "Calamares a la americana",
+      "nombre": "Calamares guisados a la americana",
       "categoria": "Segundo",
       "subcategoria_primero": "",
       "subtipo_primero": "",
@@ -4253,12 +4253,7 @@
       "tecnica_cocina": "tecnica_guiso",
       "tecnica": "tecnica_guiso",
       "precocinado": false,
-      "plato_elaborado": false,
       "demanda": "Media",
-      "alergenosManuales": [
-        "sulfitos",
-        "moluscos"
-      ],
       "alergenos": [
         "sulfitos",
         "moluscos"
@@ -4286,7 +4281,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Vino blanco",
@@ -4300,6 +4295,11 @@
           "unidad": "",
           "categoria_proveedor": "Secos"
         }
+      ],
+      "plato_elaborado": false,
+      "alergenosManuales": [
+        "sulfitos",
+        "moluscos"
       ]
     },
     {
@@ -4394,7 +4394,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -4436,7 +4436,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -4478,7 +4478,7 @@
           "nombre": "Calabacín",
           "cantidad": 50,
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Zanahoria picada",
@@ -4532,7 +4532,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Perejil",
@@ -4682,7 +4682,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Vino blanco",
@@ -4747,7 +4747,7 @@
           "nombre": "Ajo",
           "cantidad": "",
           "unidad": "g",
-          "categoria_proveedor": "Verduras y frutas"
+          "categoria_proveedor": "Verduras"
         },
         {
           "nombre": "Vino tinto",
@@ -5007,7 +5007,7 @@
       "subtipo_primero": "",
       "proteina_segundo": "Pescado",
       "animal_carne": "",
-      "especie_pescado": "custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_pescado",
+      "especie_pescado": "custom_pescado_custom_pescado_custom_pescado_pescado",
       "especie_animal": "Pescado",
       "tecnica_cocina": "tecnica_seco_asado",
       "tecnica": "tecnica_seco_asado",
@@ -5045,7 +5045,7 @@
       "subtipo_primero": "",
       "proteina_segundo": "Pescado",
       "animal_carne": "",
-      "especie_pescado": "custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_pescado",
+      "especie_pescado": "custom_pescado_custom_pescado_custom_pescado_pescado",
       "especie_animal": "Pescado",
       "tecnica_cocina": "tecnica_seco_asado",
       "tecnica": "tecnica_seco_asado",
