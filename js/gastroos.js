@@ -1137,8 +1137,8 @@
                 const demObj = demandMap[d.demanda || "Media"];
                 const missing = !hasCompleteTechnicalTags(d);
                 const missingBadge = missing ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800">Etiquetado pendiente ☓</span>' : '';
-                const precookedBadge = d.precocinado ? '<span class="px-1.5 py-0.5 rounded-md text-[10px] leading-tight font-medium bg-pink-100 dark:bg-pink-950 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Precocinado</span>' : '';
-                const preparedDishBadge = d.plato_elaborado ? '<span class="px-1.5 py-0.5 rounded-md text-[10px] leading-tight font-medium bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">Plato elaborado</span>' : '';
+                const precookedBadge = d.precocinado ? '<span class="recipe-status-badge precooked">Precocinado</span>' : '';
+                const preparedDishBadge = d.plato_elaborado ? '<span class="recipe-status-badge prepared">Plato elaborado</span>' : '';
 
                 const card = document.createElement('div');
                 card.className = "bg-white/80 p-4 rounded-2xl relative transition-all";
