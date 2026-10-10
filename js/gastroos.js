@@ -2306,15 +2306,16 @@
             const unique = new Map();
             dishes
                 .map(normalizeDishData)
-                // Los precocinados se gestionan como materia prima, no como platos elaborados.
                 .filter(d => d?.precocinado)
                 .forEach(d => {
-                    const name = String(d.nombre || "").trim();
+                    const baseIngredient = (Array.isArray(d.ingredientes) ? d.ingredientes : [])
+                        .find(ing => String(ing?.categoria_proveedor || "").trim() === "Congelados" && String(ing?.nombre || "").trim());
+                    const name = String(baseIngredient?.nombre || "").trim();
                     if (!name) return;
                     const key = normalizeFoodKey(name);
-                    if (!unique.has(key)) unique.set(key, d);
+                    if (!unique.has(key)) unique.set(key, { ...d, nombreStock: name, nombreRecetaPrecocinada: String(d.nombre || "").trim() });
                 });
-            return [...unique.values()].sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), "es", { sensitivity: "base" }));
+            return [...unique.values()].sort((a, b) => String(a.nombreStock).localeCompare(String(b.nombreStock), "es", { sensitivity: "base" }));
         }
 
         function getPrecookedStockCategory(dish) {
@@ -2328,7 +2329,7 @@
             if (!select) return;
             const ingredients = getSecondProteinIngredients();
             const precooked = getPrecookedRecipes();
-            const precookedKeys = new Set(precooked.map(d => normalizeFoodKey(d.nombre)));
+            const precookedKeys = new Set(precooked.map(d => normalizeFoodKey(d.nombreStock)));
             const current = String(selectedValue || select.value || "");
             select.innerHTML = '<option value="">Seleccionar...</option>';
 
@@ -2347,8 +2348,8 @@
                 precookedGroup.label = "Productos precocinados";
                 precooked.forEach(dish => {
                     const option = document.createElement("option");
-                    option.value = dish.nombre;
-                    option.textContent = dish.nombre;
+                    option.value = dish.nombreStock;
+                    option.textContent = dish.nombreStock;
                     option.dataset.stockType = "precocinado";
                     precookedGroup.appendChild(option);
                 });
@@ -2373,14 +2374,39 @@
         }
 
         function migratePrecookedStockToRawStock() {
-            const precookedByName = new Map(getPrecookedRecipes().map(d => [normalizeFoodKey(d.nombre), d]));
-            if (!precookedByName.size || !Array.isArray(preparedStock) || !preparedStock.length) return false;
+            const precookedRecipes = getPrecookedRecipes();
+            const precookedByName = new Map();
+            precookedRecipes.forEach(d => {
+                precookedByName.set(normalizeFoodKey(d.nombreStock), d);
+                if (d.nombreRecetaPrecocinada) precookedByName.set(normalizeFoodKey(d.nombreRecetaPrecocinada), d);
+            });
+            if (!precookedByName.size) return false;
+
+            let changed = false;
+            // Corrige también los nombres erróneos que una versión anterior pudo guardar
+            // directamente en materia prima (p. ej. el plato completo en vez del congelado base).
+            const normalizedRaw = [];
+            rawStock.forEach(item => {
+                const dish = precookedByName.get(normalizeFoodKey(item?.nombre || ""));
+                if (!dish) {
+                    normalizedRaw.push(item);
+                    return;
+                }
+                const stockName = String(dish.nombreStock || item.nombre || "").trim();
+                const unit = String(item?.unidad || "kg");
+                const existing = normalizedRaw.find(stock => normalizeFoodKey(stock?.nombre || "") === normalizeFoodKey(stockName) && String(stock?.unidad || "kg") === unit);
+                if (existing) {
+                    existing.cantidad = (Number(existing.cantidad) || 0) + (Number(item?.cantidad) || 0);
+                } else {
+                    normalizedRaw.push({ ...item, nombre: stockName, categoria_proveedor: "Congelados", tipo_stock: "precocinado" });
+                }
+                changed = true;
+            });
+            rawStock = normalizedRaw;
 
             const keepPrepared = [];
-            let changed = false;
             preparedStock.forEach(item => {
-                const key = normalizeFoodKey(item?.nombre || "");
-                const dish = precookedByName.get(key);
+                const dish = precookedByName.get(normalizeFoodKey(item?.nombre || ""));
                 if (!dish) {
                     keepPrepared.push(item);
                     return;
@@ -2392,21 +2418,19 @@
                     keepPrepared.push(item);
                     return;
                 }
-                const existing = rawStock.find(stock =>
-                    normalizeFoodKey(stock?.nombre || "") === key &&
-                    String(stock?.unidad || "kg") === unit
-                );
+                const stockName = String(dish.nombreStock || item.nombre || "").trim();
+                const existing = rawStock.find(stock => normalizeFoodKey(stock?.nombre || "") === normalizeFoodKey(stockName) && String(stock?.unidad || "kg") === unit);
                 if (existing) {
                     existing.cantidad = (Number(existing.cantidad) || 0) + quantity;
+                    existing.categoria_proveedor = "Congelados";
                     existing.tipo_stock = "precocinado";
-                    if (!existing.categoria_proveedor) existing.categoria_proveedor = getPrecookedStockCategory(dish);
                 } else {
                     rawStock.unshift({
                         id: String(item?.id || `precocinado-${Date.now()}-${rawStock.length}`),
-                        nombre: String(item.nombre).trim(),
+                        nombre: stockName,
                         cantidad: quantity,
                         unidad: unit,
-                        categoria_proveedor: getPrecookedStockCategory(dish),
+                        categoria_proveedor: "Congelados",
                         conservacion: "Congelado",
                         tipo_stock: "precocinado"
                     });
@@ -2610,13 +2634,13 @@
                 alert('Selecciona un producto e indica una cantidad mayor que cero.');
                 return;
             }
-            const precookedDish = getPrecookedRecipes().find(d => normalizeFoodKey(d.nombre) === normalizeFoodKey(nombre));
+            const precookedDish = getPrecookedRecipes().find(d => normalizeFoodKey(d.nombreStock) === normalizeFoodKey(nombre));
             const item = {
                 id: Date.now().toString(),
-                nombre,
+                nombre: precookedDish ? precookedDish.nombreStock : nombre,
                 cantidad,
                 unidad: document.getElementById('rawUnit').value,
-                categoria_proveedor: precookedDish ? getPrecookedStockCategory(precookedDish) : document.getElementById('rawCategory').value,
+                categoria_proveedor: precookedDish ? "Congelados" : document.getElementById('rawCategory').value,
                 conservacion: document.getElementById('rawConserv').value === 'Refrigerado' ? 'Refrigerado' : 'Congelado',
                 ...(precookedDish ? { tipo_stock: 'precocinado' } : {})
             };
@@ -4397,6 +4421,9 @@
                 if (d.categoria !== swapTarget.cat) return false;
                 if (swapTarget.cat === 'Primero' && swapTarget.subcat && d.subcategoria_primero !== swapTarget.subcat) return false;
                 if (swapTarget.cat === 'Segundo' && swapTarget.protein && d.proteina_segundo !== swapTarget.protein) return false;
+                // Los platos elaborados solo pueden seleccionarse manualmente si están físicamente en stock.
+                if (d.plato_elaborado && !getKitchenProfile().permitirPlatosElaboradosSinStock &&
+                    !preparedStock.some(item => normalizeFoodKey(item?.nombre) === normalizeFoodKey(d.nombre))) return false;
                 if (String(d.id) === String(currentMenu?.days?.[swapTarget.dayName]?.[swapTarget.slotIndex]?.dish?.id)) return false;
                 if (!window.GastroOSKitchenRules.isFishAllowed(d, getKitchenProfile())) return false;
                 if (!window.GastroOSKitchenRules.isMeatAnimalAllowed(d, getKitchenProfile())) return false;
