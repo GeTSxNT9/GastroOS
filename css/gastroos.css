@@ -2677,3 +2677,61 @@ html.dark .day-regeneration-modal .day-regeneration-group-label { color:#9ca3af 
     .day-regeneration-option-head { align-items:flex-start !important; }
     .day-regeneration-modal .day-regeneration-select { white-space:normal !important; }
 }
+
+
+/* Ajustes finales de alternativas: cabecera blanca y etiquetas junto al nombre, sin huecos vacíos. */
+.day-regeneration-modal-header {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border-bottom: 1px solid #e5e7eb !important;
+}
+.day-regeneration-modal-header h3 { color: #111827 !important; }
+.day-regeneration-modal-header p { color: #4b5563 !important; }
+.day-regeneration-close {
+    background: #f3f4f6 !important;
+    border: 1px solid #e5e7eb !important;
+    color: #374151 !important;
+}
+.day-regeneration-close:hover { background: #e5e7eb !important; }
+.day-regeneration-modal .day-regeneration-dish {
+    grid-template-columns: 78px minmax(0, 1fr) !important;
+    align-items: center !important;
+}
+.day-regeneration-dish-content {
+    display: flex !important;
+    flex-flow: row wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px 8px !important;
+    min-width: 0 !important;
+}
+.day-regeneration-dish-content > strong {
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    overflow-wrap: anywhere !important;
+}
+.day-regeneration-dish-content > .menu-status-badges {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-flow: row wrap !important;
+    align-items: center !important;
+    gap: 4px !important;
+    width: auto !important;
+    margin: 0 !important;
+}
+.day-regeneration-dish-content > .menu-status-badges .menu-status-badge {
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+html.dark .day-regeneration-modal-header {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border-bottom-color: #e5e7eb !important;
+}
+html.dark .day-regeneration-modal-header h3 { color: #111827 !important; }
+html.dark .day-regeneration-modal-header p { color: #4b5563 !important; }
+html.dark .day-regeneration-close { background: #f3f4f6 !important; color: #374151 !important; border-color: #e5e7eb !important; }
+@media(max-width:640px) {
+    .day-regeneration-modal .day-regeneration-dish { grid-template-columns: 70px minmax(0, 1fr) !important; }
+    .day-regeneration-dish-content { gap: 5px 7px !important; }
+}
