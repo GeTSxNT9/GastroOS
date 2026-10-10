@@ -39,9 +39,9 @@ A **constraint-based engine** generates and validates Monday–Friday menus usin
 
 In the kitchen rules, **“Guiso” means “stew”**: selected stew days must contain exactly one stew among the two meat main courses. The default configuration selects Monday, Wednesday, and Friday; these days can be changed in Settings.
 
-Both groups are configurable from Settings: a kitchen can, for example, offer 2 spoon dishes + 1 fork dish, or 1 meat dish + 2 fish dishes, without changing the code.
+Both groups are configurable from Settings: a kitchen can, for example, offer 2 platos de cuchara + 1 tenedor, or 1 carne + 2 pescados, without changing the code.
 
-The engine supports randomized generation, intelligent day alternatives, manual dish replacement, prepared-dish assignments, stock awareness, fish/meat allow-lists, stew days, configurable weekly limits and repetition controls, consecutive-day rules by first-course subfamily, and menu validation.
+The engine supports randomized generation, intelligent day alternatives, manual dish replacement, prepared-dish assignments, stock awareness, fish/meat allow-lists, guiso days, configurable weekly limits and repetition controls, consecutive-day rules by first-course subfamily, and menu validation.
 
 **Current engine:** `menu-rules-v11-stock-prepared-guiso-rations` (with configurable offer structure and weekly-family repetition rules)
 
@@ -68,13 +68,14 @@ Separate management of **raw ingredients and precooked products** versus **prepa
 - Purchase adjustment percentage.
 - Prepared-dish planning assignments.
 - Precooked products listed in Raw Materials Stock, separately from Prepared Dishes Stock.
+- Legacy precooked records are migrated only when a physical quantity and unit are available. Records containing only a number of prepared portions are retained for manual review rather than being incorrectly converted into kilograms, litres, or product units.
 - TXT export for both the weekly menu and the shopping list.
 
 ### 🧮 Kitchen Rules & Forecast
 
 The local kitchen profile controls how the generator should behave without introducing users or roles. It includes:
 
-- Stew days.
+- Guiso days.
 - Allowed meat animals and fish species.
 - Editable meat and fish catalogs directly from the application.
 - Weekly limits for fried/reboiled dishes, creams, pasta, legumes, rice, whole vegetables, and soups/broths.
@@ -123,6 +124,8 @@ Browser `localStorage` provides local persistence and supports:
 
 Optional synchronization of the recipe collection with a configured GitHub repository.
 
+**Security note:** the personal access token is stored in this browser's `localStorage` so synchronization can persist across sessions. Use a fine-grained token restricted to this repository with only the required Contents permissions, do not share the browser profile, and revoke the token if the device or browser profile may have been exposed. The token is not written into the project files.
+
 Supports repository configuration, recipe upload/download, bulk recipe synchronization, synchronization status, and shared protein-catalog metadata in `recipes.json`.
 
 GitHub synchronization is optional: the core application does not require a backend or GitHub account.
@@ -131,7 +134,8 @@ GitHub synchronization is optional: the core application does not require a back
 
 - Installable Progressive Web App.
 - Versioned Service Worker caching.
-- Network-first updates with offline fallback for cached resources.
+- Network-first updates with offline fallback for cached same-origin resources.
+- The current HTML loads Tailwind's runtime from `cdn.tailwindcss.com`; therefore, a first load without internet, or an offline session where that runtime was not already loaded by the browser, may render with incomplete utility styling. Core app files are cached, but this external runtime is not bundled locally.
 - No dedicated backend required for the core application.
 
 ---
@@ -159,3 +163,48 @@ GastroOS/
 ├── icon-192.png
 ├── icon-512.png
 └── README.md
+```
+
+**Stack:** HTML5 · CSS · JavaScript · PWA · Web Storage · GitHub API
+
+The application deliberately keeps the generator logic in the main client runtime while using small facades for storage, GitHub, and engine integration. `menu-engine-facade.js` is an integration layer; it does not duplicate the generator.
+
+---
+
+## 🎨 Design
+
+GastroOS follows a restrained, Apple-inspired design focused on:
+
+**Clarity · Information Hierarchy · Consistency · Responsiveness · Minimal Visual Clutter**
+
+The interface keeps advanced configuration inside accordions and uses compact, cohesive modals for tasks such as intelligent day alternatives and product allergen management.
+
+---
+
+## 🚀 Deployment
+
+GastroOS can be deployed as a static application through **GitHub Pages**.
+
+**Repository → GitHub Pages → PWA**
+
+No backend is required for the core application.
+
+If a shared recipe repository is configured, the existing GitHub connection can also synchronize recipe changes and the editable protein catalog metadata.
+
+---
+
+## 🔐 Security
+
+GitHub tokens are sensitive credentials.
+
+Use a **fine-grained token** with the minimum required permissions. Never commit credentials to the repository or expose them in documentation.
+
+Because authentication is client-side, credentials stored in `localStorage` are accessible to JavaScript running on the same origin. **Only trusted code should therefore be deployed to that origin.**
+
+---
+
+## 🎯 Project Goal
+
+GastroOS aims to automate repetitive weekly kitchen planning **without hiding the logic behind it**.
+
+It combines structured recipes, configurable kitchen rules, editable protein catalogs, stock awareness, production calculations, allergen mapping, shopping control, and local persistence while keeping final decisions under user control.
