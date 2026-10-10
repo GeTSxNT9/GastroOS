@@ -2504,3 +2504,67 @@ html.dark .settings-input,
 html.dark .day-regeneration-select {
   border-color: var(--g-border) !important;
 }
+
+
+/* GastroOS · ajustes de interfaz solicitados (octubre 2026) */
+:root { --g-radius-control: 7px; --g-navy: #071a33; --g-navy-hover: #102a4b; }
+html.dark { --g-navy: #10233d; --g-navy-hover: #193654; }
+/* Ningún control tipo píldora: controles y etiquetas comparten rectángulo redondeado. */
+button, input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea,
+.settings-input, .settings-textarea, .filter-lvl1, .filter-lvl2, .generator-day-tab,
+#btnSubTabMenu, #btnSubTabShopping, #allergensContainer > label,
+.product-allergen-chip, .recipe-status-badge, .menu-status-badge,
+.recipe-tag, .dish-tag, .badge, .status-badge,
+.day-choice-grid label, .compact-check-grid label, .product-allergen-row,
+.settings-accordion summary, .day-regeneration-select {
+  border-radius: 7px !important;
+}
+#allergensContainer > label { padding: 6px 9px !important; min-height: 30px; }
+.product-allergen-chip { border-radius: 6px !important; }
+.recipe-status-badge, .menu-status-badge { border-radius: 5px !important; }
+/* CTA principales con azul marino profundo, manteniendo contraste y estados de foco. */
+#btnGenerateMenu, #dishForm button[type="submit"], #rawStockForm button[type="submit"],
+#prepStockForm button[type="submit"], #btnDownloadShoppingTxt, #btnExport,
+#modalChangeDish .swap-confirm-button {
+  background: var(--g-navy) !important; border-color: var(--g-navy) !important; color: #fff !important;
+}
+#btnGenerateMenu:hover, #dishForm button[type="submit"]:hover, #rawStockForm button[type="submit"]:hover,
+#prepStockForm button[type="submit"]:hover, #btnDownloadShoppingTxt:hover, #btnExport:hover {
+  background: var(--g-navy-hover) !important; border-color: var(--g-navy-hover) !important;
+}
+/* Edición múltiple: misma altura visual que el buscador. */
+#view-banco > .recetario-search-actions { align-items: stretch !important; }
+#view-banco #searchInput, #view-banco #btnBulkEdit { min-height: 40px !important; height: 40px !important; box-sizing: border-box !important; }
+#view-banco #btnBulkEdit { padding-top: 0 !important; padding-bottom: 0 !important; align-self: stretch !important; }
+/* Límites semanales en tres columnas compactas. */
+.settings-metric-grid { grid-template-columns: repeat(3,minmax(0,1fr)) !important; gap: 8px !important; }
+.settings-metric-grid > div { min-width: 0; }
+.settings-metric-grid .input-suffix { min-width: 0; }
+.settings-metric-grid .input-suffix input { min-width: 0; padding-left: 7px; padding-right: 7px; }
+.settings-metric-grid .input-suffix span { font-size: 9px; }
+/* Al añadir una receta, reservar más ancho para el nombre del ingrediente. */
+.ingredient-row { gap: 6px !important; }
+.ingredient-row .ingredient-name-input { flex: 4 1 0% !important; }
+.ingredient-row input[inputmode="decimal"] { flex: 0 0 48px !important; width: 48px !important; min-width: 48px !important; }
+.ingredient-row select:first-of-type { flex: 0 0 52px !important; width: 52px !important; min-width: 52px !important; }
+.ingredient-row .ingredient-category-select { flex: 1.2 1 0% !important; min-width: 82px !important; padding-left: 5px !important; padding-right: 4px !important; }
+/* Formulario de materia prima: categoría más compacta que nombre/cantidad. */
+#rawStockForm > .grid.grid-cols-2:last-of-type { grid-template-columns: minmax(0,1.15fr) minmax(0,.85fr) !important; }
+/* Alternativas de menú: tarjetas claras, jerarquía y botones legibles también en tema oscuro. */
+#modalChangeDish #modalDishList { display: grid; gap: 8px; }
+#modalChangeDish #modalDishList > div { display: grid !important; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 12px; padding: 12px !important; border-radius: 8px !important; border: 1px solid var(--g-border) !important; background: var(--g-surface-strong) !important; box-shadow: 0 1px 2px rgba(15,23,42,.035); }
+#modalChangeDish #modalDishList h4 { font-size: 12px !important; line-height: 1.4 !important; overflow-wrap: anywhere; }
+#modalChangeDish #modalDishList > div > div > div { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+#modalChangeDish #modalDishList > div > button { min-width: 88px; min-height: 36px; padding: 8px 12px !important; white-space: nowrap; background: var(--g-navy) !important; color:#fff !important; border:1px solid var(--g-navy) !important; border-radius:7px !important; font-size:11px !important; font-weight:750 !important; }
+#modalChangeDish #modalDishList > div > button:hover { background:var(--g-navy-hover) !important; }
+html.dark #modalChangeDish #modalDishList > div { background: #171d28 !important; border-color: #344154 !important; }
+/* Tabs de días conservan el estilo común rectangular y compacto. */
+.generator-day-tab, .filter-lvl1, .filter-lvl2 { border-radius: 7px !important; }
+@media (max-width: 380px) {
+  .settings-metric-grid { gap: 6px !important; }
+  .settings-metric-grid .field-label { font-size: 9px; line-height: 1.25; }
+  .ingredient-row { gap: 4px !important; }
+  .ingredient-row .ingredient-category-select { min-width: 72px !important; font-size: 10px !important; }
+  #modalChangeDish #modalDishList > div { grid-template-columns: minmax(0,1fr) auto; gap: 7px; padding: 9px !important; }
+  #modalChangeDish #modalDishList > div > button { min-width: 76px; padding: 7px 8px !important; }
+}
