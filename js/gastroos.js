@@ -31,7 +31,7 @@
         let recipeProteinCatalog = { fish: [], meat: [] };
         // Marcas temporales de la lista de compra: no modifican el stock real ni se guardan.
         let shoppingManualStockKeys = new Set();
-        const proveedorCategorias = ["Carne", "Pescado", "Lácteos", "Verduras y frutas", "Secos", "Congelados"];
+        const proveedorCategorias = ["Carne", "Pescado", "Lácteos", "Verduras", "Secos", "Congelados"];
         const daysList = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
         const FIRST_SUBCATEGORIES = {
             cuchara: ["legumbres", "guisos", "sopas_o_caldos"],
@@ -265,6 +265,7 @@
 
         function normalizeDishData(d) {
             const dish = { ...d };
+            dish.ingredientes = (Array.isArray(dish.ingredientes) ? dish.ingredientes : []).map(ing => ({ ...ing, categoria_proveedor: String(ing?.categoria_proveedor || "").trim() === "Verduras y frutas" ? "Verduras" : (ing?.categoria_proveedor || "Secos") }));
             dish.demanda = dish.demanda || "Media";
             dish.precocinado = !!dish.precocinado;
             dish.plato_elaborado = !!dish.plato_elaborado;
@@ -778,6 +779,7 @@
                 const conservation = String(item?.conservacion || "");
                 return {
                     ...item,
+                    categoria_proveedor: String(item?.categoria_proveedor || "").trim() === "Verduras y frutas" ? "Verduras" : item?.categoria_proveedor,
                     conservacion: /congel/i.test(conservation) ? "Congelado" : "Refrigerado"
                 };
             }) : [];
@@ -1333,20 +1335,21 @@
             const container = document.getElementById('ingredientsContainer');
             const row = document.createElement('div');
             row.className = 'ingredient-row flex gap-2 items-center';
+            if (categoria === "Verduras y frutas") categoria = "Verduras";
             const legacyUnit = ['kg', 'L'].includes(String(unidad)) ? String(unidad) : '';
             row.dataset.originalUnidad = unidad ?? '';
             row.dataset.originalCategoria = categoria ?? '';
             row.dataset.unidadTouched = 'false';
             row.dataset.categoriaTouched = 'false';
             row.innerHTML = `
-                <input type="text" placeholder="Ingrediente..." value="${escapeHtml(nombre)}" required class="flex-[3] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <input type="text" placeholder="Ingrediente..." value="${escapeHtml(nombre)}" required class="ingredient-name-input flex-[4] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                 <input type="text" inputmode="decimal" placeholder="Cant." value="${cantidad !== '' && cantidad !== undefined ? cantidad : ''}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                 <select class="w-14 min-w-[3.5rem] flex-[0_0_3.5rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                     ${legacyUnit ? `<option value="${legacyUnit}" selected>${legacyUnit}</option>` : ''}
                     <option value="g" ${unidad==='g'?'selected':''}>g</option>
                     <option value="ml" ${unidad==='ml'?'selected':''}>ml</option>
                 </select>
-                <select class="flex-2 p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <select class="ingredient-category-select flex-[1.25] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                     ${proveedorCategorias.map(c => `<option value="${c}" ${categoria===c?'selected':''}>${c}</option>`).join('')}
                 </select>
                 <button type="button" class="text-red-500 font-bold px-1" onclick="this.parentElement.remove()">×</button>
@@ -4074,7 +4077,7 @@
             rulesBox.innerHTML = `<details class="generator-rules-details"><summary><span><b>NORMAS APLICADAS</b><small>Ver configuración de esta cocina</small></span><span class="accordion-chevron">⌄</span></summary><div class="generator-rules-body"><div class="generator-rule-grid"><div><b>Primeros</b><span>${escapeHtml(firstSummary)} · ${structure.firstSpecs.length} total</span></div><div><b>Segundos</b><span>${escapeHtml(secondSummary)} · ${structure.secondSpecs.length} total</span></div><div><b>Guisos</b><span>${escapeHtml(guisoText)}</span></div><div><b>Fritos</b><span>Máx. ${p.maxWeeklyFritos} por semana</span></div><div><b>Cremas</b><span>Máx. ${p.maxWeeklyCreams} por semana</span></div><div><b>Pasta</b><span>Máx. ${p.maxWeeklyPasta} días · consecutiva: ${consecutiveLabel(p.permitirPastaConsecutiva)}</span></div><div><b>Legumbres</b><span>Máx. ${p.maxWeeklyLegumes} días · consecutiva: ${consecutiveLabel(p.permitirLegumbresConsecutivas)}</span></div><div><b>Arroz</b><span>Máx. ${p.maxWeeklyRice} días · consecutivo: ${consecutiveLabel(p.permitirArrozConsecutivo)}</span></div><div><b>Verdura entera</b><span>Máx. ${p.maxWeeklyVegetableWhole} días</span></div><div><b>Sopas y caldos</b><span>Máx. ${p.maxWeeklySoups} días · consecutivos: ${consecutiveLabel(p.permitirSopasConsecutivas)}</span></div><div><b>Carnes</b><span>${escapeHtml(meats)}</span></div><div><b>Pescados</b><span>${escapeHtml(fish)}</span></div><div><b>Stock</b><span>${escapeHtml(stockPriorityLabels[p.prioridadStock] || p.prioridadStock)}</span></div></div></div></details>${diagnostics}`;
             container.appendChild(rulesBox);
 
-            const daysToRender = selectedGeneratorDay === 'Todos' ? daysList : [selectedGeneratorDay];
+            const daysToRender = [selectedGeneratorDay].filter(day => daysList.includes(day));
 
             daysToRender.forEach(dayName => {
                 const slots = currentMenu.days[dayName] || [];
