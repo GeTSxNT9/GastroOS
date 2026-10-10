@@ -26,7 +26,7 @@ The application runs primarily in the browser, with **local persistence, PWA ins
 
 - Create, edit, delete, filter, and bulk-edit recipes.
 - Manage ingredients, quantities, units, supplier categories, allergens, classifications, demand, and cooking techniques.
-- Classify recipes as **Precooked** and/or **Prepared Dish**. These status tags use the same visual style as the menu tags; they are deliberately smaller in the recipe catalog and slightly larger in the menu generator.
+- Classify recipes as **Precooked** and/or **Prepared Dish**. These status tags share the same rectangular shape, rounded corners, semantic colors, and typography across the recipe catalog and menu generator; they are smaller in the catalog and slightly larger in the menu generator.
 - Product-level allergen mapping can be maintained separately; mapped allergens are automatically applied to recipes that use those products.
 - Run recipe diagnostics and maintain local recipe history.
 
@@ -208,3 +208,9 @@ Because authentication is client-side, credentials stored in `localStorage` are 
 GastroOS aims to automate repetitive weekly kitchen planning **without hiding the logic behind it**.
 
 It combines structured recipes, configurable kitchen rules, editable protein catalogs, stock awareness, production calculations, allergen mapping, shopping control, and local persistence while keeping final decisions under user control.
+
+## Sistema visual de la interfaz
+
+La interfaz comparte ahora una capa de estilos globales en `css/gastroos.css`: paleta de color coherente para los temas claro y oscuro, radios y bordes consistentes, campos de formulario uniformes, estados de foco accesibles, botones principales/secundarios armonizados y superficies coherentes para tarjetas y ventanas modales. Los filtros y pestañas conservan su forma de píldora y las etiquetas de estado mantienen sus colores semánticos. El tamaño puede variar según el contexto (por ejemplo, recetario frente a generador de menús), sin cambiar el estilo base.
+
+Esta unificación visual no elimina la dependencia de Tailwind cargado desde CDN; el funcionamiento visual completamente sin conexión debe verificarse y resolverse por separado.
