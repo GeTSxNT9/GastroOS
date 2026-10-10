@@ -26,7 +26,7 @@ The application runs primarily in the browser, with **local persistence, PWA ins
 
 - Create, edit, delete, filter, and bulk-edit recipes.
 - Manage ingredients, quantities, units, supplier categories, allergens, classifications, demand, and cooking techniques.
-- Classify recipes as **Precooked** and/or **Prepared Dish**.
+- Classify recipes as **Precooked** and/or **Prepared Dish**. These status tags use the same visual style as the menu tags; they are deliberately smaller in the recipe catalog and slightly larger in the menu generator.
 - Product-level allergen mapping can be maintained separately; mapped allergens are automatically applied to recipes that use those products.
 - Run recipe diagnostics and maintain local recipe history.
 
@@ -135,7 +135,7 @@ GitHub synchronization is optional: the core application does not require a back
 - Installable Progressive Web App.
 - Versioned Service Worker caching.
 - Network-first updates with offline fallback for cached same-origin resources.
-- The current HTML loads Tailwind's runtime from `cdn.tailwindcss.com`; therefore, a first load without internet, or an offline session where that runtime was not already loaded by the browser, may render with incomplete utility styling. Core app files are cached, but this external runtime is not bundled locally.
+- **Offline limitation:** the HTML still loads Tailwind's runtime from `cdn.tailwindcss.com`. The Service Worker caches same-origin app files, but does not cache that external runtime. Therefore, offline opening and full visual fidelity are not guaranteed. To claim reliable offline operation, Tailwind must be bundled locally and the complete offline flow tested in a real browser.
 - No dedicated backend required for the core application.
 
 ---
