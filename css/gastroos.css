@@ -2203,3 +2203,304 @@ html.dark .menu-status-badge.precooked { background:#500724; color:#f9a8d4; bord
 @media (max-width:640px) {
     .menu-status-badge { font-size:10px; padding:2px 6px; }
 }
+
+/* =====================================================================
+   GastroOS Design System — capa de coherencia visual global
+   Mantiene intactas las reglas funcionales; unifica controles, superficies,
+   radios, bordes, foco y estados en todas las vistas y modales.
+   ===================================================================== */
+:root {
+  --g-bg: #f4f6fa;
+  --g-surface: #ffffff;
+  --g-surface-strong: #ffffff;
+  --g-control: #f7f8fb;
+  --g-border: #e1e6ef;
+  --g-text: #172033;
+  --g-muted: #65718a;
+  --g-accent: #315bd6;
+  --g-accent-hover: #2449b8;
+  --g-accent-soft: #edf2ff;
+  --g-focus: rgba(49, 91, 214, .22);
+  --g-radius: 16px;
+  --g-radius-control: 10px;
+  --g-radius-small: 8px;
+  --g-shadow: 0 8px 24px rgba(27, 39, 67, .07);
+  --g-shadow-sm: 0 2px 8px rgba(27, 39, 67, .045);
+}
+html.dark {
+  --g-bg: #11151d;
+  --g-surface: #1a202b;
+  --g-surface-strong: #202735;
+  --g-control: #151b25;
+  --g-border: #30394a;
+  --g-text: #edf1f8;
+  --g-muted: #a3aec1;
+  --g-accent: #83a5ff;
+  --g-accent-hover: #a0b8ff;
+  --g-accent-soft: #252f48;
+  --g-focus: rgba(131, 165, 255, .25);
+  --g-shadow: 0 10px 28px rgba(0, 0, 0, .22);
+  --g-shadow-sm: 0 3px 10px rgba(0, 0, 0, .16);
+}
+
+html { background: var(--g-bg); }
+body {
+  background: var(--g-bg) !important;
+  color: var(--g-text) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.45;
+}
+header, body > header, html.dark header, html.dark body > header {
+  background: var(--g-surface) !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+  box-shadow: 0 1px 0 var(--g-border) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Tarjetas y contenedores principales comparten la misma superficie. */
+#dishesList > div, #generatedMenuContainer > div, #historyListContainer > div,
+#rawStockList > div, #prepStockList > div, #shoppingListBreakdown > div,
+main section, #dishForm, #rawStockForm, #prepStockForm,
+#subtab-shopping-content > div, #modalChangeDish > div,
+#subtab-menu-content > div:first-child,
+.day-regeneration-modal-panel, .day-regeneration-option,
+#bulkToolbar, .backup-action, .settings-card {
+  border-radius: var(--g-radius) !important;
+}
+#dishesList > div, #generatedMenuContainer > div, #historyListContainer > div,
+#rawStockList > div, #prepStockList > div, #shoppingListBreakdown > div,
+main section, #dishForm, #rawStockForm, #prepStockForm,
+#subtab-shopping-content > div, #modalChangeDish > div,
+#subtab-menu-content > div:first-child, .day-regeneration-modal-panel,
+.day-regeneration-option {
+  border-color: var(--g-border) !important;
+  box-shadow: var(--g-shadow-sm) !important;
+}
+#subtab-menu-content > div:first-child,
+html.dark #subtab-menu-content > div:first-child {
+  background: var(--g-surface) !important;
+  color: var(--g-text) !important;
+}
+.gastro-slot, .day-regeneration-dish,
+.day-regeneration-modal .day-regeneration-dish {
+  border-radius: var(--g-radius-control) !important;
+  border-color: var(--g-border) !important;
+}
+.gastro-slot { background: var(--g-control) !important; }
+.gastro-slot:hover { background: var(--g-surface) !important; }
+
+/* Todos los campos editables tienen altura, radio, borde y foco coherentes. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select, textarea,
+.settings-input, .day-regeneration-select {
+  border-radius: var(--g-radius-control) !important;
+  border: 1px solid var(--g-border) !important;
+  background-color: var(--g-control) !important;
+  color: var(--g-text) !important;
+  box-shadow: none !important;
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select, .settings-input { min-height: 40px; }
+textarea { min-height: 84px; }
+input::placeholder, textarea::placeholder { color: var(--g-muted) !important; opacity: .85; }
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+select:focus, textarea:focus, .settings-input:focus,
+.day-regeneration-select:focus {
+  outline: none !important;
+  border-color: var(--g-accent) !important;
+  box-shadow: 0 0 0 3px var(--g-focus) !important;
+}
+input[type="checkbox"], input[type="radio"] { accent-color: var(--g-accent); }
+
+/* Botones: altura y forma coherentes; se conservan los colores semánticos de
+   peligro/éxito/advertencia cuando el código ya los define explícitamente. */
+button:not(.nav-btn):not(.generator-day-tab):not(.filter-lvl1):not(.filter-lvl2),
+label[for="fileImport"], .secondary-action, .backup-action {
+  border-radius: var(--g-radius-control) !important;
+  font-weight: 650;
+  transition: background-color .16s ease, border-color .16s ease,
+    box-shadow .16s ease, transform .16s ease, color .16s ease !important;
+}
+button:focus-visible, label[for="fileImport"]:focus-visible {
+  outline: 3px solid var(--g-focus) !important;
+  outline-offset: 2px;
+}
+button:disabled { cursor: not-allowed; opacity: .52; }
+#btnGenerateMenu, #dishForm button[type="submit"],
+#rawStockForm button[type="submit"], #prepStockForm button[type="submit"],
+#btnDownloadShoppingTxt, #btnExport, .day-regeneration-select {
+  background: var(--g-accent) !important;
+  color: #fff !important;
+  border: 1px solid var(--g-accent) !important;
+  border-radius: var(--g-radius-control) !important;
+  box-shadow: none !important;
+}
+#btnGenerateMenu:hover, #dishForm button[type="submit"]:hover,
+#rawStockForm button[type="submit"]:hover, #prepStockForm button[type="submit"]:hover,
+#btnDownloadShoppingTxt:hover, #btnExport:hover {
+  background: var(--g-accent-hover) !important;
+}
+#btnSaveToHistory, #btnDownloadMenuTxt, #themeToggleBtn,
+.gastro-slot-action, .day-regeneration-close {
+  border-radius: var(--g-radius-control) !important;
+  border: 1px solid var(--g-border) !important;
+  background: var(--g-control) !important;
+  color: var(--g-text) !important;
+  box-shadow: none !important;
+}
+#themeToggleBtn { width: 36px !important; height: 36px !important; }
+
+/* Navegación y filtros: la forma es siempre píldora, con un único acento. */
+.filter-lvl1, .filter-lvl2, .generator-day-tab,
+#btnSubTabMenu, #btnSubTabShopping {
+  border-radius: 999px !important;
+  border-color: var(--g-border) !important;
+  box-shadow: none !important;
+}
+.filter-lvl1.active, .filter-lvl1.bg-indigo-600,
+.generator-day-tab.active, .generator-day-tab.bg-indigo-600 {
+  background: var(--g-accent) !important;
+  border-color: var(--g-accent) !important;
+  color: #fff !important;
+}
+.filter-lvl2.active, .filter-lvl2.bg-indigo-100 {
+  background: var(--g-accent-soft) !important;
+  border-color: var(--g-accent) !important;
+  color: var(--g-accent) !important;
+}
+.bg-indigo-600 { background-color: var(--g-accent) !important; }
+
+.text-indigo-600, .text-indigo-700 { color: var(--g-accent) !important; }
+.border-indigo-100, .border-indigo-200 { border-color: var(--g-border) !important; }
+
+/* Etiquetas compactas con forma común; colores semánticos conservados. */
+.recipe-status-badge, .menu-status-badge {
+  border-radius: 999px !important;
+  border-width: 1px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0 !important;
+}
+.recipe-status-badge { padding: 2px 6px !important; font-size: 9px !important; }
+.menu-status-badge { padding: 3px 8px !important; font-size: 11px !important; }
+
+/* Modales, alertas y elementos de ayuda usan la misma familia de superficies. */
+.day-regeneration-modal-panel, .day-regeneration-modal-header,
+.day-regeneration-option, .day-regeneration-dish {
+  border-color: var(--g-border) !important;
+}
+.day-regeneration-modal-panel, .day-regeneration-modal-header,
+.day-regeneration-option, .day-regeneration-dish,
+html.dark .day-regeneration-modal-panel, html.dark .day-regeneration-modal-header,
+html.dark .day-regeneration-option, html.dark .day-regeneration-dish {
+  color: var(--g-text) !important;
+}
+.day-regeneration-modal-header, .day-regeneration-option,
+html.dark .day-regeneration-modal-header, html.dark .day-regeneration-option {
+  background: var(--g-surface) !important;
+}
+.day-regeneration-dish, html.dark .day-regeneration-dish {
+  background: var(--g-control) !important;
+}
+.day-regeneration-option-number { color: var(--g-accent) !important; }
+.day-regeneration-option-note, .day-regeneration-group-label { color: var(--g-muted) !important; }
+
+/* Reducir movimiento si el dispositivo lo solicita. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+@media (max-width: 640px) {
+  main { padding: 14px !important; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, .settings-input { min-height: 42px; }
+  .recipe-status-badge { font-size: 9px !important; }
+  .menu-status-badge { font-size: 10px !important; padding: 3px 7px !important; }
+}
+
+/* =====================================================================
+   GastroOS — ajuste final de consistencia visual
+   Última capa intencionada para neutralizar reglas históricas duplicadas.
+   Mantiene los colores semánticos de estado y unifica las formas.
+   ===================================================================== */
+:root {
+  --g-radius-card: 14px;
+  --g-radius-control: 8px;
+  --g-radius-badge: 5px;
+  --g-control-height: 40px;
+}
+
+/* Campos: misma geometría, borde, fondo y estado de foco en toda la app. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select,
+textarea,
+.settings-input,
+.day-regeneration-select {
+  border-radius: var(--g-radius-control) !important;
+  border-color: var(--g-border) !important;
+  color: var(--g-text) !important;
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select,
+.settings-input {
+  min-height: var(--g-control-height);
+}
+
+/* Botones de acción con una forma común; navegación y filtros conservan
+   su forma de pestaña porque cumplen una función visual distinta. */
+button:not(.nav-btn):not(.generator-day-tab):not(.filter-lvl1):not(.filter-lvl2),
+label[for="fileImport"],
+.secondary-action,
+.backup-action,
+.gastro-slot-action,
+.day-regeneration-close {
+  border-radius: var(--g-radius-control) !important;
+}
+
+/* Tarjetas, paneles y modales usan la misma familia de esquinas. */
+#dishesList > div, #generatedMenuContainer > div, #historyListContainer > div,
+#rawStockList > div, #prepStockList > div, #shoppingListBreakdown > div,
+main section, #dishForm, #rawStockForm, #prepStockForm,
+#subtab-shopping-content > div, #modalChangeDish > div,
+#subtab-menu-content > div:first-child, .day-regeneration-modal-panel,
+.day-regeneration-option, .settings-card, .backup-action {
+  border-radius: var(--g-radius-card) !important;
+}
+
+/* Etiquetas de estado: rectangulares con esquinas suavemente redondeadas,
+   nunca ovaladas. Solo varía el tamaño según el contexto. */
+.recipe-status-badge,
+.menu-status-badge {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  max-width: 100%;
+  border-radius: var(--g-radius-badge) !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  font-weight: 650 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.2 !important;
+  white-space: nowrap;
+}
+.recipe-status-badge {
+  padding: 2px 5px !important;
+  font-size: 9px !important;
+}
+.menu-status-badge {
+  padding: 3px 7px !important;
+  font-size: 11px !important;
+}
+@media (max-width: 640px) {
+  .recipe-status-badge { padding: 2px 4px !important; font-size: 9px !important; }
+  .menu-status-badge { padding: 3px 6px !important; font-size: 10px !important; }
+}
+
+/* El tema oscuro usa los mismos tokens y no introduce geometrías distintas. */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html.dark select,
+html.dark textarea,
+html.dark .settings-input,
+html.dark .day-regeneration-select {
+  border-color: var(--g-border) !important;
+}
