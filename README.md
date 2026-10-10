@@ -208,9 +208,3 @@ Because authentication is client-side, credentials stored in `localStorage` are 
 GastroOS aims to automate repetitive weekly kitchen planning **without hiding the logic behind it**.
 
 It combines structured recipes, configurable kitchen rules, editable protein catalogs, stock awareness, production calculations, allergen mapping, shopping control, and local persistence while keeping final decisions under user control.
-
-## Sistema visual de la interfaz
-
-La interfaz comparte ahora una capa de estilos globales en `css/gastroos.css`: paleta de color coherente para los temas claro y oscuro, radios y bordes consistentes, campos de formulario uniformes, estados de foco accesibles, botones principales/secundarios armonizados y superficies coherentes para tarjetas y ventanas modales. Los filtros y pestañas conservan su forma de píldora y las etiquetas de estado mantienen sus colores semánticos. El tamaño puede variar según el contexto (por ejemplo, recetario frente a generador de menús), sin cambiar el estilo base.
-
-Esta unificación visual no elimina la dependencia de Tailwind cargado desde CDN; el funcionamiento visual completamente sin conexión debe verificarse y resolverse por separado.
