@@ -106,6 +106,7 @@ GastroOS/
 ├── icon-192.png
 ├── icon-512.png
 └── README.md
+```
 
 **Stack:** HTML5 · CSS · JavaScript · PWA · Web Storage · GitHub API
 
