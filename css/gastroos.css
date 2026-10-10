@@ -2167,3 +2167,39 @@ html.dark .day-regeneration-modal-header p{color:#a1a1aa!important}
 html.dark .day-regeneration-close{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.10)!important;color:#d4d4d8!important}
 html.dark .day-regeneration-option{background:#232326!important;border-color:rgba(255,255,255,.09)!important}.dark .day-regeneration-dish{background:#18181b!important}
 @media(max-width:640px){.protein-catalog-add-row{gap:8px}.protein-catalog-add-row .secondary-action{padding:9px 12px!important}.day-regeneration-modal{padding:12px!important}.day-regeneration-modal-panel{width:100%!important;max-height:82vh;border-radius:16px!important}.day-regeneration-dish{grid-template-columns:82px minmax(0,1fr)}.day-regeneration-select{padding:8px 9px!important;font-size:9px!important}}
+
+
+/* Etiquetas de estado unificadas: compactas en el recetario y algo mayores en menús. */
+.recipe-status-badge,
+.menu-status-badge {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:max-content;
+    max-width:100%;
+    border:1px solid transparent;
+    border-radius:999px;
+    font-weight:700;
+    line-height:1.15;
+    white-space:nowrap;
+    box-sizing:border-box;
+}
+.recipe-status-badge {
+    padding:2px 6px;
+    font-size:9px;
+}
+.menu-status-badge {
+    padding:3px 8px;
+    font-size:11px;
+}
+.recipe-status-badge.prepared,
+.menu-status-badge.prepared { background:#f3e8ff; color:#7e22ce; border-color:#e9d5ff; }
+.recipe-status-badge.precooked,
+.menu-status-badge.precooked { background:#fce7f3; color:#be185d; border-color:#fbcfe8; }
+html.dark .recipe-status-badge.prepared,
+html.dark .menu-status-badge.prepared { background:#2e1065; color:#d8b4fe; border-color:#581c87; }
+html.dark .recipe-status-badge.precooked,
+html.dark .menu-status-badge.precooked { background:#500724; color:#f9a8d4; border-color:#831843; }
+@media (max-width:640px) {
+    .menu-status-badge { font-size:10px; padding:2px 6px; }
+}
