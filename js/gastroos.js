@@ -2412,8 +2412,15 @@
                     return;
                 }
                 const hasTotal = item?.cantidadTotal !== undefined && item?.cantidadTotal !== null && item?.cantidadTotal !== "";
-                const quantity = Number(hasTotal ? item.cantidadTotal : item?.raciones);
-                const unit = hasTotal ? String(item?.unidad || "kg") : "raciones";
+                // Las raciones de un plato elaborado no equivalen a kg/L/unidades del producto congelado.
+                // Si no existe una cantidad física y una unidad explícita, se conserva el registro
+                // para revisión manual en vez de contaminar el stock de materia prima con otra unidad.
+                if (!hasTotal || !String(item?.unidad || "").trim()) {
+                    keepPrepared.push({ ...item, requiereRevisionPrecocinado: true });
+                    return;
+                }
+                const quantity = Number(item.cantidadTotal);
+                const unit = String(item.unidad).trim();
                 if (!Number.isFinite(quantity) || quantity < 0) {
                     keepPrepared.push(item);
                     return;
@@ -2872,6 +2879,7 @@
                             <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">${escapeHtml(quantityLabel)}</span>
                             ${servingsLabel ? `<span class="text-[10px] text-gray-500 dark:text-gray-400">${escapeHtml(servingsLabel)}</span>` : ''}
                             <span class="text-[9px] px-1.5 py-0.5 rounded font-semibold border ${badgeColor}">${escapeHtml(item.asignacion || "Sin asignar")}</span>
+                            ${item.requiereRevisionPrecocinado ? '<span class="text-[9px] px-1.5 py-0.5 rounded font-semibold border border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300">Revisar unidad del precocinado</span>' : ''}
                         </div>
                     </div>
                     <div class="flex items-center gap-1">
