@@ -2735,3 +2735,51 @@ html.dark .day-regeneration-close { background: #f3f4f6 !important; color: #3741
     .day-regeneration-modal .day-regeneration-dish { grid-template-columns: 70px minmax(0, 1fr) !important; }
     .day-regeneration-dish-content { gap: 5px 7px !important; }
 }
+
+
+/* Corrección definitiva: el menú generado solo reserva ancho para etiquetas que existen. */
+.gastro-slot-title-row {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}
+.gastro-slot-title-row.no-badges {
+    display: block !important;
+}
+.gastro-slot-title-row.no-badges > .text-sm {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+}
+.gastro-slot-title-row.has-badges {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) max-content !important;
+    align-items: start !important;
+    column-gap: 6px !important;
+}
+.gastro-slot-title-row.has-badges > .text-sm {
+    min-width: 0 !important;
+    width: auto !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+}
+.gastro-slot-title-row.has-badges .menu-status-badges-inline {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    width: max-content !important;
+    min-width: max-content !important;
+    margin: 0 !important;
+}
+.gastro-slot-title-row.has-badges .menu-status-badge {
+    white-space: nowrap !important;
+}
+@media (max-width: 640px) {
+    .gastro-slot-title-row.has-badges { column-gap: 4px !important; }
+    .gastro-slot-title-row.has-badges .menu-status-badge { font-size: 9px !important; padding: 2px 4px !important; }
+}
