@@ -2568,3 +2568,112 @@ html.dark #modalChangeDish #modalDishList > div { background: #171d28 !important
   #modalChangeDish #modalDishList > div { grid-template-columns: minmax(0,1fr) auto; gap: 7px; padding: 9px !important; }
   #modalChangeDish #modalDishList > div > button { min-width: 76px; padding: 7px 8px !important; }
 }
+
+
+/* Ajustes solicitados: centrar días y unificar alternativas con el modal de cambio de plato. */
+#dayTabsContainer {
+    display:flex !important;
+    justify-content:center !important;
+    align-items:center !important;
+    flex-wrap:wrap !important;
+    gap:8px !important;
+    overflow:visible !important;
+    width:100% !important;
+    padding:4px 0 8px !important;
+    margin-inline:auto !important;
+}
+#dayTabsContainer .generator-day-tab { flex:0 0 auto !important; }
+
+.day-regeneration-modal {
+    background:rgba(15,23,42,.60) !important;
+    backdrop-filter:blur(8px) !important;
+    -webkit-backdrop-filter:blur(8px) !important;
+    padding:0 !important;
+}
+.day-regeneration-modal-panel {
+    width:min(100%, 512px) !important;
+    max-height:85vh !important;
+    border-radius:16px !important;
+    background:#fff !important;
+    color:#1f2937 !important;
+    border:1px solid #e5e7eb !important;
+    box-shadow:0 20px 50px rgba(15,23,42,.24) !important;
+}
+.day-regeneration-modal-header {
+    padding:16px !important;
+    background:#4f46e5 !important;
+    color:#fff !important;
+    border-bottom:0 !important;
+}
+.day-regeneration-modal-header h3 {
+    color:#fff !important;
+    font-size:14px !important;
+    font-weight:800 !important;
+}
+.day-regeneration-modal-header p {
+    color:#e0e7ff !important;
+    font-size:11px !important;
+}
+.day-regeneration-close {
+    width:32px !important;
+    height:32px !important;
+    border-radius:8px !important;
+    background:rgba(255,255,255,.12) !important;
+    border:1px solid rgba(255,255,255,.25) !important;
+    color:#fff !important;
+}
+#dayRegenerationList {
+    padding:12px !important;
+    overflow-y:auto !important;
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    max-height:calc(85vh - 68px) !important;
+}
+.day-regeneration-modal .day-regeneration-option {
+    padding:12px !important;
+    border:1px solid #e5e7eb !important;
+    border-radius:12px !important;
+    background:#fff !important;
+    box-shadow:0 1px 3px rgba(15,23,42,.05) !important;
+}
+.day-regeneration-modal .day-regeneration-option + .day-regeneration-option { margin-top:10px !important; }
+.day-regeneration-option-head { align-items:center !important; margin-bottom:10px !important; }
+.day-regeneration-option-number { color:#4f46e5 !important; font-size:10px !important; }
+.day-regeneration-option-note { font-size:10px !important; }
+.day-regeneration-modal .day-regeneration-select {
+    min-height:36px !important;
+    padding:8px 12px !important;
+    border-radius:7px !important;
+    background:#071a33 !important;
+    color:#fff !important;
+    font-size:10px !important;
+    font-weight:800 !important;
+}
+.day-regeneration-modal .day-regeneration-group-label {
+    color:#64748b !important;
+    font-size:9px !important;
+    letter-spacing:.06em !important;
+}
+.day-regeneration-modal .day-regeneration-dish {
+    grid-template-columns:92px minmax(0,1fr) !important;
+    gap:8px !important;
+    padding:7px 8px !important;
+    border:1px solid #eef0f4 !important;
+    border-radius:8px !important;
+    background:#f9fafb !important;
+}
+.day-regeneration-modal .day-regeneration-dish strong { font-size:11px !important; line-height:1.35 !important; }
+html.dark .day-regeneration-modal-panel { background:#111827 !important; color:#f3f4f6 !important; border-color:#374151 !important; }
+html.dark .day-regeneration-modal-header { background:#312e81 !important; }
+html.dark .day-regeneration-modal .day-regeneration-option { background:#1f2937 !important; border-color:#374151 !important; }
+html.dark .day-regeneration-modal .day-regeneration-dish { background:#111827 !important; border-color:#374151 !important; }
+html.dark .day-regeneration-modal .day-regeneration-group-label { color:#9ca3af !important; }
+@media(max-width:640px) {
+    #dayTabsContainer { gap:6px !important; }
+    .day-regeneration-modal { padding:0 !important; align-items:flex-end !important; }
+    .day-regeneration-modal-panel { width:100% !important; max-height:85vh !important; border-radius:16px 16px 0 0 !important; }
+    #dayRegenerationList { max-height:calc(85vh - 68px) !important; }
+    .day-regeneration-modal .day-regeneration-dish { grid-template-columns:78px minmax(0,1fr) !important; }
+    .day-regeneration-option-head { align-items:flex-start !important; }
+    .day-regeneration-modal .day-regeneration-select { white-space:normal !important; }
+}
