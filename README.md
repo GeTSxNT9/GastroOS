@@ -87,6 +87,7 @@ Installable PWA with Service Worker caching and network-first strategy. *(Requir
 
 Lightweight static structure:
 
+```text
 GastroOS/
 ├── index.html
 ├── recipes.json
