@@ -3172,3 +3172,43 @@ nav.fixed.bottom-0.left-0.right-0.z-50 {
   .menu-status-badges-inline .menu-status-badge { font-size: 8px !important; }
   nav.fixed.bottom-0.left-0.right-0.z-50 { height: 56px !important; min-height: 56px !important; }
 }
+
+/* v29: alinear el texto del plato en el mismo eje, con o sin etiquetas. */
+.gastro-slot-title-row {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 34px !important;
+  height: auto !important;
+}
+.gastro-slot-title-row > div.text-sm {
+  display: flex !important;
+  align-items: center !important;
+  align-self: stretch !important;
+  min-height: 34px !important;
+  line-height: 1.25 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.gastro-slot-title-row .menu-status-badges-inline {
+  align-self: center !important;
+}
+/* v29: dar más altura a la barra inferior para que los botones queden dentro. */
+nav.fixed.bottom-0.left-0.right-0.z-50 {
+  height: 68px !important;
+  min-height: 68px !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  box-sizing: border-box !important;
+}
+.nav-btn {
+  min-height: 56px !important;
+  height: 56px !important;
+  padding: 4px 0 !important;
+  box-sizing: border-box !important;
+}
+@media (max-width: 640px) {
+  .gastro-slot-title-row { min-height: 34px !important; }
+  .gastro-slot-title-row > div.text-sm { min-height: 34px !important; }
+  nav.fixed.bottom-0.left-0.right-0.z-50 { height: 66px !important; min-height: 66px !important; }
+  .nav-btn { min-height: 54px !important; height: 54px !important; }
+}
