@@ -3236,3 +3236,19 @@ nav.fixed.bottom-0.left-0.right-0.z-50 {
   min-height: 34px !important;
   align-items: center !important;
 }
+
+
+/* GastroOS · Fase 6: accesibilidad transversal, sin alterar el diseño base. */
+:where(button, a, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
