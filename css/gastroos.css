@@ -3227,7 +3227,10 @@ nav.fixed.bottom-0.left-0.right-0.z-50 {
   height: 34px !important;
   display: flex !important;
   align-items: center !important;
-  transform: translateY(4px) !important;
+  /* Sin desplazamiento vertical adicional: ambos tipos de fila comparten el mismo eje. */
+  transform: none !important;
+  position: relative !important;
+  top: 0 !important;
 }
 .gastro-slot-title-row.has-badges {
   min-height: 34px !important;
