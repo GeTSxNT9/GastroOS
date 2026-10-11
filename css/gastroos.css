@@ -2992,3 +2992,63 @@ body > nav, nav.fixed {
   #view-stock section { padding: 13px !important; }
   #dishesList > div { padding: 12px !important; }
 }
+
+/* GastroOS · etiquetas refinadas y centradas en el menú generado */
+.recipe-status-badge,
+.menu-status-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 22px !important;
+  padding: 3px 9px !important;
+  border-radius: 6px !important;
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+  font-weight: 600 !important;
+  letter-spacing: .01em !important;
+  border-width: 1px !important;
+  box-shadow: 0 1px 1px rgb(15 23 42 / 3%) !important;
+}
+.recipe-status-badge.prepared,
+.menu-status-badge.prepared {
+  background: #f3f0ff !important;
+  color: #55419a !important;
+  border-color: #dcd4fb !important;
+}
+.recipe-status-badge.precooked,
+.menu-status-badge.precooked {
+  background: #edf5fb !important;
+  color: #285b7d !important;
+  border-color: #d0e3f1 !important;
+}
+/* Demanda: tonos suaves y elegantes, sin depender únicamente del emoji. */
+#recipeList span.border.bg-green-100,
+#recipeList span.bg-green-100.border { background: #edf7f0 !important; color: #276749 !important; border-color: #cce8d4 !important; }
+#recipeList span.border.bg-yellow-100,
+#recipeList span.bg-yellow-100.border { background: #fbf5e6 !important; color: #85651b !important; border-color: #efe0b4 !important; }
+#recipeList span.border.bg-red-100,
+#recipeList span.bg-red-100.border { background: #fbefef !important; color: #9b4141 !important; border-color: #efd1d1 !important; }
+#recipeList .gastro-category-badge,
+#recipeList .gastro-technical-badge {
+  border-radius: 5px !important;
+  font-weight: 600 !important;
+  letter-spacing: .01em !important;
+}
+/* En el menú generado, centrar las etiquetas en la zona disponible entre nombre y margen. */
+.gastro-slot-title-row.has-badges {
+  grid-template-columns: minmax(0, 1fr) minmax(112px, .72fr) !important;
+  column-gap: 8px !important;
+}
+.gastro-slot-title-row.has-badges .menu-status-badges-inline {
+  width: 100% !important;
+  min-width: 0 !important;
+  justify-content: center !important;
+  justify-self: stretch !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+}
+.gastro-slot-title-row.has-badges .menu-status-badge { white-space: nowrap !important; }
+@media (max-width: 640px) {
+  .gastro-slot-title-row.has-badges { grid-template-columns: minmax(0, 1fr) minmax(90px, .62fr) !important; column-gap: 5px !important; }
+  .gastro-slot-title-row.has-badges .menu-status-badge { font-size: 9px !important; padding: 3px 6px !important; }
+}
