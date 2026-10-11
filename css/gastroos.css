@@ -2783,3 +2783,97 @@ html.dark .day-regeneration-close { background: #f3f4f6 !important; color: #3741
     .gastro-slot-title-row.has-badges { column-gap: 4px !important; }
     .gastro-slot-title-row.has-badges .menu-status-badge { font-size: 9px !important; padding: 2px 4px !important; }
 }
+
+
+/* GastroOS · renovación visual clara, profesional y coherente */
+:root {
+  --g-bg: #f4f7fb;
+  --g-surface: #ffffff;
+  --g-surface-strong: #ffffff;
+  --g-border: #e3e9f1;
+  --g-text: #14263f;
+  --g-muted: #64748b;
+  --g-accent: #17365d;
+  --g-accent-soft: #eaf1fa;
+  --g-shadow: 0 12px 32px rgba(22, 42, 70, .055);
+  --g-shadow-sm: 0 4px 14px rgba(22, 42, 70, .045);
+  --g-radius: 16px;
+  --g-control: #f8fafc;
+}
+body {
+  background: #f4f7fb !important;
+  color: #14263f !important;
+  letter-spacing: -.012em !important;
+}
+body::before { content: none !important; }
+body > header, header {
+  background: rgba(255,255,255,.94) !important;
+  border-bottom: 1px solid #e5eaf1 !important;
+  box-shadow: 0 2px 12px rgba(22,42,70,.035) !important;
+  backdrop-filter: blur(16px) !important;
+}
+header h1 { color: #102b4d !important; letter-spacing: -.04em !important; }
+header svg { color: #17365d !important; }
+main { padding: clamp(12px, 2.4vw, 24px) !important; }
+main > h2, main h2, main h3 { color: #172b45; letter-spacing: -.025em; }
+#dishesList > div, #generatedMenuContainer > div, #historyListContainer > div,
+#rawStockList > div, #prepStockList > div, #shoppingListBreakdown > div,
+main section, #dishForm, #subtab-shopping-content > div, #modalChangeDish > div {
+  background: #fff !important;
+  border: 1px solid #e3e9f1 !important;
+  box-shadow: 0 4px 16px rgba(22,42,70,.045) !important;
+  backdrop-filter: none !important;
+}
+main section, #dishForm { border-radius: 16px !important; }
+#dishesList > div, #generatedMenuContainer > div, #historyListContainer > div,
+#rawStockList > div, #prepStockList > div { border-radius: 14px !important; }
+input:not([type=checkbox]):not([type=radio]):not([type=file]), select, textarea,
+#searchInput, .ingredient-name-input, .ingredient-category-select {
+  background: #f8fafc !important;
+  color: #172b45 !important;
+  border: 1px solid #dbe3ed !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+input:focus, select:focus, textarea:focus, #searchInput:focus {
+  outline: none !important;
+  border-color: #6d8db5 !important;
+  box-shadow: 0 0 0 3px rgba(42, 83, 132, .10) !important;
+}
+button:not(.nav-btn):not(.generator-day-tab):not(.filter-lvl1):not(.filter-lvl2) {
+  border-radius: 9px;
+  font-weight: 600;
+  transition: background-color .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease;
+}
+#btnGenerateMenu, #dishForm button[type=submit], #rawStockForm button[type=submit],
+#prepStockForm button[type=submit], #btnDownloadShoppingTxt, #btnExport,
+#btnBulkEdit, .btn-primary {
+  background: #17365d !important;
+  color: #fff !important;
+  border-color: #17365d !important;
+  box-shadow: 0 3px 8px rgba(23,54,93,.12) !important;
+}
+#btnGenerateMenu:hover, #dishForm button[type=submit]:hover, #btnBulkEdit:hover {
+  background: #234a78 !important;
+}
+button:focus-visible, a:focus-visible { outline: 3px solid rgba(63,111,166,.28); outline-offset: 2px; }
+body > nav, nav.fixed {
+  background: rgba(255,255,255,.96) !important;
+  border-top: 1px solid #e3e9f1 !important;
+  box-shadow: 0 -4px 18px rgba(22,42,70,.04) !important;
+  backdrop-filter: blur(18px) !important;
+}
+.nav-btn { color: #8492a5 !important; }
+.nav-btn.active, .nav-btn.text-indigo-600, .nav-btn.text-indigo-400 { color: #17365d !important; }
+.nav-btn span { font-size: 10px !important; font-weight: 600; letter-spacing: 0 !important; }
+#themeToggleBtn { border-radius: 9px !important; background: #f1f5f9 !important; color: #334155 !important; }
+#modalChangeDish { background: rgba(18,35,56,.28) !important; backdrop-filter: blur(5px) !important; }
+#modalChangeDish > div, .day-regeneration-modal { border-radius: 18px !important; box-shadow: 0 22px 70px rgba(15,35,60,.18) !important; }
+.day-regeneration-modal-header { background: #fff !important; border-bottom: 1px solid #e3e9f1 !important; }
+/* Más aire sin perder densidad en móvil */
+@media (max-width: 640px) {
+  main { padding: 12px !important; }
+  main section, #dishForm { border-radius: 14px !important; }
+  #dishesList > div, #generatedMenuContainer > div, #rawStockList > div, #prepStockList > div { border-radius: 12px !important; }
+  body > nav, nav.fixed { height: 76px !important; }
+}
