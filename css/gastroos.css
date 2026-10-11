@@ -2877,3 +2877,118 @@ body > nav, nav.fixed {
   #dishesList > div, #generatedMenuContainer > div, #rawStockList > div, #prepStockList > div { border-radius: 12px !important; }
   body > nav, nav.fixed { height: 76px !important; }
 }
+
+/* GastroOS · acabado visual integral de todas las pestañas */
+:root {
+  --g-bg: #f4f7fb;
+  --g-surface: #ffffff;
+  --g-border: #e2e8f0;
+  --g-text: #172b45;
+  --g-muted: #66768b;
+  --g-accent: #17365d;
+  --g-accent-hover: #234a78;
+  --g-accent-soft: #edf3fa;
+  --g-radius: 14px;
+}
+#main-container { background: #f4f7fb !important; }
+#view-banco, #view-form, #view-stock, #view-generator, #view-settings {
+  color: var(--g-text) !important;
+}
+/* Encabezados de cada sección */
+.view-heading-row, .view-heading-row > div { min-width: 0; }
+.view-title, #view-form > h2, #view-stock h2, #view-generator h2, #view-settings h2 {
+  color: #142b49 !important;
+  font-weight: 750 !important;
+  letter-spacing: -.035em !important;
+}
+.view-subtitle { color: #718096 !important; line-height: 1.5; }
+/* Banco de platos y filtros */
+.recetario-search-actions { gap: 10px !important; margin-bottom: 16px !important; }
+#searchInput { min-height: 44px !important; padding: 11px 14px !important; }
+.recetario-bulk-action-row { gap: 8px !important; }
+#btnBulkEdit { min-height: 44px !important; padding: 10px 13px !important; font-size: 11px !important; white-space: nowrap; }
+#bulkToolbar { border-radius: 13px !important; background: #f8fafc !important; border-color: #dfe7f1 !important; }
+.filter-lvl1, .filter-lvl2, .generator-day-tab {
+  border-radius: 9px !important; box-shadow: none !important; font-weight: 650 !important;
+}
+.filter-lvl1.active, .filter-lvl2.active, .generator-day-tab.active {
+  background: #17365d !important; border-color: #17365d !important; color: #fff !important;
+}
+.filter-lvl1:not(.active), .filter-lvl2:not(.active), .generator-day-tab:not(.active) {
+  background: #fff !important; border-color: #e0e7ef !important; color: #52647b !important;
+}
+#recipeResultsSummary { color: #718096 !important; font-size: 11px !important; }
+#dishesList { gap: 10px !important; }
+#dishesList > div { padding: 14px !important; }
+/* Formularios de recetas */
+#dishForm { padding: clamp(14px, 3vw, 22px) !important; gap: 17px !important; }
+#dishForm label, #view-form label { color: #64748b !important; font-weight: 650 !important; letter-spacing: .005em; }
+#dishForm input, #dishForm select, #dishForm textarea { min-height: 42px; }
+#dishForm input[type=checkbox], #dishForm input[type=radio] { min-height: initial; accent-color: #17365d; }
+#dishForm .pt-4 { border-top: 1px solid #edf1f6; margin-top: 4px; padding-top: 16px; }
+/* Stock: materias primas y elaboraciones */
+#view-stock { gap: 16px !important; }
+#view-stock section, #view-stock .settings-card, #view-stock form {
+  border: 1px solid #e2e8f0 !important; border-radius: 15px !important;
+  box-shadow: 0 4px 16px rgba(22,42,70,.04) !important;
+}
+#view-stock section { padding: 16px !important; }
+#view-stock h2, #view-stock h3 { font-weight: 720 !important; }
+#rawStockForm, #prepStockForm { gap: 12px !important; }
+#rawStockForm label, #prepStockForm label { color: #64748b !important; font-size: 11px !important; font-weight: 650 !important; }
+#rawStockForm input, #rawStockForm select, #prepStockForm input, #prepStockForm select { min-height: 40px; }
+#rawStockList, #prepStockList { gap: 9px !important; }
+#rawStockList > div, #prepStockList > div { padding: 12px !important; }
+/* Generador y lista de compra */
+#view-generator .gastro-generator-title { color: #142b49 !important; font-size: 20px !important; letter-spacing: -.035em !important; }
+#view-generator .gastro-generator-description { color: #64748b !important; }
+#view-generator > div:first-child > div:first-child,
+#view-generator .generator-header, #view-generator .gastro-generator-header {
+  background: #fff !important; color: #172b45 !important; border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important; box-shadow: 0 4px 16px rgba(22,42,70,.04) !important;
+}
+#btnGenerateMenu { background: #17365d !important; color: #fff !important; border: 1px solid #17365d !important; }
+#btnGenerateMenu:hover { background: #234a78 !important; }
+#btnSaveToHistory, #btnDownloadMenuTxt { background: #edf3fa !important; color: #17365d !important; border: 1px solid #dce6f2 !important; }
+#dayTabsContainer { justify-content: center !important; gap: 8px !important; padding: 3px 0 8px !important; }
+#dayTabsContainer .generator-day-tab { flex: 0 1 auto; min-width: 58px; padding: 9px 12px !important; }
+#generatedMenuContainer > div { border-radius: 15px !important; }
+#subtab-shopping-content > div:first-child { border-radius: 15px !important; }
+#shoppingListBreakdown > div { border-radius: 14px !important; overflow: hidden; }
+#shoppingRacionesBadge { border-radius: 7px !important; background: #edf3fa !important; color: #17365d !important; }
+#btnDownloadShoppingTxt { background: #17365d !important; color: #fff !important; }
+/* Ajustes, historial y reglas de cocina */
+#view-settings { gap: 16px !important; }
+#view-settings section, #view-settings .settings-card, #view-settings .settings-forecast-card,
+#view-settings .setting-group, #view-settings .settings-accordion {
+  background: #fff !important; border-color: #e2e8f0 !important; border-radius: 14px !important;
+  box-shadow: 0 4px 16px rgba(22,42,70,.035) !important;
+}
+#view-settings section { padding: 16px !important; }
+#view-settings .settings-card-heading { margin-bottom: 16px; }
+#view-settings .settings-card-title { color: #172b45 !important; font-weight: 750 !important; }
+#view-settings .settings-card-description, #view-settings .setting-help { color: #718096 !important; line-height: 1.55; }
+#view-settings .field-label { color: #64748b !important; font-weight: 650 !important; }
+#view-settings .settings-input, #view-settings input, #view-settings select { background: #f8fafc !important; border-color: #dbe3ed !important; border-radius: 8px !important; color: #172b45 !important; }
+#view-settings .settings-accordion > summary { color: #17365d !important; background: #f8fafc !important; border-radius: 12px !important; }
+#view-settings .settings-accordion[open] > summary { border-bottom: 1px solid #e8edf4; border-radius: 12px 12px 0 0 !important; }
+#view-settings .settings-accordion-body { padding: 14px !important; }
+#view-settings .settings-section-kicker, #view-settings .setting-group-title { color: #718096 !important; letter-spacing: .08em !important; }
+#historyListContainer > div { border: 1px solid #e3e9f1 !important; border-radius: 11px !important; padding: 12px !important; background: #fbfcfe !important; }
+/* Todas las ventanas emergentes con el mismo lenguaje visual */
+[role=dialog], .modal-content, .day-regeneration-modal, #modalChangeDish > div {
+  border: 1px solid #e2e8f0 !important; border-radius: 17px !important;
+  box-shadow: 0 24px 70px rgba(15,35,60,.20) !important;
+}
+/* Evitar que los componentes antiguos con clases dark se vean oscuros dentro de la interfaz clara */
+#view-banco .dark\:bg-gray-900, #view-form .dark\:bg-gray-900, #view-stock .dark\:bg-gray-900,
+#view-generator .dark\:bg-gray-900, #view-settings .dark\:bg-gray-900 { background-color: #fff !important; }
+/* Móvil: campos cómodos y sin desbordamientos */
+@media (max-width: 640px) {
+  #view-banco, #view-form, #view-stock, #view-generator, #view-settings { padding: 12px !important; }
+  #dishForm { padding: 14px !important; }
+  #dayTabsContainer .generator-day-tab { min-width: 0; padding: 8px 9px !important; font-size: 11px !important; }
+  #view-settings .settings-forecast-grid, #view-settings .settings-primary-grid { gap: 10px !important; }
+  #view-stock section { padding: 13px !important; }
+  #dishesList > div { padding: 12px !important; }
+}
