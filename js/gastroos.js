@@ -848,34 +848,25 @@
             recipeProteinCatalog = normalizeRecipeProteinCatalog({ fish: settings.kitchenProfile.especiesPescadoPersonalizadas, meat: settings.kitchenProfile.animalesCarnePersonalizados });
             mergeRecipeProteinCatalogIntoProfile(recipeProteinCatalog);
             try {
-                const store = window.GastroOSDataStore;
-                const writeJSON = (key, value) => {
-                    if (store ? !store.setJSON(key, value) : (localStorage.setItem(key, JSON.stringify(value)), false)) {
-                        throw new Error(`No se pudo guardar ${key}`);
-                    }
-                };
-                const removeKey = key => {
-                    if (store ? !store.remove(key) : (localStorage.removeItem(key), false)) throw new Error(`No se pudo eliminar ${key}`);
-                };
-                writeJSON('chefTrack_dishes', dishes);
-                writeJSON('chefTrack_settings', settings);
-                writeJSON('chefTrack_rawStock', rawStock);
-                writeJSON('chefTrack_preparedStock', preparedStock);
-                writeJSON('chefTrack_historyMenus', historyMenus);
-                writeJSON('chefTrack_recipeChangeHistory', recipeChangeHistory);
-                writeJSON('chefTrack_productAllergens', productAllergenMap);
-                if (currentMenu) writeJSON('chefTrack_currentMenu', currentMenu);
-                else removeKey('chefTrack_currentMenu');
+                localStorage.setItem('chefTrack_dishes', JSON.stringify(dishes));
+                localStorage.setItem('chefTrack_settings', JSON.stringify(settings));
+                localStorage.setItem('chefTrack_rawStock', JSON.stringify(rawStock));
+                localStorage.setItem('chefTrack_preparedStock', JSON.stringify(preparedStock));
+                localStorage.setItem('chefTrack_historyMenus', JSON.stringify(historyMenus));
+                localStorage.setItem('chefTrack_recipeChangeHistory', JSON.stringify(recipeChangeHistory));
+                localStorage.setItem('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
+                if (currentMenu) localStorage.setItem('chefTrack_currentMenu', JSON.stringify(currentMenu));
+                else localStorage.removeItem('chefTrack_currentMenu');
                 if (previousWeekMenu) {
-                    writeJSON('previousWeekMenu', previousWeekMenu);
-                    writeJSON('chefTrack_previousWeekMenu', previousWeekMenu);
+                    localStorage.setItem('previousWeekMenu', JSON.stringify(previousWeekMenu));
+                    localStorage.setItem('chefTrack_previousWeekMenu', JSON.stringify(previousWeekMenu));
                 } else {
-                    removeKey('previousWeekMenu');
-                    removeKey('chefTrack_previousWeekMenu');
+                    localStorage.removeItem('previousWeekMenu');
+                    localStorage.removeItem('chefTrack_previousWeekMenu');
                 }
             } catch (error) {
                 console.error('No se pudieron guardar los datos locales:', error);
-                alert('No se han podido guardar todos los datos en este navegador. Comprueba el espacio disponible y verifica la copia de seguridad antes de cerrar la app.');
+                alert('No se han podido guardar los datos en este navegador. Comprueba el espacio disponible.');
             }
             updateGitHubPendingState();
             updateAutoBackupStatus();
@@ -4597,16 +4588,17 @@
         }
 
         function summarizeImport(data) {
-            const validation = window.GastroOSBackupValidation
-                ? window.GastroOSBackupValidation.validate(data)
-                : { valid: false, errors: ['No se ha cargado el validador de copias.'], full: false, dishes: null };
-            const importedDishes = validation.dishes;
-            const full = validation.full;
+            const importedDishes = Array.isArray(data) ? data : (Array.isArray(data?.dishes) ? data.dishes : (Array.isArray(data?.recipes) ? data.recipes : null));
+            const full = !Array.isArray(data) && data && typeof data === 'object';
+            const recognizedType = !full || !data.type || ['full-backup', 'automatic-backup', 'recipes-only'].includes(data.type);
+            const recipeArrayValid = Array.isArray(importedDishes);
+            const invalidRecipes = recipeArrayValid ? importedDishes.filter(recipe => !recipe || typeof recipe !== 'object' || recipe.id === undefined || !String(recipe.nombre || '').trim()).length : 0;
             return {
-                importedDishes, full, recognizedType: validation.valid,
-                recipeArrayValid: Array.isArray(importedDishes),
-                invalidRecipes: validation.errors.length,
-                validationErrors: validation.errors,
+                importedDishes,
+                full,
+                recognizedType,
+                recipeArrayValid,
+                invalidRecipes,
                 recipeCount: importedDishes?.length || 0,
                 hasSettings: !!(full && data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)),
                 hasStock: !!(full && (Array.isArray(data.rawStock) || Array.isArray(data.preparedStock))),
@@ -4617,7 +4609,9 @@
 
         function openImportPreview(data, fileName = '') {
             const summary = summarizeImport(data);
-            if (!summary.recognizedType) throw new Error(`No se puede importar esta copia:\n\n${summary.validationErrors.join('\n')}`);
+            if (!summary.importedDishes && !summary.full) throw new Error('El archivo no contiene datos reconocibles de GastroOS.');
+            if (!summary.recognizedType) throw new Error('El archivo parece ser JSON, pero no es un formato de copia de GastroOS reconocido.');
+            if (!summary.recipeArrayValid || summary.invalidRecipes > 0) throw new Error(`El archivo contiene ${summary.invalidRecipes} receta(s) con estructura básica inválida.`);
             pendingImportData = { data, fileName, summary };
             const el = document.getElementById('importPreviewContent');
             el.innerHTML = `
@@ -4642,18 +4636,7 @@
         async function confirmPendingImport() {
             if (!pendingImportData) return;
             const { data, summary } = pendingImportData;
-            const backup = createAutoBackup(`antes de restaurar ${pendingImportData.fileName || 'una copia JSON'}`);
-            let verifiedBackup = null;
-            try {
-                const rawBackup = localStorage.getItem('chefTrack_autoBackup');
-                verifiedBackup = rawBackup ? JSON.parse(rawBackup) : null;
-            } catch (error) {
-                console.error('No se pudo verificar la copia previa a la restauración.', error);
-            }
-            if (!backup || !verifiedBackup || verifiedBackup.type !== 'automatic-backup' || !Array.isArray(verifiedBackup.dishes)) {
-                alert('Restauración cancelada por seguridad: no se ha podido crear y verificar una copia automática de los datos actuales. Descarga una copia manual y vuelve a intentarlo.');
-                return;
-            }
+            createAutoBackup(`antes de restaurar ${pendingImportData.fileName || 'una copia JSON'}`);
             if (summary.full && data.settings && typeof data.settings === 'object') settings = { ...defaultSettings, ...data.settings };
             if (summary.full && data.productAllergenMap && typeof data.productAllergenMap === 'object') productAllergenMap = data.productAllergenMap;
             if (summary.full && data.proteinCatalog) mergeRecipeProteinCatalogIntoProfile(data.proteinCatalog);
