@@ -3212,3 +3212,24 @@ nav.fixed.bottom-0.left-0.right-0.z-50 {
   nav.fixed.bottom-0.left-0.right-0.z-50 { height: 66px !important; min-height: 66px !important; }
   .nav-btn { min-height: 54px !important; height: 54px !important; }
 }
+
+
+/* v30: corrección específica del nombre cuando no hay etiquetas de estado.
+   La fila conserva la misma altura que la variante con etiquetas y baja el título
+   ligeramente para igualar el centro óptico observado en el generador. */
+.gastro-slot-title-row.no-badges {
+  min-height: 34px !important;
+  height: 34px !important;
+  align-items: center !important;
+}
+.gastro-slot-title-row.no-badges > div.text-sm {
+  min-height: 34px !important;
+  height: 34px !important;
+  display: flex !important;
+  align-items: center !important;
+  transform: translateY(4px) !important;
+}
+.gastro-slot-title-row.has-badges {
+  min-height: 34px !important;
+  align-items: center !important;
+}
