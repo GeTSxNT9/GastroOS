@@ -3052,3 +3052,51 @@ body > nav, nav.fixed {
   .gastro-slot-title-row.has-badges { grid-template-columns: minmax(0, 1fr) minmax(90px, .62fr) !important; column-gap: 5px !important; }
   .gastro-slot-title-row.has-badges .menu-status-badge { font-size: 9px !important; padding: 3px 6px !important; }
 }
+
+/* GastroOS · ajuste fino de alineación y acento más profundo */
+:root {
+  --g-accent: #0b1728;
+  --g-accent-hover: #17263b;
+  --g-focus: #9aabc2;
+}
+/* Unifica el azul marino casi negro en botones, estados activos e iconos de acción. */
+#btnGenerateMenu, #dishForm button[type="submit"],
+#rawStockForm button[type="submit"], #prepStockForm button[type="submit"],
+#btnDownloadShoppingTxt, #btnExport, .day-regeneration-select,
+.filter-lvl1.active, .filter-lvl2.active, .generator-day-tab.active,
+#btnGenerateMenu, #btnDownloadShoppingTxt {
+  background-color: #0b1728 !important;
+  border-color: #0b1728 !important;
+}
+#btnGenerateMenu:hover, #dishForm button[type="submit"]:hover,
+#rawStockForm button[type="submit"]:hover, #prepStockForm button[type="submit"]:hover,
+#btnDownloadShoppingTxt:hover, #btnExport:hover,
+.filter-lvl1.active:hover, .filter-lvl2.active:hover, .generator-day-tab.active:hover {
+  background-color: #17263b !important;
+  border-color: #17263b !important;
+}
+.nav-btn.active, .nav-btn.text-indigo-600, .nav-btn.text-indigo-400,
+.text-indigo-600, .text-indigo-700,
+#view-settings .settings-accordion > summary,
+#shoppingRacionesBadge { color: #0b1728 !important; }
+#dishForm input[type="checkbox"], #dishForm input[type="radio"],
+input[type="checkbox"], input[type="radio"] { accent-color: #0b1728; }
+#btnSaveToHistory, #btnDownloadMenuTxt { color: #0b1728 !important; }
+/* La fila del nombre y las etiquetas comparte una misma línea base vertical. */
+.gastro-slot-title-row {
+  align-items: center !important;
+  min-height: 24px;
+}
+.gastro-slot-title-row > div:first-child {
+  align-self: center !important;
+  margin-block: 0 !important;
+  line-height: 1.25 !important;
+}
+.gastro-slot-title-row.has-badges .menu-status-badges-inline {
+  align-self: center !important;
+  margin-block: 0 !important;
+  line-height: 1 !important;
+}
+.gastro-slot-title-row .menu-status-badge {
+  vertical-align: middle !important;
+}
