@@ -6,7 +6,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v30';
+const CACHE_NAME = 'gastroos-v31';
 const APP_SHELL = [
   './',
   './index.html',
