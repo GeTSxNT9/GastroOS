@@ -871,7 +871,9 @@
       "tecnica_cocina": "",
       "tecnica": "",
       "precocinado": false,
+      "plato_elaborado": false,
       "demanda": "Media",
+      "alergenosManuales": [],
       "alergenos": [],
       "ingredientes": [
         {
@@ -881,7 +883,7 @@
           "categoria_proveedor": "Verduras"
         },
         {
-          "nombre": "Costilla de cerdo",
+          "nombre": "Costillas de cerdo",
           "cantidad": 80,
           "unidad": "g",
           "categoria_proveedor": "Carne"
@@ -910,9 +912,7 @@
           "unidad": "",
           "categoria_proveedor": "Secos"
         }
-      ],
-      "plato_elaborado": false,
-      "alergenosManuales": []
+      ]
     },
     {
       "id": "100017",
