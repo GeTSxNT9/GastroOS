@@ -2161,11 +2161,13 @@
       "tecnica_cocina": "",
       "tecnica": "",
       "precocinado": false,
+      "plato_elaborado": false,
       "demanda": "Media",
+      "alergenosManuales": [],
       "alergenos": [],
       "ingredientes": [
         {
-          "nombre": "Arroz",
+          "nombre": "Arroz largo",
           "cantidad": 100,
           "unidad": "g",
           "categoria_proveedor": "Secos"
@@ -2200,9 +2202,7 @@
           "unidad": "",
           "categoria_proveedor": "Secos"
         }
-      ],
-      "plato_elaborado": false,
-      "alergenosManuales": []
+      ]
     },
     {
       "id": "100045",
