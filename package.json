@@ -6,6 +6,7 @@
   "scripts": {
     "test": "node --test tests/*.test.js",
     "check": "node --check js/gastroos.js && node --check js/kitchen-rules.js && node --check js/data-store-facade.js && node --check js/backup-validation.js && node --check js/menu-engine-facade.js && node --check js/github-facade.js && node --check sw.js",
-    "audit:css": "node scripts/audit-css.js"
+    "audit:css": "node scripts/audit-css.js",
+    "audit:app": "node scripts/audit-app.js"
   }
 }

@@ -1,13 +1,9 @@
-/* GastroOS · Service Worker · Fase definitiva · exportación iOS + tags centrados + alternativas
- * Caché versionada y actualizaciones seguras.
- * La aplicación sigue usando estrategia network-first: intenta obtener la versión
- * más reciente y recurre a la caché si no hay conexión.
- */
+/* GastroOS · Fases 7-8: caché del núcleo verificada y actualización versionada. */
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v31';
-const APP_SHELL = [
+const CACHE_NAME = 'gastroos-v32';
+const CORE_SHELL = [
   './',
   './index.html',
   './manifest.json',
@@ -16,8 +12,11 @@ const APP_SHELL = [
   './js/gastroos.js',
   './js/kitchen-rules.js',
   './js/data-store-facade.js',
+  './js/backup-validation.js',
   './js/menu-engine-facade.js',
-  './js/github-facade.js',
+  './js/github-facade.js'
+];
+const OPTIONAL_ASSETS = [
   './favicon-32.png',
   './apple-touch-icon.png',
   './icon-192.png',
@@ -27,17 +26,20 @@ const APP_SHELL = [
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    // Los recursos principales se precargan individualmente para que un icono
-    // opcional ausente no impida instalar toda la aplicación.
-    await Promise.all(APP_SHELL.map(async path => {
+    // No activar una versión incompleta: los recursos esenciales deben quedar
+    // guardados antes de sustituir la versión anterior.
+    for (const path of CORE_SHELL) {
+      const response = await fetch(path, { cache: 'reload' });
+      if (!response || response.status !== 200 || response.type !== 'basic') {
+        throw new Error(`No se pudo precargar el recurso esencial: ${path}`);
+      }
+      await cache.put(path, response);
+    }
+    await Promise.all(OPTIONAL_ASSETS.map(async path => {
       try {
         const response = await fetch(path, { cache: 'reload' });
-        if (response && response.status === 200 && response.type === 'basic') {
-          await cache.put(path, response);
-        }
-      } catch (_) {
-        // Si no se puede descargar un recurso ahora, la instalación continúa.
-      }
+        if (response && response.status === 200 && response.type === 'basic') await cache.put(path, response);
+      } catch (_) { /* Los iconos no son necesarios para ejecutar la aplicación. */ }
     }));
     await self.skipWaiting();
   })());
@@ -56,7 +58,6 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
-
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
