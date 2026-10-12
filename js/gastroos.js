@@ -787,8 +787,14 @@
             const migration = window.GastroOSDataStore.migrateSchema?.();
             if (migration && !migration.ok) {
                 const status = document.getElementById('appErrorStatus');
-                if (status) { status.textContent = migration.reason === 'future-version' ? 'Los datos locales pertenecen a una versión más reciente. Actualiza GastroOS antes de continuar.' : 'No se pudieron migrar los datos locales. Exporta una copia de seguridad y comprueba el espacio disponible.'; status.hidden = false; }
-                if (migration.reason === 'future-version') return;
+                if (status) {
+                    status.textContent = migration.reason === 'future-version'
+                        ? 'Los datos locales pertenecen a una versión más reciente. Actualiza GastroOS antes de continuar. No se han modificado.'
+                        : 'No se pudieron migrar los datos locales. GastroOS se ha detenido para evitar sobrescribirlos. Exporta o recupera una copia de seguridad antes de reintentar.';
+                    status.hidden = false;
+                }
+                // No continuar con saveAll() si la migración no se confirmó.
+                return;
             }
             registerServiceWorker();
             loadProductAllergens();
@@ -879,27 +885,28 @@
             recipeProteinCatalog = normalizeRecipeProteinCatalog({ fish: settings.kitchenProfile.especiesPescadoPersonalizadas, meat: settings.kitchenProfile.animalesCarnePersonalizados });
             mergeRecipeProteinCatalogIntoProfile(recipeProteinCatalog);
             try {
-                const writes = [
-                    window.GastroOSDataStore.setJSON('chefTrack_dishes', dishes),
-                    window.GastroOSDataStore.setJSON('chefTrack_settings', settings),
-                    window.GastroOSDataStore.setJSON('chefTrack_rawStock', rawStock),
-                    window.GastroOSDataStore.setJSON('chefTrack_preparedStock', preparedStock),
-                    window.GastroOSDataStore.setJSON('chefTrack_historyMenus', historyMenus),
-                    window.GastroOSDataStore.setJSON('chefTrack_recipeChangeHistory', recipeChangeHistory),
-                    window.GastroOSDataStore.setJSON('chefTrack_productAllergens', productAllergenMap)
+                const operations = [
+                    { key: 'chefTrack_dishes', type: 'set', value: JSON.stringify(dishes) },
+                    { key: 'chefTrack_settings', type: 'set', value: JSON.stringify(settings) },
+                    { key: 'chefTrack_rawStock', type: 'set', value: JSON.stringify(rawStock) },
+                    { key: 'chefTrack_preparedStock', type: 'set', value: JSON.stringify(preparedStock) },
+                    { key: 'chefTrack_historyMenus', type: 'set', value: JSON.stringify(historyMenus) },
+                    { key: 'chefTrack_recipeChangeHistory', type: 'set', value: JSON.stringify(recipeChangeHistory) },
+                    { key: 'chefTrack_productAllergens', type: 'set', value: JSON.stringify(productAllergenMap) },
+                    currentMenu ? { key: 'chefTrack_currentMenu', type: 'set', value: JSON.stringify(currentMenu) } : { key: 'chefTrack_currentMenu', type: 'remove' }
                 ];
-                writes.push(currentMenu ? window.GastroOSDataStore.setJSON('chefTrack_currentMenu', currentMenu) : window.GastroOSDataStore.remove('chefTrack_currentMenu'));
                 if (previousWeekMenu) {
-                    writes.push(window.GastroOSDataStore.setJSON('previousWeekMenu', previousWeekMenu));
-                    writes.push(window.GastroOSDataStore.setJSON('chefTrack_previousWeekMenu', previousWeekMenu));
+                    operations.push({ key: 'previousWeekMenu', type: 'set', value: JSON.stringify(previousWeekMenu) });
+                    operations.push({ key: 'chefTrack_previousWeekMenu', type: 'set', value: JSON.stringify(previousWeekMenu) });
                 } else {
-                    writes.push(window.GastroOSDataStore.remove('previousWeekMenu'));
-                    writes.push(window.GastroOSDataStore.remove('chefTrack_previousWeekMenu'));
+                    operations.push({ key: 'previousWeekMenu', type: 'remove' });
+                    operations.push({ key: 'chefTrack_previousWeekMenu', type: 'remove' });
                 }
-                if (writes.some(ok => ok !== true)) throw new Error('Una o más escrituras locales fallaron.');
+                const result = window.GastroOSDataStore.writeBatch(operations);
+                if (!result.ok) throw new Error(`No se pudo confirmar el lote de persistencia (${result.reason || 'error desconocido'}).`);
             } catch (error) {
                 console.error('No se pudieron guardar los datos locales:', error);
-                alert('No se han podido guardar todos los datos en este navegador. Comprueba el espacio disponible; no cierres la aplicación hasta resolverlo.');
+                alert('No se han podido guardar todos los datos en este navegador. La operación se ha detenido para proteger la información. Comprueba el espacio disponible y crea una copia de seguridad antes de continuar.');
                 updateGitHubPendingState();
                 updateAutoBackupStatus();
                 return false;
@@ -4351,8 +4358,12 @@
                         const isVolume = ['l', 'ml'].includes(unit);
                         const hasCalculableQuantity = rawQuantityText !== '' && Number.isFinite(rawQty) && rawQty > 0 && (isWeight || isVolume);
                         const category = proveedorCategorias.includes(ing?.categoria_proveedor) ? ing.categoria_proveedor : 'Secos';
-                        const key = normalizeFoodKey(rawName);
-                        if (!key) return;
+                        const foodKey = normalizeFoodKey(rawName);
+                        if (!foodKey) return;
+                        // No sumar unidades dimensionalmente incompatibles (p. ej. kg y litros)
+                        // bajo un mismo producto; cada dimensión queda separada para revisión.
+                        const dimensionKey = isWeight ? 'weight' : (isVolume ? 'volume' : 'unknown');
+                        const key = `${foodKey}::${dimensionKey}`;
 
                         if (!aggregated[key]) {
                             aggregated[key] = {
@@ -4363,11 +4374,11 @@
                                 cat: category,
                                 baseUnit: isWeight ? 'kg' : (isVolume ? 'L' : ''),
                                 needsManualPurchase: false,
-                                manualStock: shoppingManualStockKeys.has(key)
+                                manualStock: shoppingManualStockKeys.has(foodKey)
                             };
                         }
 
-                        aggregated[key].manualStock = shoppingManualStockKeys.has(key);
+                        aggregated[key].manualStock = shoppingManualStockKeys.has(foodKey);
 
                         // Una cantidad vacía NO significa que el ingrediente deba desaparecer
                         // de la lista: debe aparecer como "Por comprar" para recordar la compra.
@@ -4777,7 +4788,10 @@
                 if (copy[key] !== undefined && typeof copy[key] !== 'string') throw new Error(`El campo ${key} del stock debe ser texto.`);
             }
             for (const key of ['cantidad', 'stock', 'cantidad_actual', 'cantidadDisponible']) {
-                if (copy[key] !== undefined && copy[key] !== null && typeof copy[key] === 'number' && (!Number.isFinite(copy[key]) || copy[key] < 0)) throw new Error(`El campo ${key} del stock debe ser un número no negativo.`);
+                if (copy[key] === undefined || copy[key] === null || copy[key] === '') continue;
+                const numeric = typeof copy[key] === 'number' ? copy[key] : (typeof copy[key] === 'string' && copy[key].trim() !== '' ? Number(copy[key].trim().replace(',', '.')) : NaN);
+                if (!Number.isFinite(numeric) || numeric < 0) throw new Error(`El campo ${key} del stock debe ser un número no negativo; se recibió un valor inválido.`);
+                copy[key] = numeric;
             }
             return copy;
         }
@@ -4828,10 +4842,15 @@
                 const githubSettings = window.GastroOSDataStore.get('chefTrack_githubSettings');
                 const autoBackup = window.GastroOSDataStore.get('chefTrack_autoBackup');
                 const autoBackupAt = window.GastroOSDataStore.get('chefTrack_autoBackupAt');
-                window.GastroOSDataStore.clear();
-                if (autoBackup) window.GastroOSDataStore.set('chefTrack_autoBackup', autoBackup);
-                if (autoBackupAt) window.GastroOSDataStore.set('chefTrack_autoBackupAt', autoBackupAt);
-                if (githubSettings) window.GastroOSDataStore.set('chefTrack_githubSettings', githubSettings);
+                const cleared = window.GastroOSDataStore.clearOwned({ preserve: ['chefTrack_autoBackup', 'chefTrack_autoBackupAt', 'chefTrack_githubSettings', 'chefTrack_dataSchemaVersion'] });
+                if (!cleared.ok) {
+                    alert('No se pudieron borrar todos los datos. No se recargará la aplicación para evitar mostrar un estado parcial.');
+                    return;
+                }
+                // Se restauran explícitamente las claves protegidas solo si estaban presentes.
+                if (autoBackup !== null) window.GastroOSDataStore.set('chefTrack_autoBackup', autoBackup);
+                if (autoBackupAt !== null) window.GastroOSDataStore.set('chefTrack_autoBackupAt', autoBackupAt);
+                if (githubSettings !== null) window.GastroOSDataStore.set('chefTrack_githubSettings', githubSettings);
                 location.reload();
             }
         }
