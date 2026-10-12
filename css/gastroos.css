@@ -3236,3 +3236,30 @@ nav.fixed.bottom-0.left-0.right-0.z-50 {
   min-height: 34px !important;
   align-items: center !important;
 }
+
+
+/* Accesibilidad y resiliencia: ajustes incrementales sin alterar el lenguaje visual. */
+.app-error-status {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 12px 16px;
+    background: #fff1f2;
+    color: #9f1239;
+    border-bottom: 1px solid #fecdd3;
+    font-size: 14px;
+    line-height: 1.45;
+}
+html.dark .app-error-status { background: #4c0519; color: #ffe4e6; border-color: #881337; }
+button, input, select, textarea, [role="button"] { touch-action: manipulation; }
+button, [role="button"] { min-height: 40px; }
+input, select, textarea { max-width: 100%; }
+:focus-visible { outline: 3px solid var(--g-accent) !important; outline-offset: 2px; }
+@media (max-width: 640px) {
+    main { padding: 12px !important; }
+    table { max-width: 100%; }
+    .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
