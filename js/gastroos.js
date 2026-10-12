@@ -1308,9 +1308,9 @@
             }
             setGitHubSyncStatus("Guardando cambios múltiples en GitHub…", 'loading');
             try {
-                const apiUrl = `https://api.github.com/repos/${encodeURIComponent(github.owner)}/${encodeURIComponent(github.repo)}/contents/${github.path.split('/').map(encodeURIComponent).join('/')}`;
+                const apiUrl = window.GastroOSGitHubNetwork.buildContentsUrl(github);
                 const headers = {"Accept":"application/vnd.github+json","Authorization":`Bearer ${github.token}`,"X-GitHub-Api-Version":"2022-11-28"};
-                const response = await fetch(apiUrl, {method:'GET', headers});
+                const response = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {method:'GET', headers});
                 let data = {}; try { data = await response.json(); } catch {}
                 if (!response.ok || typeof data.content !== 'string' || !data.sha) throw new Error(data.message || `GitHub respondió con HTTP ${response.status}.`);
                 const parsedFile = parseGitHubRecipeFile(base64ToUtf8(data.content), github.path);
@@ -1318,7 +1318,7 @@
                 const updatedRecipes = parsedFile.recipes.map(recipe => updates.has(String(recipe?.id ?? '')) ? updates.get(String(recipe.id)) : recipe);
                 if (updates.size !== updatedRecipes.filter(r => updates.has(String(r?.id ?? ''))).length) throw new Error('No se encontraron todas las recetas seleccionadas en GitHub.');
                 const updatedContent = buildGitHubRecipeFile({...parsedFile, recipes: updatedRecipes}, null);
-                const putResponse = await fetch(apiUrl, {method:'PUT', headers:{...headers,"Content-Type":"application/json"}, body:JSON.stringify({message:"Actualizadas varias recetas desde GastroOS",content:utf8ToBase64(updatedContent),sha:data.sha})});
+                const putResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {method:'PUT', headers:{...headers,"Content-Type":"application/json"}, body:JSON.stringify({message:"Actualizadas varias recetas desde GastroOS",content:utf8ToBase64(updatedContent),sha:data.sha})});
                 let putData = {}; try { putData = await putResponse.json(); } catch {}
                 if (!putResponse.ok || ![200,201].includes(putResponse.status)) throw new Error(putData.message || `GitHub respondió con HTTP ${putResponse.status}.`);
                 markGitHubSyncSuccess(`${updates.size} recetas actualizadas en GitHub.`);
@@ -1467,14 +1467,14 @@
             setGitHubSyncStatus("Leyendo recetario desde GitHub…", 'loading');
 
             try {
-                const apiUrl = `https://api.github.com/repos/${encodeURIComponent(github.owner)}/${encodeURIComponent(github.repo)}/contents/${github.path.split('/').map(encodeURIComponent).join('/')}`;
+                const apiUrl = window.GastroOSGitHubNetwork.buildContentsUrl(github);
                 const headers = {
                     "Accept": "application/vnd.github+json",
                     "Authorization": `Bearer ${github.token}`,
                     "X-GitHub-Api-Version": "2022-11-28"
                 };
 
-                const response = await fetch(apiUrl, { method: 'GET', headers });
+                const response = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'GET', headers });
                 let data = {};
                 try { data = await response.json(); } catch {}
 
@@ -1515,7 +1515,7 @@
                             content: utf8ToBase64(updatedContent),
                             sha: data.sha
                         };
-                        const putResponse = await fetch(apiUrl, {
+                        const putResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {
                             method: 'PUT',
                             headers: { ...headers, "Content-Type": "application/json" },
                             body: JSON.stringify(putPayload)
@@ -1794,9 +1794,9 @@
             const github = getGitHubSettings();
             if (!github.token || !github.owner || !github.repo || !github.path) return { success: false, skipped: true };
             try {
-                const apiUrl = `https://api.github.com/repos/${encodeURIComponent(github.owner)}/${encodeURIComponent(github.repo)}/contents/${github.path.split('/').map(encodeURIComponent).join('/')}`;
+                const apiUrl = window.GastroOSGitHubNetwork.buildContentsUrl(github);
                 const headers = { 'Accept': 'application/vnd.github+json', 'Authorization': `Bearer ${github.token}`, 'X-GitHub-Api-Version': '2022-11-28' };
-                const response = await fetch(apiUrl, { method: 'GET', headers });
+                const response = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'GET', headers });
                 const data = await response.json().catch(() => ({}));
                 let parsedFile;
                 let sha = null;
@@ -1811,7 +1811,7 @@
                 const content = buildGitHubRecipeFile(parsedFile, null, parsedFile.recipes, parsedFile.proteinCatalog);
                 const payload = { message: 'Actualizado catálogo de carnes y pescados desde GastroOS', content: utf8ToBase64(content) };
                 if (sha) payload.sha = sha;
-                const put = await fetch(apiUrl, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const put = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!put.ok) { const body = await put.json().catch(() => ({})); throw new Error(body.message || `HTTP ${put.status}`); }
                 markGitHubSyncSuccess('Catálogo de carnes y pescados actualizado en recipes.json.');
                 return { success: true, skipped: false };
@@ -1831,14 +1831,14 @@
 
             setDishSaveState(true);
             try {
-                const apiUrl = `https://api.github.com/repos/${encodeURIComponent(github.owner)}/${encodeURIComponent(github.repo)}/contents/${github.path.split('/').map(encodeURIComponent).join('/')}`;
+                const apiUrl = window.GastroOSGitHubNetwork.buildContentsUrl(github);
                 const headers = {
                     "Accept": "application/vnd.github+json",
                     "Authorization": `Bearer ${github.token}`,
                     "X-GitHub-Api-Version": "2022-11-28"
                 };
 
-                const getResponse = await fetch(apiUrl, { method: 'GET', headers });
+                const getResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'GET', headers });
                 let getData = {};
                 try { getData = await getResponse.json(); } catch {}
                 const normalizedDish = normalizeDishData(dish);
@@ -1885,7 +1885,7 @@
                 };
                 if (fileSha) putPayload.sha = fileSha;
 
-                const putResponse = await fetch(apiUrl, {
+                const putResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {
                     method: 'PUT',
                     headers: { ...headers, "Content-Type": "application/json" },
                     body: JSON.stringify(putPayload)
@@ -1918,7 +1918,7 @@
             }
 
             try {
-                const apiUrl = `https://api.github.com/repos/${encodeURIComponent(github.owner)}/${encodeURIComponent(github.repo)}/contents/${github.path.split('/').map(encodeURIComponent).join('/')}`;
+                const apiUrl = window.GastroOSGitHubNetwork.buildContentsUrl(github);
                 const headers = {
                     "Accept": "application/vnd.github+json",
                     "Authorization": `Bearer ${github.token}`,
@@ -1926,7 +1926,7 @@
                 };
 
                 const normalizedRecipes = importedDishes.map(normalizeDishData);
-                const getResponse = await fetch(apiUrl, { method: 'GET', headers });
+                const getResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'GET', headers });
                 let getData = {};
                 try { getData = await getResponse.json(); } catch {}
 
@@ -1962,7 +1962,7 @@
                 };
                 if (fileSha) putPayload.sha = fileSha;
 
-                const putResponse = await fetch(apiUrl, {
+                const putResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {
                     method: 'PUT',
                     headers: { ...headers, "Content-Type": "application/json" },
                     body: JSON.stringify(putPayload)
@@ -2141,14 +2141,14 @@
             }
 
             try {
-                const apiUrl = `https://api.github.com/repos/${encodeURIComponent(github.owner)}/${encodeURIComponent(github.repo)}/contents/${github.path.split('/').map(encodeURIComponent).join('/')}`;
+                const apiUrl = window.GastroOSGitHubNetwork.buildContentsUrl(github);
                 const headers = {
                     "Accept": "application/vnd.github+json",
                     "Authorization": `Bearer ${github.token}`,
                     "X-GitHub-Api-Version": "2022-11-28"
                 };
 
-                const getResponse = await fetch(apiUrl, { method: 'GET', headers });
+                const getResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'GET', headers });
                 let getData = {};
                 try { getData = await getResponse.json(); } catch {}
                 if (!getResponse.ok) {
@@ -2170,7 +2170,7 @@
                 const updatedFile = { ...parsedFile, recipes: updatedRecipes };
                 const updatedContent = buildGitHubRecipeFile(updatedFile, null);
 
-                const putResponse = await fetch(apiUrl, {
+                const putResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {
                     method: 'PUT',
                     headers: { ...headers, "Content-Type": "application/json" },
                     body: JSON.stringify({
