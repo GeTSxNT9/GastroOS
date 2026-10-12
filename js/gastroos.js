@@ -473,6 +473,15 @@
                 const required = perDay * daysList.length;
                 if (available < required) errors.push(`Catálogo insuficiente: ${parent} tiene ${available} recetas únicas y la configuración necesita ${required} en la semana.`);
             });
+            const configuredFirstTotal = firstRequirements.reduce((sum, [, count]) => sum + count, 0);
+            const configuredSecondTotal = Number(profile.segundosCarne || 0) + Number(profile.segundosPescado || 0);
+            if (configuredFirstTotal < 1) errors.push('La configuración debe incluir al menos un primer plato al día.');
+            if (configuredSecondTotal < 1) errors.push('La configuración debe incluir al menos un segundo plato al día.');
+            const configuredGuisoDays = new Set(profile.guisoDays || []);
+            if (configuredGuisoDays.size > 0 && Number(profile.segundosCarne || 0) < 1) {
+                errors.push('Hay días de guiso configurados, pero la oferta no incluye ningún segundo de carne. Añade carne o desactiva los días de guiso.');
+            }
+
             const secondRequirements = [
                 ['Carne', Number(profile.segundosCarne) || 0],
                 ['Pescado', Number(profile.segundosPescado) || 0]
@@ -481,8 +490,12 @@
                 if (perDay <= 0) return;
                 const available = uniqueDishCount(dishes.filter(d => d?.categoria === 'Segundo' && d?.proteina_segundo === protein && (protein !== 'Carne' || allowedMeat.has(String(d?.animal_carne || '').toLowerCase())) && (protein !== 'Pescado' || allowedFish.has(String(d?.especie_pescado || '').toLowerCase()))));
                 const required = perDay * daysList.length;
-                if (available < required) warnings.push(`Variedad limitada: hay ${available} recetas únicas de ${protein.toLowerCase()} y se necesitan ${required} selecciones semanales; algunas reglas pueden impedir generar un menú completo.`);
+                if (available < required) errors.push(`Catálogo insuficiente: hay ${available} recetas únicas de ${protein.toLowerCase()} y la configuración necesita ${required} durante la semana. Como un plato no puede repetirse, añade recetas o reduce esa cantidad.`);
             });
+            if (configuredGuisoDays.size > 0 && meatSlots > 0) {
+                const availableGuisos = uniqueDishCount(dishes.filter(d => d?.categoria === 'Segundo' && d?.proteina_segundo === 'Carne' && d?.tecnica_cocina === 'tecnica_guiso' && allowedMeat.has(String(d?.animal_carne || '').toLowerCase())));
+                if (availableGuisos < configuredGuisoDays.size) errors.push(`Hay ${configuredGuisoDays.size} días de guiso configurados, pero solo ${availableGuisos} recetas de carne guisada únicas permitidas. Añade recetas o reduce los días de guiso.`);
+            }
             if (meatSlots > 1 && meatAnimalsInRecipes.size < meatSlots + 1) warnings.push('Hay poca variedad de animales de carne para la oferta configurada; puede ser difícil evitar repeticiones en días consecutivos.');
 
             return { valid: errors.length === 0, errors, warnings };
@@ -1387,14 +1400,14 @@
             row.dataset.categoriaTouched = 'false';
             row.innerHTML = `
                 <input type="text" placeholder="Ingrediente..." value="${escapeHtml(nombre)}" required class="ingredient-name-input flex-[4] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                <input type="text" inputmode="decimal" placeholder="Cant." value="${escapeHtml(cantidad !== '' && cantidad !== undefined ? cantidad : '')}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <input type="text" inputmode="decimal" placeholder="Cant." value="${cantidad !== '' && cantidad !== undefined ? cantidad : ''}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                 <select class="w-14 min-w-[3.5rem] flex-[0_0_3.5rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                     ${legacyUnit ? `<option value="${legacyUnit}" selected>${legacyUnit}</option>` : ''}
                     <option value="g" ${unidad==='g'?'selected':''}>g</option>
                     <option value="ml" ${unidad==='ml'?'selected':''}>ml</option>
                 </select>
                 <select class="ingredient-category-select flex-[1.25] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                    ${proveedorCategorias.map(c => `<option value="${escapeHtml(c)}" ${categoria===c?'selected':''}>${escapeHtml(c)}</option>`).join('')}
+                    ${proveedorCategorias.map(c => `<option value="${c}" ${categoria===c?'selected':''}>${c}</option>`).join('')}
                 </select>
                 <button type="button" class="text-red-500 font-bold px-1" onclick="this.parentElement.remove()">×</button>
             `;
@@ -3780,6 +3793,19 @@
         }
 
         function generateWeeklyMenu() {
+            // Revalidar antes de generar: las recetas o la configuración pueden haber
+            // cambiado desde la última vez que se guardaron los ajustes.
+            const configurationCheck = validateKitchenConfiguration();
+            if (!configurationCheck.valid) {
+                const message = `No se puede generar una semana con la configuración actual:\n\n${configurationCheck.errors.join('\n')}`;
+                lastGenerationDiagnostics = { valid: false, errors: configurationCheck.errors, attempts: 0, configurationError: true };
+                alert(message);
+                renderGeneratorView();
+                return false;
+            }
+            if (configurationCheck.warnings.length) {
+                console.warn('GastroOS: posibles conflictos de configuración antes de generar:', configurationCheck.warnings);
+            }
             return window.GastroOSMenuGenerationEngine.generateWeeklyMenu({
                 getCurrentMenu: () => currentMenu,
                 setCurrentMenu: menu => { currentMenu = menu; },

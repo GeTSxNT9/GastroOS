@@ -25,9 +25,12 @@
     }
     const hasCream = firsts.some(dish => dish?.subtipo_primero === 'cremas');
     const hasHeavySpoon = firsts.some(dish => ['guisos', 'legumbres'].includes(dish?.subtipo_primero));
-    const hasTenedor = firsts.some(dish => dish?.subcategoria_primero === 'Tenedor');
-    if (hasCream && hasHeavySpoon && !hasTenedor) {
-      errors.push(`${dayName}: hay una crema y un plato de cuchara, debe existir al menos un hidrato tipo arroz o pasta.`);
+    const hasRequiredHydrate = firsts.some(dish => ['arroces', 'pastas', 'pastas_rellenas'].includes(dish?.subtipo_primero));
+    // La regla de combinación no puede inventar un hueco que la configuración
+    // no haya solicitado. Solo exigimos un hidrato si la oferta incluye ese hueco.
+    const hasConfiguredTenedorSlot = (structure.firstSpecs || []).some(spec => spec?.allowedParents?.includes('Tenedor'));
+    if (hasCream && hasHeavySpoon && hasConfiguredTenedorSlot && !hasRequiredHydrate) {
+      errors.push(`${dayName}: hay una crema y un plato de cuchara; el hueco de tenedor configurado debe ser un hidrato tipo arroz o pasta.`);
     }
 
     const meats = seconds.filter(dish => dish?.proteina_segundo === 'Carne');

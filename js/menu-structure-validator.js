@@ -18,8 +18,15 @@
         return;
       }
       slots.forEach((slot, index) => {
+        const expected = structure.slotSpecs[index];
         if (!slot || slot.slotLabel !== expectedLabels[index]) {
-          errors.push(`${dayName}: slot ${index + 1} no respeta la estructura fija.`);
+          errors.push(`${dayName}: slot ${index + 1} no respeta la estructura configurada.`);
+        }
+        if (slot && expected && slot.cat !== expected.cat) {
+          errors.push(`${dayName}: slot ${index + 1} tiene una categoría incompatible con la configuración.`);
+        }
+        if (slot && expected?.protein && slot.dish?.proteina_segundo !== expected.protein) {
+          errors.push(`${dayName}: el plato del slot ${index + 1} tiene una proteína incompatible con la configuración.`);
         }
         const id = slot?.dish?.id;
         if (id && id !== 'none') {

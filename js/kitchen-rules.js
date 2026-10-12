@@ -150,8 +150,9 @@
             carne: clampInt(secondDefaults.segundosCarne, 0, 5, DEFAULT_RULES.segundosCarne),
             pescado: clampInt(secondDefaults.segundosPescado, 0, 5, DEFAULT_RULES.segundosPescado)
         };
-        if (normalizedFirsts.verdura + normalizedFirsts.cuchara + normalizedFirsts.tenedor < 1) normalizedFirsts.cuchara = 1;
-        if (normalizedSeconds.carne + normalizedSeconds.pescado < 1) normalizedSeconds.carne = 1;
+        // La configuración explícita es la fuente de verdad. No reintroducir
+        // cantidades fijas aquí: la interfaz y validateKitchenConfiguration
+        // informan si la oferta total queda vacía.
 
         return {
             version: VERSION,
@@ -164,10 +165,10 @@
             maxWeeklyRice: clampInt(source.maxWeeklyRice, 0, 5, DEFAULT_RULES.maxWeeklyRice),
             maxWeeklyVegetableWhole: clampInt(source.maxWeeklyVegetableWhole, 0, 5, DEFAULT_RULES.maxWeeklyVegetableWhole),
             maxWeeklySoups: clampInt(source.maxWeeklySoups, 0, 5, DEFAULT_RULES.maxWeeklySoups),
-            permitirPastaConsecutiva: false,
-            permitirLegumbresConsecutivas: false,
-            permitirArrozConsecutivo: false,
-            permitirSopasConsecutivas: false,
+            permitirPastaConsecutiva: source.permitirPastaConsecutiva === true,
+            permitirLegumbresConsecutivas: source.permitirLegumbresConsecutivas === true,
+            permitirArrozConsecutivo: source.permitirArrozConsecutivo === true,
+            permitirSopasConsecutivas: source.permitirSopasConsecutivas === true,
             primerosVerdura: normalizedFirsts.verdura,
             primerosCuchara: normalizedFirsts.cuchara,
             primerosTenedor: normalizedFirsts.tenedor,
@@ -179,8 +180,8 @@
             especiesPescadoPersonalizadas: customFish,
             animalesCarnePersonalizados: customMeat,
             prioridadStock,
-            permitirPrecocinados: true,
-            permitirPlatosElaboradosSinStock: false,
+            permitirPrecocinados: source.permitirPrecocinados !== false,
+            permitirPlatosElaboradosSinStock: source.permitirPlatosElaboradosSinStock === true,
             evitarLiquidosEnPrimeros: source.evitarLiquidosEnPrimeros !== false,
             evitarRepeticionPrimeroConsecutivo: source.evitarRepeticionPrimeroConsecutivo !== false,
             evitarVerduraRepetida: source.evitarVerduraRepetida !== false,
