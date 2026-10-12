@@ -19,7 +19,10 @@
         recipeChangeHistory: 'chefTrack_recipeChangeHistory',
         productAllergens: 'chefTrack_productAllergens',
         autoBackup: 'chefTrack_autoBackup',
-        autoBackupAt: 'chefTrack_autoBackupAt'
+        autoBackupAt: 'chefTrack_autoBackupAt',
+        githubSettings: 'chefTrack_githubSettings',
+        githubLastSync: 'chefTrack_githubLastSync',
+        githubLastSyncedRecipes: 'chefTrack_githubLastSyncedRecipes'
     });
 
     function get(key, fallback = null) {
@@ -62,6 +65,36 @@
         }
     }
 
+    function clear() {
+        try { localStorage.clear(); return true; }
+        catch (error) { console.warn('GastroOS: no se pudo limpiar almacenamiento local.', error); return false; }
+    }
+
+    function createSnapshot(keys = Object.values(STORAGE_KEYS)) {
+        const snapshot = {};
+        try {
+            keys.forEach(key => { snapshot[key] = localStorage.getItem(key); });
+            return Object.freeze({ createdAt: new Date().toISOString(), values: snapshot });
+        } catch (error) {
+            console.warn('GastroOS: no se pudo crear snapshot local.', error);
+            return null;
+        }
+    }
+
+    function restoreSnapshot(snapshot) {
+        if (!snapshot || !snapshot.values || typeof snapshot.values !== 'object') return false;
+        try {
+            Object.entries(snapshot.values).forEach(([key, value]) => {
+                if (value === null) localStorage.removeItem(key);
+                else localStorage.setItem(key, value);
+            });
+            return true;
+        } catch (error) {
+            console.error('GastroOS: falló la restauración del snapshot.', error);
+            return false;
+        }
+    }
+
     function remove(key) {
         try {
             localStorage.removeItem(key);
@@ -78,6 +111,9 @@
         getJSON,
         set,
         setJSON,
-        remove
+        remove,
+        clear,
+        createSnapshot,
+        restoreSnapshot
     });
 })();
