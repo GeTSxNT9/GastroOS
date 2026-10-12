@@ -2,7 +2,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v44';
+const CACHE_NAME = 'gastroos-v45';
 const APP_SHELL = [
   './',
   './index.html',
@@ -25,21 +25,28 @@ const CORE = ['./index.html', './js/github-network.js', './css/gastroos.css', '.
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    // Los recursos esenciales deben estar disponibles para poder afirmar que el shell está instalado.
-    await Promise.all(CORE.map(async path => {
-      const response = await fetch(path, { cache: 'reload' });
-      if (!response.ok || response.type === 'opaque') throw new Error(`No se pudo precargar ${path}`);
-      await cache.put(path, response);
-    }));
-    await Promise.all(APP_SHELL.filter(path => !CORE.includes(path)).map(async path => {
-      try {
-        const externalTailwind = path === 'https://cdn.tailwindcss.com';
-        const response = await fetch(path, externalTailwind ? { cache: 'reload', mode: 'no-cors' } : { cache: 'reload' });
-        if (externalTailwind ? response.type === 'opaque' : response.ok && response.type === 'basic') await cache.put(path, response);
-      } catch (_) { /* Recurso opcional: no bloquea la instalación. */ }
-    }));
-    await self.skipWaiting();
+    try {
+      const cache = await caches.open(CACHE_NAME);
+      // Los recursos esenciales deben estar disponibles para poder afirmar que el shell está instalado.
+      await Promise.all(CORE.map(async path => {
+        const response = await fetch(path, { cache: 'reload' });
+        if (!response.ok || response.type === 'opaque') throw new Error(`No se pudo precargar ${path}`);
+        await cache.put(path, response);
+      }));
+      // Recursos secundarios (incluida la CDN de Tailwind) no deben bloquear la instalación.
+      await Promise.all(APP_SHELL.filter(path => !CORE.includes(path)).map(async path => {
+        try {
+          const externalTailwind = path === 'https://cdn.tailwindcss.com';
+          const response = await fetch(path, externalTailwind ? { cache: 'reload', mode: 'no-cors' } : { cache: 'reload' });
+          if (externalTailwind ? response.type === 'opaque' : response.ok && response.type === 'basic') await cache.put(path, response);
+        } catch (_) { /* Recurso opcional: no bloquea la instalación. */ }
+      }));
+      await self.skipWaiting();
+    } catch (error) {
+      // No dejar una caché parcial como si la instalación hubiera sido correcta.
+      try { await caches.delete(CACHE_NAME); } catch (_) { /* Mantener el error original. */ }
+      throw error;
+    }
   })());
 });
 
