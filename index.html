@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GastroOS">
@@ -20,6 +20,7 @@
         <link rel="stylesheet" href="css/gastroos.css">
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
+    <div id="appErrorStatus" role="status" aria-live="polite" hidden class="app-error-status"></div>
     <div id="appSplash" class="app-splash" aria-hidden="true"><div class="app-splash-mark">G</div><div class="app-splash-name">GastroOS</div><div class="app-splash-loading">Cargando…</div></div>
 
     <!-- CABECERA PRINCIPAL -->
@@ -754,10 +755,10 @@
         </button>
     </nav>
 
+    <script src="js/data-store-facade.js"></script>
     <script src="js/kitchen-rules.js"></script>
     <script src="js/gastroos.js"></script>
     <script src="js/menu-engine-facade.js"></script>
     <script src="js/github-facade.js"></script>
-    <script src="js/data-store-facade.js"></script>
 </body>
 </html>
