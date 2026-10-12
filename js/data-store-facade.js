@@ -74,7 +74,8 @@
             STORAGE_KEYS.autoBackup,
             STORAGE_KEYS.autoBackupAt,
             STORAGE_KEYS.githubSettings,
-            STORAGE_KEYS.dataSchemaVersion
+            STORAGE_KEYS.dataSchemaVersion,
+            'chefTrack_safetySnapshot'
         ]);
         let snapshot = null;
         try {
@@ -128,7 +129,7 @@
         }
     }
 
-    function createSnapshot(keys = [...new Set([...Object.values(STORAGE_KEYS), 'chefTrack_dishes', 'chefTrack_settings', 'chefTrack_rawStock', 'chefTrack_preparedStock', 'chefTrack_currentMenu', 'chefTrack_historyMenus', 'chefTrack_recipeChangeHistory', 'chefTrack_productAllergens', 'chefTrack_autoBackup', 'chefTrack_autoBackupAt', 'chefTrack_githubSettings', 'chefTrack_githubLastSync', 'chefTrack_githubLastSyncedRecipes', 'previousWeekMenu'])]) {
+    function createSnapshot(keys = [...new Set([...Object.values(STORAGE_KEYS), 'chefTrack_safetySnapshot'])]) {
         const snapshot = {};
         try {
             keys.forEach(key => { snapshot[key] = localStorage.getItem(key); });
