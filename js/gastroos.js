@@ -3794,52 +3794,19 @@
         }
 
         function generateWeeklyMenu() {
-            const previousMenuBeforeGeneration = currentMenu;
-            try {
-            const previousCandidate = getPreviousWeekCandidateMenu();
-            const previousForAntiTemplate = previousCandidate?.days ? previousCandidate : null;
-            const MAX_GENERATION_ATTEMPTS = 80;
-            lastGenerationDiagnostics = null;
-            let bestMenu = null;
-            let bestValidation = null;
-
-            for (let attempt = 1; attempt <= MAX_GENERATION_ATTEMPTS; attempt++) {
-                const candidate = buildWeeklyMenuCandidate(previousForAntiTemplate);
-                const validation = validateWeeklyMenu(candidate);
-                if (!bestValidation || validation.errors.length < bestValidation.errors.length) {
-                    bestMenu = candidate;
-                    bestValidation = validation;
-                }
-                if (validation.valid) {
-                    currentMenu = candidate;
-                    shoppingManualStockKeys.clear();
-                    lastGenerationDiagnostics = { valid: true, errors: [], attempts: attempt };
-                    if (!saveAll()) {
-                        currentMenu = previousMenuBeforeGeneration;
-                        lastGenerationDiagnostics = { valid: false, errors: ['No se pudo guardar el menú generado. Se conserva el menú anterior.'], attempts: attempt };
-                        try { renderGeneratorView(); } catch (renderError) { console.error(renderError); }
-                        return;
-                    }
-                    renderGeneratorView();
-                    return;
-                }
-            }
-
-            // No guardamos un menú inválido como si fuese correcto. Conservamos
-            // únicamente el mejor candidato para que el usuario pueda ver el
-            // diagnóstico y no se pierda el menú anterior válido.
-            if (bestMenu && bestValidation) {
-                lastGenerationDiagnostics = { valid: false, errors: bestValidation.errors.slice(0, 12), attempts: MAX_GENERATION_ATTEMPTS };
-                renderGeneratorView();
-                alert(`No se ha podido construir una semana que cumpla todas las reglas después de ${MAX_GENERATION_ATTEMPTS} intentos.\n\nEl menú anterior se mantiene sin cambios.\n\nPrincipales incidencias detectadas: ${bestValidation.errors.slice(0, 5).join(" | ")}`);
-            }
-            } catch (error) {
-                currentMenu = previousMenuBeforeGeneration;
-                lastGenerationDiagnostics = { valid: false, errors: ['Se produjo un error interno al generar el menú. El menú anterior se mantiene sin cambios.'], attempts: 0 };
-                console.error('GastroOS: fallo controlado en el generador de menús.', error);
-                try { renderGeneratorView(); } catch (renderError) { console.error(renderError); }
-                alert('No se ha podido generar el menú por un error inesperado. El menú anterior se conserva y tus datos no se han sustituido.');
-            }
+            return window.GastroOSMenuGenerationEngine.generateWeeklyMenu({
+                getCurrentMenu: () => currentMenu,
+                setCurrentMenu: menu => { currentMenu = menu; },
+                getPreviousCandidate: () => getPreviousWeekCandidateMenu(),
+                buildCandidate: previousMenu => buildWeeklyMenuCandidate(previousMenu),
+                validateCandidate: menu => validateWeeklyMenu(menu),
+                clearManualStockMarks: () => shoppingManualStockKeys.clear(),
+                setDiagnostics: value => { lastGenerationDiagnostics = value; },
+                save: () => saveAll(),
+                render: () => renderGeneratorView(),
+                alert: message => alert(message),
+                logError: (...args) => console.error(...args)
+            });
         }
         function buildDayRegenerationContext(dayName) {
             const originalMenu = JSON.parse(JSON.stringify(currentMenu));
