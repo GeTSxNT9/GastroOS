@@ -3967,36 +3967,21 @@
                     errors.push(`${dayName}: no se puede repetir la misma forma de preparación en los segundos.`);
                 }
 
-                if (dayIndex > 0) {
-                    const prev = menu.days[days[dayIndex - 1]] || [];
-                    const prevFirsts = prev.filter(s => s.cat === 'Primero').map(s => s.dish).filter(Boolean);
-                    const currentFirsts = firsts;
-                    currentFirsts.forEach(first => {
-                        const subtype = first?.subtipo_primero;
-                        if (getKitchenRule('evitarRepeticionPrimeroConsecutivo', true) && CONSECUTIVE_FIRST_SUBTYPES.has(subtype) &&
-                            prevFirsts.some(d => d?.subtipo_primero === subtype)) {
-                            errors.push(`${dayName}: ${FIRST_LABELS[subtype] || subtype} repetido en días consecutivos.`);
-                        }
-                    });
-
-                    const previousDayFritos = prev.filter(s => s.cat === 'Segundo').some(s => s.dish?.tecnica_cocina === "tecnica_frito_rebozado");
-                    if (dayFritos > 0 && previousDayFritos) {
-                        errors.push(`${dayName}: no puede haber frito en días consecutivos.`);
-                    }
-                }
-
-                if (dayIndex >= 2) {
-                    const previousTwoAnimals = [
-                        ...(menu.days[days[dayIndex - 1]] || []).filter(s => s.cat === 'Segundo' && s.dish?.proteina_segundo === 'Carne').map(s => s.dish?.animal_carne),
-                        ...(menu.days[days[dayIndex - 2]] || []).filter(s => s.cat === 'Segundo' && s.dish?.proteina_segundo === 'Carne').map(s => s.dish?.animal_carne)
-                    ].filter(Boolean);
-
-                    meats.forEach(m => {
-                        if (m?.animal_carne && previousTwoAnimals.filter(a => a === m.animal_carne).length >= 2) {
-                            errors.push(`${dayName}: ${getProteinLabel('meat', m.animal_carne)} aparece 3 días consecutivos.`);
-                        }
-                    });
-                }
+                errors.push(...window.GastroOSMenuContinuityRules.validateDayContinuity({
+                    dayName,
+                    dayIndex,
+                    days,
+                    menuDays: menu.days,
+                    firsts,
+                    meats,
+                    dayFritos,
+                    avoidConsecutiveFirsts: getKitchenRule('evitarRepeticionPrimeroConsecutivo', true),
+                    avoidConsecutiveFritos: true,
+                    avoidThreeConsecutiveMeatAnimals: true,
+                    consecutiveFirstSubtypes: Array.from(CONSECUTIVE_FIRST_SUBTYPES),
+                    liquidFirstLabels: FIRST_LABELS,
+                    getProteinLabel
+                }));
             });
 
             const weeklyCreams = getWeeklyFirstSubtypeCount(menu.days, "cremas");
