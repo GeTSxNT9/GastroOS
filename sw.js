@@ -2,7 +2,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v32';
+const CACHE_NAME = 'gastroos-v33';
 const APP_SHELL = [
   './',
   './index.html',
@@ -17,7 +17,8 @@ const APP_SHELL = [
   './favicon-32.png',
   './apple-touch-icon.png',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  'https://cdn.tailwindcss.com'
 ];
 const CORE = ['./index.html', './css/gastroos.css', './js/gastroos.js', './js/kitchen-rules.js', './js/data-store-facade.js'];
 
@@ -32,8 +33,9 @@ self.addEventListener('install', event => {
     }));
     await Promise.all(APP_SHELL.filter(path => !CORE.includes(path)).map(async path => {
       try {
-        const response = await fetch(path, { cache: 'reload' });
-        if (response.ok && response.type === 'basic') await cache.put(path, response);
+        const externalTailwind = path === 'https://cdn.tailwindcss.com';
+        const response = await fetch(path, externalTailwind ? { cache: 'reload', mode: 'no-cors' } : { cache: 'reload' });
+        if (externalTailwind ? response.type === 'opaque' : response.ok && response.type === 'basic') await cache.put(path, response);
       } catch (_) { /* Recurso opcional: no bloquea la instalación. */ }
     }));
     await self.skipWaiting();
@@ -52,7 +54,23 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
+  const isTailwindCdn = url.origin === 'https://cdn.tailwindcss.com' && url.pathname === '/';
+  if (url.origin !== self.location.origin && !isTailwindCdn) return;
+
+  // Dependencia de estilos usada por index.html: cache-first para que la app
+  // no pierda el diseño cuando la red desaparezca tras la primera carga.
+  if (isTailwindCdn) {
+    event.respondWith((async () => {
+      const cached = await caches.match('https://cdn.tailwindcss.com');
+      if (cached) {
+        event.waitUntil((async () => { try { const fresh = await fetch(request); if (fresh.ok || fresh.type === 'opaque') (await caches.open(CACHE_NAME)).put('https://cdn.tailwindcss.com', fresh); } catch (_) {} })());
+        return cached;
+      }
+      try { const response = await fetch(request); if (response.ok || response.type === 'opaque') (await caches.open(CACHE_NAME)).put('https://cdn.tailwindcss.com', response.clone()); return response; }
+      catch (_) { return Response.error(); }
+    })());
+    return;
+  }
 
   // Navegación: intenta actualizar; si no hay red, sirve la shell cacheada.
   if (request.mode === 'navigate') {
