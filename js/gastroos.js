@@ -3211,28 +3211,14 @@
         }
 
         function hasLiquidFirstConflict(candidate, chosenFirsts) {
-            if (!candidate || candidate.categoria !== "Primero") return false;
-            const subtype = candidate.subtipo_primero;
-            if (!LIQUID_FIRST_SUBTYPES.has(subtype)) return false;
-            return chosenFirsts.some(d => LIQUID_FIRST_SUBTYPES.has(d?.subtipo_primero));
+            return window.GastroOSMenuSelectionRules.hasLiquidFirstConflict(candidate, chosenFirsts, LIQUID_FIRST_SUBTYPES);
         }
 
         function isStructuralMatch(dish, spec) {
-            if (!dish || dish.categoria !== spec.cat) return false;
-            if (spec.cat === "Primero") {
-                return spec.allowedParents
-                    ? spec.allowedParents.includes(dish.subcategoria_primero)
-                    : dish.subtipo_primero === spec.subtipo;
-            }
-            if (spec.protein === "Carne") {
-                return dish.proteina_segundo === "Carne" &&
-                    MEAT_ANIMALS.includes(dish.animal_carne) &&
-                    MEAT_TECHNIQUES.includes(dish.tecnica_cocina);
-            }
-            if (spec.protein === "Pescado") {
-                return dish.proteina_segundo === "Pescado" && !!dish.especie_pescado;
-            }
-            return false;
+            return window.GastroOSMenuSelectionRules.isStructuralMatch(dish, spec, {
+                meatAnimals: MEAT_ANIMALS,
+                meatTechniques: MEAT_TECHNIQUES
+            });
         }
 
         function dayPatternSignature(slots) {
