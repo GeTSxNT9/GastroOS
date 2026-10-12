@@ -1387,14 +1387,14 @@
             row.dataset.categoriaTouched = 'false';
             row.innerHTML = `
                 <input type="text" placeholder="Ingrediente..." value="${escapeHtml(nombre)}" required class="ingredient-name-input flex-[4] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                <input type="text" inputmode="decimal" placeholder="Cant." value="${cantidad !== '' && cantidad !== undefined ? cantidad : ''}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <input type="text" inputmode="decimal" placeholder="Cant." value="${escapeHtml(cantidad !== '' && cantidad !== undefined ? cantidad : '')}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                 <select class="w-14 min-w-[3.5rem] flex-[0_0_3.5rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                     ${legacyUnit ? `<option value="${legacyUnit}" selected>${legacyUnit}</option>` : ''}
                     <option value="g" ${unidad==='g'?'selected':''}>g</option>
                     <option value="ml" ${unidad==='ml'?'selected':''}>ml</option>
                 </select>
                 <select class="ingredient-category-select flex-[1.25] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                    ${proveedorCategorias.map(c => `<option value="${c}" ${categoria===c?'selected':''}>${c}</option>`).join('')}
+                    ${proveedorCategorias.map(c => `<option value="${escapeHtml(c)}" ${categoria===c?'selected':''}>${escapeHtml(c)}</option>`).join('')}
                 </select>
                 <button type="button" class="text-red-500 font-bold px-1" onclick="this.parentElement.remove()">×</button>
             `;
