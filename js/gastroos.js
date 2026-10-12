@@ -4354,15 +4354,15 @@
                         const unit = String(ing?.unidad || '').trim().toLowerCase();
                         const rawQuantityText = String(ing?.cantidad ?? '').trim().replace(',', '.');
                         const rawQty = Number(rawQuantityText);
-                        const isWeight = ['kg', 'g'].includes(unit);
-                        const isVolume = ['l', 'ml'].includes(unit);
+                        const dimensionKey = window.GastroOSStockUtils.getUnitDimension(unit);
+                        const isWeight = dimensionKey === 'weight';
+                        const isVolume = dimensionKey === 'volume';
                         const hasCalculableQuantity = rawQuantityText !== '' && Number.isFinite(rawQty) && rawQty > 0 && (isWeight || isVolume);
                         const category = proveedorCategorias.includes(ing?.categoria_proveedor) ? ing.categoria_proveedor : 'Secos';
                         const foodKey = normalizeFoodKey(rawName);
                         if (!foodKey) return;
                         // No sumar unidades dimensionalmente incompatibles (p. ej. kg y litros)
                         // bajo un mismo producto; cada dimensión queda separada para revisión.
-                        const dimensionKey = isWeight ? 'weight' : (isVolume ? 'volume' : 'unknown');
                         const key = `${foodKey}::${dimensionKey}`;
 
                         if (!aggregated[key]) {
@@ -4372,7 +4372,7 @@
                                 requiredBaseQty: 0,
                                 stockUsedBaseQty: 0,
                                 cat: category,
-                                baseUnit: isWeight ? 'kg' : (isVolume ? 'L' : ''),
+                                baseUnit: window.GastroOSStockUtils.getBaseUnit(unit),
                                 needsManualPurchase: false,
                                 manualStock: shoppingManualStockKeys.has(foodKey)
                             };
@@ -4398,7 +4398,7 @@
                         aggregated[key].requiredBaseQty += baseQty;
                         aggregated[key].stockUsedBaseQty += stockUsed;
                         aggregated[key].totalBaseQty += netQty;
-                        aggregated[key].baseUnit = isWeight ? 'kg' : 'L';
+                        aggregated[key].baseUnit = window.GastroOSStockUtils.getBaseUnit(unit);
                     });
                 });
             });
@@ -4782,18 +4782,7 @@
         }
 
         function normalizeImportedStockItem(item) {
-            if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error('El stock contiene un registro que no es un objeto válido.');
-            const copy = { ...item };
-            for (const key of ['nombre', 'unidad', 'categoria_proveedor', 'conservacion', 'asignacion']) {
-                if (copy[key] !== undefined && typeof copy[key] !== 'string') throw new Error(`El campo ${key} del stock debe ser texto.`);
-            }
-            for (const key of ['cantidad', 'stock', 'cantidad_actual', 'cantidadDisponible']) {
-                if (copy[key] === undefined || copy[key] === null || copy[key] === '') continue;
-                const numeric = typeof copy[key] === 'number' ? copy[key] : (typeof copy[key] === 'string' && copy[key].trim() !== '' ? Number(copy[key].trim().replace(',', '.')) : NaN);
-                if (!Number.isFinite(numeric) || numeric < 0) throw new Error(`El campo ${key} del stock debe ser un número no negativo; se recibió un valor inválido.`);
-                copy[key] = numeric;
-            }
-            return copy;
+            return window.GastroOSStockUtils.normalizeImportedStockItem(item);
         }
 
         function validateImportedMenu(menu, label) {
@@ -4839,18 +4828,12 @@
         function wipeData() {
             if (confirm("¿Estás completamente seguro de borrar los datos locales y restaurar valores iniciales? La conexión con GitHub se conservará para poder volver a cargar el recetario.")) {
                 createAutoBackup('antes de borrar todos los datos locales');
-                const githubSettings = window.GastroOSDataStore.get('chefTrack_githubSettings');
-                const autoBackup = window.GastroOSDataStore.get('chefTrack_autoBackup');
-                const autoBackupAt = window.GastroOSDataStore.get('chefTrack_autoBackupAt');
                 const cleared = window.GastroOSDataStore.clearOwned({ preserve: ['chefTrack_autoBackup', 'chefTrack_autoBackupAt', 'chefTrack_githubSettings', 'chefTrack_dataSchemaVersion'] });
                 if (!cleared.ok) {
                     alert('No se pudieron borrar todos los datos. No se recargará la aplicación para evitar mostrar un estado parcial.');
                     return;
                 }
-                // Se restauran explícitamente las claves protegidas solo si estaban presentes.
-                if (autoBackup !== null) window.GastroOSDataStore.set('chefTrack_autoBackup', autoBackup);
-                if (autoBackupAt !== null) window.GastroOSDataStore.set('chefTrack_autoBackupAt', autoBackupAt);
-                if (githubSettings !== null) window.GastroOSDataStore.set('chefTrack_githubSettings', githubSettings);
+                // clearOwned conserva las claves protegidas; no hace falta reescribirlas.
                 location.reload();
             }
         }
