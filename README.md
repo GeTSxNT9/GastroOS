@@ -1,44 +1,44 @@
 # GastroOS
 
-**GastroOS** es una aplicación web progresiva (PWA) para gestionar recetas, planificar menús de lunes a viernes, controlar existencias, calcular compras y aplicar las normas de una cocina de autoservicio.
+**GastroOS** is a Progressive Web Application (PWA) to manage recipes, plan Monday-to-Friday menus, track inventory, calculate shopping lists, and apply the rules of a self-service kitchen.
 
-Está construida con HTML, CSS y JavaScript sin framework de aplicación ni backend propio. La información de trabajo se guarda en el navegador; la sincronización con GitHub es opcional.
+It is built with HTML, CSS, and JavaScript without an application framework or its own backend. Working information is stored in the browser; synchronization with GitHub is optional.
 
-## Funciones principales
+## Main Features
 
-- Catálogo de recetas: creación, edición, filtros, edición masiva, técnicas, clasificaciones, ingredientes y alérgenos.
-- Generación y validación de menús semanales con estructura configurable, reglas diarias y semanales, límites de repetición, restricciones de carnes y pescados, guisos y disponibilidad de stock.
-- Regeneración de días y búsqueda de alternativas que respeten las reglas configuradas.
-- Gestión diferenciada de materias primas/productos precocinados y platos elaborados.
-- Cálculo de la lista de la compra, agrupación por categoría de proveedor, ajuste de cantidades y exportación TXT.
-- Catálogos editables de carnes y especies de pescado.
-- Alérgenos por producto, historial local, diagnósticos, copias de seguridad y restauración.
-- PWA instalable, almacenamiento local y sincronización opcional de `recipes.json` con GitHub Contents API.
+- Recipe catalog: creation, editing, filters, batch editing, techniques, classifications, ingredients, and allergens.
+- Generation and validation of weekly menus with configurable structure, daily and weekly rules, repetition limits, meat and fish restrictions, stews, and stock availability.
+- Day regeneration and search for alternatives that respect the configured rules.
+- Differentiated management of raw materials/pre-cooked products and prepared dishes.
+- Shopping list calculation, grouping by supplier category, quantity adjustment, and TXT export.
+- Editable catalogs of meat and fish species.
+- Allergens per product, local history, diagnostics, backups, and restoration.
+- Installable PWA, local storage, and optional synchronization of `recipes.json` with the GitHub Contents API.
 
-## Arquitectura actual
+## Current Architecture
 
 ```text
 GastroOS-main/
-├── index.html                  # Interfaz, vistas y carga ordenada de módulos
-├── css/gastroos.css            # Estilos propios de la aplicación
+├── index.html                  # Interface, views, and ordered module loading
+├── css/gastroos.css            # Application-specific styles
 ├── js/
-│   ├── gastroos.js             # Estado de la app, interfaz y orquestación principal
-│   ├── data-store-facade.js    # Acceso y migraciones de localStorage
-│   ├── kitchen-rules.js        # Perfil y configuración de las reglas de cocina
-│   ├── stock-utils.js          # Normalización y validación de registros de stock
-│   ├── shopping-engine.js      # Cálculos de necesidades y compra
-│   ├── menu-generation-engine.js # Orquestación de intentos de generación semanal
-│   ├── menu-selection-rules.js # Reglas estructurales para elegir platos
-│   ├── menu-structure-validator.js # Validación estructural de la semana
-│   ├── menu-daily-rules.js     # Restricciones de composición diaria
-│   ├── menu-frequency-rules.js # Límites y frecuencias semanales
-│   ├── menu-continuity-rules.js # Restricciones entre días consecutivos
-│   ├── menu-engine-facade.js   # Fachada sobre las funciones del motor existentes
-│   ├── github-network.js       # Construcción de rutas y timeout de red de GitHub
-│   └── github-facade.js        # Fachada para las operaciones de sincronización
-├── recipes.json                # Recetario semilla y metadatos compartidos del catálogo
-├── manifest.json               # Metadatos de instalación PWA
-├── sw.js                       # Instalación, actualización y caché offline
+│   ├── gastroos.js             # App state, interface, and main orchestration
+│   ├── data-store-facade.js    # localStorage access and migrations
+│   ├── kitchen-rules.js        # Kitchen rules profile and configuration
+│   ├── stock-utils.js          # Normalization and validation of stock records
+│   ├── shopping-engine.js      # Needs and shopping calculations
+│   ├── menu-generation-engine.js # Weekly generation attempt orchestration
+│   ├── menu-selection-rules.js # Structural rules for choosing dishes
+│   ├── menu-structure-validator.js # Structural validation of the week
+│   ├── menu-daily-rules.js     # Daily composition restrictions
+│   ├── menu-frequency-rules.js # Weekly limits and frequencies
+│   ├── menu-continuity-rules.js # Restrictions between consecutive days
+│   ├── menu-engine-facade.js   # Facade over existing engine functions
+│   ├── github-network.js       # Construction of paths and GitHub network timeout
+│   └── github-facade.js        # Facade for synchronization operations
+├── recipes.json                # Seed recipe book and shared catalog metadata
+├── manifest.json               # PWA installation metadata
+├── sw.js                       # Installation, update, and offline cache
 ├── icon-192.png
 ├── icon-512.png
 ├── apple-touch-icon.png
@@ -46,56 +46,56 @@ GastroOS-main/
 └── README.md
 ```
 
-### Responsabilidades y límites
+### Responsibilities and Limits
 
-- `gastroos.js` sigue siendo el módulo principal y contiene partes importantes del motor culinario y de la interfaz. Las fachadas no son motores duplicados: exponen funciones existentes para facilitar una separación gradual.
-- Los módulos `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js` y `shopping-engine.js` aíslan comprobaciones o cálculos para poder probarlos por separado.
-- Los scripts de `index.html` se cargan en un orden deliberado: primero utilidades y reglas, después `gastroos.js` y finalmente las fachadas que exponen sus funciones.
-- `recipes.json` se utiliza como fuente inicial cuando no hay recetario local utilizable. La instalación del Service Worker lo trata como recurso esencial junto con los módulos de aplicación.
+- `gastroos.js` remains the main module and contains important parts of the culinary engine and the interface. Facades are not duplicated engines: they expose existing functions to facilitate gradual separation.
+- The `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js`, and `shopping-engine.js` modules isolate checks or calculations so they can be tested separately.
+- `index.html` scripts are loaded in a deliberate order: utilities and rules first, then `gastroos.js`, and finally the facades that expose their functions.
+- `recipes.json` is used as an initial source when there is no usable local recipe book. Service Worker installation treats it as an essential resource along with the application modules.
 
-## Datos y persistencia
+## Data and Persistence
 
-- `localStorage` guarda el recetario de trabajo, la configuración, existencias, menú actual e histórico, alérgenos, copias automáticas y metadatos de sincronización.
-- Las migraciones de esquema se realizan mediante `data-store-facade.js`. No borres manualmente las claves `chefTrack_*` si quieres conservar los datos.
-- Las copias de seguridad exportadas son la vía recomendada para trasladar o recuperar datos. Haz una exportación antes de actualizar la aplicación o restaurar datos antiguos.
-- El token de GitHub se conserva en `sessionStorage` de la pestaña/sesión del navegador. La configuración no secreta del repositorio se guarda por separado en `localStorage`. Al cerrar la sesión del navegador, puede ser necesario volver a introducir el token.
+- `localStorage` stores the working recipe book, configuration, inventory, current and historical menu, allergens, automatic backups, and synchronization metadata.
+- Schema migrations are performed via `data-store-facade.js`. Do not manually delete `chefTrack_*` keys if you want to keep the data.
+- Exported backups are the recommended way to move or recover data. Make an export before updating the application or restoring old data.
+- The GitHub token is kept in `sessionStorage` for the browser tab/session. Non-secret repository configuration is stored separately in `localStorage`. When closing the browser session, it may be necessary to re-enter the token.
 
-## Sincronización con GitHub
+## GitHub Synchronization
 
-La integración es opcional y usa la GitHub Contents API para leer y actualizar el archivo configurado (normalmente `recipes.json`). No se necesita GitHub para usar las funciones locales.
+Integration is optional and uses the GitHub Contents API to read and update the configured file (usually `recipes.json`). GitHub is not needed to use local features.
 
-Recomendaciones de seguridad:
+Security recommendations:
 
-1. Usa un token fine-grained con acceso únicamente al repositorio requerido y los permisos mínimos de Contents necesarios para leer/escribir.
-2. No incluyas el token en archivos del repositorio, capturas, incidencias ni documentación.
-3. El token está disponible para el JavaScript de la aplicación durante la sesión; un script malicioso ejecutado en el mismo origen podría acceder a él. Publica únicamente código de confianza y revoca el token si sospechas que se ha expuesto.
-4. GitHub Pages no proporciona un backend secreto: la autenticación se realiza desde el navegador.
+1. Use a fine-grained token with access only to the required repository and the minimum Contents permissions needed to read/write.
+2. Do not include the token in repository files, screenshots, issues, or documentation.
+3. The token is available to the application's JavaScript during the session; a malicious script executed on the same origin could access it. Publish only trusted code and revoke the token if you suspect it has been exposed.
+4. GitHub Pages does not provide a secret backend: authentication is done from the browser.
 
-`github-network.js` valida el formato de propietario/repositorio/ruta y aplica un timeout a las peticiones. Esto mejora la robustez, pero no elimina errores de red, límites de API ni conflictos de escritura simultánea.
+`github-network.js` validates the owner/repository/path format and applies a timeout to requests. This improves robustness, but does not eliminate network errors, API limits, or simultaneous write conflicts.
 
-## PWA y funcionamiento sin conexión
+## PWA and Offline Operation
 
-El Service Worker usa caché versionada y elimina cachés antiguas de GastroOS al activarse. Durante la instalación precarga los recursos esenciales; si falta un recurso esencial, cancela la instalación en lugar de dejar una shell incompleta. La CDN de Tailwind es opcional durante la instalación y se intenta almacenar en caché cuando está disponible.
+The Service Worker uses versioned caching and deletes old GastroOS caches upon activation. During installation, it preloads essential resources; if an essential resource is missing, it cancels the installation instead of leaving an incomplete shell. The Tailwind CDN is optional during installation and is attempted to be cached when available.
 
-**Límite conocido:** `index.html` carga Tailwind desde `https://cdn.tailwindcss.com`. La copia en caché es de mejor esfuerzo y no garantiza el estilo completo en una primera instalación sin conexión ni frente a cambios del proveedor externo. Para offline predecible, la siguiente mejora sería compilar Tailwind como CSS local y probar instalación, actualización y uso sin red en navegadores reales.
+**Known limit:** `index.html` loads Tailwind from `https://cdn.tailwindcss.com`. The cached copy is best-effort and does not guarantee full styling on a first offline installation or against external provider changes. For predictable offline use, the next improvement would be to compile Tailwind as local CSS and test installation, updating, and use without a network in real browsers.
 
-Los datos existentes están en `localStorage`, pero la disponibilidad de la interfaz y de los recursos en una instalación inicial sin conexión depende de haber cargado antes la aplicación y sus recursos esenciales con éxito.
+Existing data is in `localStorage`, but the availability of the interface and resources in an initial offline installation depends on having previously loaded the application and its essential resources successfully.
 
-## Desarrollo y comprobaciones
+## Development and Checks
 
-No se necesita Node.js para ejecutar la PWA publicada. Node.js se puede usar para comprobaciones estáticas y pruebas automatizadas si están presentes en el repositorio:
+Node.js is not needed to run the published PWA. Node.js can be used for static checks and automated tests if they are present in the repository:
 
 ```bash
 node --check js/gastroos.js
 node --check sw.js
 ```
 
-Antes de publicar cambios, comprueba que todos los módulos referenciados por `index.html` existen y están incluidos en la lista de recursos esenciales de `sw.js`. Después prueba en la aplicación publicada: generación semanal, regeneración de un día, lista de compra, persistencia tras recargar y sincronización de GitHub si está configurada.
+Before publishing changes, check that all modules referenced by `index.html` exist and are included in the essential resource list of `sw.js`. Then test in the published application: weekly generation, regeneration of a single day, shopping list, persistence after reloading, and GitHub synchronization if configured.
 
-## Despliegue
+## Deployment
 
-La aplicación puede servirse como sitio estático con GitHub Pages. Publica el contenido de esta carpeta conservando la estructura de archivos. No requiere un proceso de compilación para su funcionamiento actual.
+The application can be served as a static site with GitHub Pages. Publish the contents of this folder while keeping the file structure. It does not require a build process for its current operation.
 
-## Diseño y objetivo
+## Design and Goal
 
-GastroOS prioriza claridad, controles compactos y configuración explícita. Su objetivo es automatizar tareas repetitivas de planificación y compra sin ocultar las reglas que condicionan la selección de platos ni quitar al usuario el control final.
+GastroOS prioritizes clarity, compact controls, and explicit configuration. Its goal is to automate repetitive planning and shopping tasks without hiding the rules that condition dish selection or taking away the user's final control.
