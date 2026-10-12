@@ -3488,3 +3488,44 @@ html.dark #view-settings .bg-gray-100 {
   color: var(--g-text) !important;
   border-color: var(--g-border) !important;
 }
+
+/* Corrección global de botones en modo oscuro.
+   Las clases de color de Tailwind suelen ganar a las reglas genéricas; se neutralizan
+   aquí los fondos claros y se conservan colores semánticos para acciones principales. */
+html.dark button,
+html.dark [role="button"],
+html.dark input[type="button"],
+html.dark input[type="submit"],
+html.dark input[type="reset"] {
+  color: var(--g-text, #e7eef8);
+  border-color: var(--g-border, #30445c);
+}
+html.dark button:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600),
+html.dark [role="button"]:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600),
+html.dark input[type="button"],
+html.dark input[type="reset"] {
+  background-color: #1a2a3e !important;
+  color: #e7eef8 !important;
+  border-color: #344a63 !important;
+}
+html.dark button:not(:disabled):not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600):hover,
+html.dark [role="button"]:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600):hover {
+  background-color: #263b54 !important;
+  border-color: #496584 !important;
+}
+html.dark button:disabled,
+html.dark [role="button"][aria-disabled="true"] {
+  opacity: .55;
+  filter: saturate(.65);
+}
+/* Acciones principales mantienen su color, pero con contraste de texto explícito. */
+html.dark button.bg-indigo-600, html.dark button.bg-indigo-500,
+html.dark button.bg-blue-600, html.dark button.bg-blue-500,
+html.dark button.bg-green-600, html.dark button.bg-emerald-600,
+html.dark button.bg-red-600, html.dark button.bg-rose-600,
+html.dark button.bg-orange-500, html.dark button.bg-amber-500,
+html.dark button.bg-purple-600, html.dark button.bg-violet-600,
+html.dark button.bg-teal-600, html.dark button.bg-sky-600 {
+  color: #fff !important;
+  border-color: rgba(255,255,255,.18) !important;
+}
