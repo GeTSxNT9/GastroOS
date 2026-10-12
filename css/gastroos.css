@@ -3263,3 +3263,228 @@ input, select, textarea { max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* GastroOS v48: corrección integral del tema oscuro en todas las vistas y modales.
+   Estas reglas se sitúan al final para prevalecer sobre antiguos ajustes visuales claros. */
+html.dark {
+  color-scheme: dark;
+  --g-bg: #0b1220;
+  --g-surface: #111c2b;
+  --g-surface-strong: #152235;
+  --g-border: #29394d;
+  --g-text: #e7eef8;
+  --g-muted: #a3b2c6;
+  --g-accent: #78b7ff;
+  --g-accent-hover: #9acaff;
+  --g-accent-soft: #182e49;
+  --g-control: #172538;
+  --g-navy: #23466f;
+  --g-navy-hover: #2d5889;
+}
+html.dark body,
+html.dark #main-container,
+html.dark #view-banco,
+html.dark #view-form,
+html.dark #view-stock,
+html.dark #view-generator,
+html.dark #view-settings {
+  background-color: var(--g-bg) !important;
+  color: var(--g-text) !important;
+}
+html.dark body > header,
+html.dark header,
+html.dark body > nav,
+html.dark nav.fixed,
+html.dark nav.fixed.bottom-0.left-0.right-0.z-50 {
+  background: rgba(12, 22, 36, .97) !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+  box-shadow: 0 -4px 18px rgba(0,0,0,.22) !important;
+}
+html.dark header h1,
+html.dark header svg,
+html.dark main > h2,
+html.dark main h2,
+html.dark main h3,
+html.dark .view-title,
+html.dark #view-form > h2,
+html.dark #view-stock h2,
+html.dark #view-generator h2,
+html.dark #view-settings h2,
+html.dark #view-generator .gastro-generator-title {
+  color: var(--g-text) !important;
+}
+html.dark .view-subtitle,
+html.dark #recipeResultsSummary,
+html.dark #view-generator .gastro-generator-description,
+html.dark #view-settings .settings-card-description,
+html.dark #view-settings .setting-help,
+html.dark #view-settings .field-label,
+html.dark #view-settings .settings-section-kicker,
+html.dark #view-settings .setting-group-title,
+html.dark #rawStockForm label,
+html.dark #prepStockForm label,
+html.dark #dishForm label,
+html.dark #view-form label {
+  color: var(--g-muted) !important;
+}
+html.dark #dishesList > div,
+html.dark #generatedMenuContainer > div,
+html.dark #historyListContainer > div,
+html.dark #rawStockList > div,
+html.dark #prepStockList > div,
+html.dark #shoppingListBreakdown > div,
+html.dark main section,
+html.dark #dishForm,
+html.dark #subtab-shopping-content > div,
+html.dark #view-stock section,
+html.dark #view-stock .settings-card,
+html.dark #view-stock form,
+html.dark #view-settings section,
+html.dark #view-settings .settings-card,
+html.dark #view-settings .settings-forecast-card,
+html.dark #view-settings .setting-group,
+html.dark #view-settings .settings-accordion,
+html.dark #view-generator > div:first-child > div:first-child,
+html.dark #view-generator .generator-header,
+html.dark #view-generator .gastro-generator-header,
+html.dark #historyListContainer > div {
+  background: var(--g-surface) !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,.16) !important;
+}
+html.dark #bulkToolbar,
+html.dark #rawStockForm,
+html.dark #prepStockForm,
+html.dark #view-settings .settings-input,
+html.dark #view-settings input,
+html.dark #view-settings select,
+html.dark #view-settings .settings-accordion > summary,
+html.dark #bulkField,
+html.dark #bulkValue {
+  background: var(--g-control) !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+}
+html.dark input:not([type=checkbox]):not([type=radio]):not([type=file]),
+html.dark select,
+html.dark textarea,
+html.dark #searchInput,
+html.dark .ingredient-name-input,
+html.dark .ingredient-category-select {
+  background: var(--g-control) !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+  caret-color: var(--g-text);
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder,
+html.dark #searchInput::placeholder { color: #91a2b8 !important; opacity: 1 !important; }
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus,
+html.dark #searchInput:focus {
+  background: #1b2b40 !important;
+  color: var(--g-text) !important;
+  border-color: #4f83ba !important;
+  box-shadow: 0 0 0 3px rgba(86,157,230,.18) !important;
+}
+html.dark .filter-lvl1:not(.active),
+html.dark .filter-lvl2:not(.active),
+html.dark .generator-day-tab:not(.active) {
+  background: #172538 !important;
+  border-color: var(--g-border) !important;
+  color: #c2d0e2 !important;
+}
+html.dark .filter-lvl1.active,
+html.dark .filter-lvl2.active,
+html.dark .generator-day-tab.active {
+  background: #24466e !important;
+  border-color: #3b6594 !important;
+  color: #fff !important;
+}
+html.dark .nav-btn { color: #91a2b8 !important; }
+html.dark .nav-btn.active,
+html.dark .nav-btn.text-indigo-600,
+html.dark .nav-btn.text-indigo-400 { color: #8fc4ff !important; }
+html.dark #themeToggleBtn { background: #24364b !important; color: #e7eef8 !important; border-color: var(--g-border) !important; }
+html.dark #themeToggleBtn:hover { background: #304760 !important; }
+html.dark #btnSaveToHistory,
+html.dark #btnDownloadMenuTxt,
+html.dark #shoppingRacionesBadge {
+  background: #1c3048 !important;
+  color: #a9d2ff !important;
+  border-color: #314b68 !important;
+}
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-gray-700,
+html.dark .text-gray-600 { color: var(--g-text) !important; }
+html.dark .text-gray-500,
+html.dark .text-gray-400 { color: var(--g-muted) !important; }
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-300,
+html.dark .border-gray-400,
+html.dark .border-t,
+html.dark .border-b { border-color: var(--g-border) !important; }
+/* Modales y ventanas secundarias: alérgenos, importación, cambio de plato y regeneración diaria. */
+html.dark #modalProductAllergens > div,
+html.dark #modalImportPreview > div,
+html.dark #modalChangeDish > div,
+html.dark #modalChangeDish #modalDishList > div,
+html.dark .day-regeneration-modal-panel {
+  background: var(--g-surface-strong) !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+}
+html.dark #modalProductAllergens > div > div:first-child,
+html.dark #modalProductAllergens > div > div:first-child h3,
+html.dark #modalProductAllergens > div > div:first-child p,
+html.dark #modalProductAllergens > div > div:first-child button,
+html.dark .day-regeneration-modal-header,
+html.dark .day-regeneration-modal-header h3,
+html.dark .day-regeneration-modal-header p {
+  background: #172538 !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+}
+html.dark #modalProductAllergens > div > div:first-child p,
+html.dark #modalProductAllergens .text-indigo-200,
+html.dark #modalProductAllergens .text-indigo-100 { color: var(--g-muted) !important; }
+html.dark #modalProductAllergens .bg-gray-50,
+html.dark #modalImportPreview .bg-gray-50,
+html.dark #modalChangeDish .bg-gray-50,
+html.dark #modalChangeDish .bg-gray-100,
+html.dark .day-regeneration-modal .day-regeneration-option,
+html.dark .day-regeneration-modal .day-regeneration-dish {
+  background: #1a2a3e !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+}
+html.dark .day-regeneration-modal .day-regeneration-group-label,
+html.dark .day-regeneration-modal .day-regeneration-option-note { color: var(--g-muted) !important; }
+html.dark .day-regeneration-close { background: #263a52 !important; color: var(--g-text) !important; border-color: var(--g-border) !important; }
+html.dark #modalChangeDish { background: rgba(0,0,0,.68) !important; }
+html.dark #recipeList span.border.bg-green-100,
+html.dark #recipeList span.bg-green-100.border { background: #17372e !important; color: #a7e8c7 !important; border-color: #285844 !important; }
+html.dark #recipeList span.border.bg-yellow-100,
+html.dark #recipeList span.bg-yellow-100.border { background: #3b321c !important; color: #f6d98c !important; border-color: #5b4b27 !important; }
+html.dark #recipeList span.border.bg-red-100,
+html.dark #recipeList span.bg-red-100.border { background: #40232a !important; color: #ffb8c1 !important; border-color: #63333d !important; }
+html.dark .bg-indigo-50,
+html.dark .bg-indigo-100 { background-color: #1b304b !important; }
+html.dark .text-indigo-600,
+html.dark .text-indigo-700 { color: #8fc4ff !important; }
+html.dark .border-indigo-100,
+html.dark .border-indigo-200 { border-color: #314d6b !important; }
+html.dark #view-generator .dark\:bg-gray-900,
+html.dark #view-settings .dark\:bg-gray-900,
+html.dark #view-settings .bg-white,
+html.dark #view-settings .bg-gray-50,
+html.dark #view-settings .bg-gray-100 {
+  background-color: var(--g-surface) !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+}
