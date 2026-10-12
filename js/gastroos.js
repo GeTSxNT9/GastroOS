@@ -3999,20 +3999,30 @@
                 }
             });
 
-            if (weeklyFritos > getMaxWeeklyFritos()) errors.push(`Semana: hay ${weeklyFritos} fritos o rebozados; el máximo es ${getMaxWeeklyFritos()}.`);
             const weeklyCreams = getWeeklyFirstSubtypeCount(menu.days, "cremas");
-            if (weeklyCreams > getMaxWeeklyCreams()) errors.push(`Semana: hay ${weeklyCreams} días de crema; el máximo es ${getMaxWeeklyCreams()}.`);
-            const weeklyPasta = getWeeklyFirstFamilyCount(menu.days, 'pasta');
-            const weeklyLegumes = getWeeklyFirstFamilyCount(menu.days, 'legumbres');
-            const weeklyRice = getWeeklyFirstFamilyCount(menu.days, 'arroz');
-            const weeklyVegetableWhole = getWeeklyFirstFamilyCount(menu.days, 'verdura_entera');
-            const weeklySoups = getWeeklyFirstFamilyCount(menu.days, 'sopas');
-            if (weeklyPasta > getMaxWeeklyPasta()) errors.push(`Semana: hay ${weeklyPasta} días de pasta; el máximo es ${getMaxWeeklyPasta()}.`);
-            if (weeklyLegumes > getMaxWeeklyLegumes()) errors.push(`Semana: hay ${weeklyLegumes} días de legumbres; el máximo es ${getMaxWeeklyLegumes()}.`);
-            if (weeklyRice > getMaxWeeklyRice()) errors.push(`Semana: hay ${weeklyRice} días de arroz; el máximo es ${getMaxWeeklyRice()}.`);
-            if (weeklyVegetableWhole > getMaxWeeklyVegetableWhole()) errors.push(`Semana: hay ${weeklyVegetableWhole} días de verdura entera; el máximo es ${getMaxWeeklyVegetableWhole()}.`);
-            if (weeklySoups > getMaxWeeklySoups()) errors.push(`Semana: hay ${weeklySoups} días de sopa o caldo; el máximo es ${getMaxWeeklySoups()}.`);
-            if (weeklyGuisos !== getGuisoDays().size) errors.push(`Semana: debe haber exactamente ${getGuisoDays().size} guisos; hay ${weeklyGuisos}.`);
+            const weeklyLimitsCheck = window.GastroOSMenuFrequencyRules.validateWeeklyLimits(
+                {
+                    fritos: weeklyFritos,
+                    creams: weeklyCreams,
+                    pasta: getWeeklyFirstFamilyCount(menu.days, 'pasta'),
+                    legumes: getWeeklyFirstFamilyCount(menu.days, 'legumbres'),
+                    rice: getWeeklyFirstFamilyCount(menu.days, 'arroz'),
+                    vegetableWhole: getWeeklyFirstFamilyCount(menu.days, 'verdura_entera'),
+                    soups: getWeeklyFirstFamilyCount(menu.days, 'sopas'),
+                    guisos: weeklyGuisos
+                },
+                {
+                    maxFritos: getMaxWeeklyFritos(),
+                    maxCreams: getMaxWeeklyCreams(),
+                    maxPasta: getMaxWeeklyPasta(),
+                    maxLegumes: getMaxWeeklyLegumes(),
+                    maxRice: getMaxWeeklyRice(),
+                    maxVegetableWhole: getMaxWeeklyVegetableWhole(),
+                    maxSoups: getMaxWeeklySoups(),
+                    guisos: getGuisoDays().size
+                }
+            );
+            errors.push(...weeklyLimitsCheck.errors);
 
             days.forEach((dayName, dayIndex) => {
                 const meats = (menu.days[dayName] || []).filter(s => s.cat === 'Segundo' && s.dish?.proteina_segundo === 'Carne').map(s => s.dish).filter(Boolean);
