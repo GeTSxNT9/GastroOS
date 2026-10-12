@@ -2,7 +2,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v33';
+const CACHE_NAME = 'gastroos-v34';
 const APP_SHELL = [
   './',
   './index.html',
@@ -80,8 +80,10 @@ self.addEventListener('fetch', event => {
         if (response.ok) {
           const cache = await caches.open(CACHE_NAME);
           await cache.put('./index.html', response.clone());
+          return response;
         }
-        return response;
+        // Un 404/500 del servidor también debe permitir abrir el shell offline.
+        return (await caches.match(request)) || (await caches.match('./index.html')) || response;
       } catch (_) {
         return (await caches.match(request)) || (await caches.match('./index.html')) || Response.error();
       }
@@ -103,10 +105,13 @@ self.addEventListener('fetch', event => {
     }
     try {
       const response = await fetch(request);
-      if (response.ok && response.type === 'basic') (await caches.open(CACHE_NAME)).put(request, response.clone());
-      return response;
+      if (response.ok && response.type === 'basic') {
+        (await caches.open(CACHE_NAME)).put(request, response.clone());
+        return response;
+      }
+      return (await caches.match(request)) || response;
     } catch (_) {
-      return Response.error();
+      return (await caches.match(request)) || Response.error();
     }
   })());
 });
