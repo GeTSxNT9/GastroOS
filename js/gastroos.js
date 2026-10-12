@@ -3898,13 +3898,10 @@
             if (!menu || typeof menu !== 'object' || Array.isArray(menu) || !menu.days || typeof menu.days !== 'object' || Array.isArray(menu.days)) {
                 return { valid: false, errors: ['El menú está vacío o tiene una estructura inválida.'] };
             }
-            const days = daysList.filter(day => menu?.days?.[day]);
-            if (days.length !== daysList.length) {
-                daysList.filter(day => !menu?.days?.[day]).forEach(day => errors.push(`${day}: falta el día completo.`));
-            }
             const structure = getMenuStructure();
-            const expectedLabels = structure.slotSpecs.map(spec => spec.slotLabel);
-            const usedIds = new Set();
+            const structuralCheck = window.GastroOSMenuStructureValidator.validateMenuStructure(menu, daysList, structure);
+            errors.push(...structuralCheck.errors);
+            const days = structuralCheck.days;
             const vegetableKeys = new Set();
             let weeklyGuisos = 0;
             let weeklyFritos = 0;
@@ -3912,22 +3909,7 @@
 
             days.forEach((dayName, dayIndex) => {
                 const slots = menu.days[dayName] || [];
-                if (slots.length !== structure.slotSpecs.length) {
-                    errors.push(`${dayName}: deben existir exactamente ${structure.slotSpecs.length} opciones según la configuración actual.`);
-                    return;
-                }
-
-                slots.forEach((slot, index) => {
-                    if (slot.slotLabel !== expectedLabels[index]) {
-                        errors.push(`${dayName}: slot ${index + 1} no respeta la estructura fija.`);
-                    }
-                    const id = slot.dish?.id;
-                    if (id && id !== "none") {
-                        const normalizedId = String(id);
-                        if (usedIds.has(normalizedId)) errors.push(`${dayName}: el plato "${slot.dish?.nombre || ""}" se repite en la semana.`);
-                        usedIds.add(normalizedId);
-                    }
-                });
+                if (!Array.isArray(slots) || slots.length !== structure.slotSpecs.length) return;
 
                 const firsts = slots.filter(s => s.cat === 'Primero').map(s => s.dish).filter(Boolean);
                 const seconds = slots.filter(s => s.cat === 'Segundo').map(s => s.dish).filter(Boolean);
