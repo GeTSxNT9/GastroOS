@@ -22,7 +22,10 @@
         autoBackupAt: 'chefTrack_autoBackupAt',
         githubSettings: 'chefTrack_githubSettings',
         githubLastSync: 'chefTrack_githubLastSync',
-        githubLastSyncedRecipes: 'chefTrack_githubLastSyncedRecipes'
+        githubLastSyncedRecipes: 'chefTrack_githubLastSyncedRecipes',
+        dataSchemaVersion: 'chefTrack_dataSchemaVersion',
+        legacyPreviousWeekMenu: 'previousWeekMenu',
+        githubFileMissing: 'chefTrack_githubFileMissing'
     });
 
     function get(key, fallback = null) {
@@ -70,7 +73,7 @@
         catch (error) { console.warn('GastroOS: no se pudo limpiar almacenamiento local.', error); return false; }
     }
 
-    function createSnapshot(keys = Object.values(STORAGE_KEYS)) {
+    function createSnapshot(keys = [...new Set([...Object.values(STORAGE_KEYS), 'chefTrack_dishes', 'chefTrack_settings', 'chefTrack_rawStock', 'chefTrack_preparedStock', 'chefTrack_currentMenu', 'chefTrack_historyMenus', 'chefTrack_recipeChangeHistory', 'chefTrack_productAllergens', 'chefTrack_autoBackup', 'chefTrack_autoBackupAt', 'chefTrack_githubSettings', 'chefTrack_githubLastSync', 'chefTrack_githubLastSyncedRecipes', 'previousWeekMenu'])]) {
         const snapshot = {};
         try {
             keys.forEach(key => { snapshot[key] = localStorage.getItem(key); });
@@ -82,17 +85,43 @@
     }
 
     function restoreSnapshot(snapshot) {
-        if (!snapshot || !snapshot.values || typeof snapshot.values !== 'object') return false;
+        if (!snapshot || !snapshot.values || typeof snapshot.values !== 'object' || Array.isArray(snapshot.values)) return false;
+        const entries = Object.entries(snapshot.values);
+        const before = {};
         try {
-            Object.entries(snapshot.values).forEach(([key, value]) => {
+            entries.forEach(([key]) => { before[key] = localStorage.getItem(key); });
+            entries.forEach(([key, value]) => {
                 if (value === null) localStorage.removeItem(key);
-                else localStorage.setItem(key, value);
+                else if (typeof value === 'string') localStorage.setItem(key, value);
+                else throw new TypeError(`Snapshot inválido para ${key}`);
             });
             return true;
         } catch (error) {
+            // Best-effort rollback: evita dejar una mezcla de claves si falla una escritura.
+            try {
+                Object.entries(before).forEach(([key, value]) => {
+                    if (value === null) localStorage.removeItem(key);
+                    else localStorage.setItem(key, value);
+                });
+            } catch (rollbackError) {
+                console.error('GastroOS: también falló la reversión del snapshot.', rollbackError);
+            }
             console.error('GastroOS: falló la restauración del snapshot.', error);
             return false;
         }
+    }
+
+    function migrateSchema() {
+        const CURRENT_SCHEMA = 2;
+        const storedVersion = Number(get(STORAGE_KEYS.dataSchemaVersion, '1')) || 1;
+        if (storedVersion > CURRENT_SCHEMA) return { ok: false, reason: 'future-version', version: storedVersion };
+        if (storedVersion < 2) {
+            const canonical = get('chefTrack_previousWeekMenu', null);
+            const legacy = get('previousWeekMenu', null);
+            if (canonical === null && legacy !== null && !set('chefTrack_previousWeekMenu', legacy)) return { ok: false, reason: 'storage-write' };
+            if (!set(STORAGE_KEYS.dataSchemaVersion, String(CURRENT_SCHEMA))) return { ok: false, reason: 'storage-write' };
+        }
+        return { ok: true, version: CURRENT_SCHEMA };
     }
 
     function remove(key) {
@@ -114,6 +143,7 @@
         remove,
         clear,
         createSnapshot,
-        restoreSnapshot
+        restoreSnapshot,
+        migrateSchema
     });
 })();

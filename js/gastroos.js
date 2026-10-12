@@ -457,7 +457,32 @@
             const meatAnimalsInRecipes = new Set(dishes.filter(d => d?.categoria === 'Segundo' && d?.proteina_segundo === 'Carne' && allowedMeat.has(String(d?.animal_carne || '').toLowerCase())).map(d => String(d.animal_carne || '').toLowerCase()).filter(Boolean));
             if (fishSlots > fishSpeciesInRecipes.size) errors.push(`La oferta necesita ${fishSlots} pescados por día, pero solo hay ${fishSpeciesInRecipes.size} especies permitidas con recetas disponibles; cada especie solo puede aparecer una vez por semana.`);
             if (meatSlots > meatAnimalsInRecipes.size) errors.push(`La oferta necesita ${meatSlots} carnes por día, pero solo hay ${meatAnimalsInRecipes.size} tipos de carne permitidos con recetas disponibles; no se puede repetir animal dentro del mismo día.`);
-            if (fishSlots * daysList.length > fishSpeciesInRecipes.size) warnings.push(`La configuración requiere ${fishSlots * daysList.length} pescados por semana y solo hay ${fishSpeciesInRecipes.size} especies disponibles sin repetir.`);
+            if (fishSlots * daysList.length > fishSpeciesInRecipes.size) errors.push(`Configuración imposible: se necesitan ${fishSlots * daysList.length} pescados por semana, pero solo hay ${fishSpeciesInRecipes.size} especies permitidas disponibles y no se permite repetir especie.`);
+
+            // Un menú semanal nunca reutiliza IDs. Detectamos catálogos demasiado pequeños
+            // antes de iniciar el generador para evitar semanas parcialmente vacías.
+            const uniqueDishCount = list => new Set(list.map(d => String(d?.id ?? '')).filter(Boolean)).size;
+            const firstRequirements = [
+                ['Verdura', Number(profile.primerosVerdura) || 0],
+                ['Cuchara', Number(profile.primerosCuchara) || 0],
+                ['Tenedor', Number(profile.primerosTenedor) || 0]
+            ];
+            firstRequirements.forEach(([parent, perDay]) => {
+                if (perDay <= 0) return;
+                const available = uniqueDishCount(dishes.filter(d => d?.categoria === 'Primero' && d?.subcategoria_primero === parent));
+                const required = perDay * daysList.length;
+                if (available < required) errors.push(`Catálogo insuficiente: ${parent} tiene ${available} recetas únicas y la configuración necesita ${required} en la semana.`);
+            });
+            const secondRequirements = [
+                ['Carne', Number(profile.segundosCarne) || 0],
+                ['Pescado', Number(profile.segundosPescado) || 0]
+            ];
+            secondRequirements.forEach(([protein, perDay]) => {
+                if (perDay <= 0) return;
+                const available = uniqueDishCount(dishes.filter(d => d?.categoria === 'Segundo' && d?.proteina_segundo === protein && (protein !== 'Carne' || allowedMeat.has(String(d?.animal_carne || '').toLowerCase())) && (protein !== 'Pescado' || allowedFish.has(String(d?.especie_pescado || '').toLowerCase()))));
+                const required = perDay * daysList.length;
+                if (available < required) warnings.push(`Variedad limitada: hay ${available} recetas únicas de ${protein.toLowerCase()} y se necesitan ${required} selecciones semanales; algunas reglas pueden impedir generar un menú completo.`);
+            });
             if (meatSlots > 1 && meatAnimalsInRecipes.size < meatSlots + 1) warnings.push('Hay poca variedad de animales de carne para la oferta configurada; puede ser difícil evitar repeticiones en días consecutivos.');
 
             return { valid: errors.length === 0, errors, warnings };
@@ -759,6 +784,12 @@
         }
 
         async function init() {
+            const migration = window.GastroOSDataStore.migrateSchema?.();
+            if (migration && !migration.ok) {
+                const status = document.getElementById('appErrorStatus');
+                if (status) { status.textContent = migration.reason === 'future-version' ? 'Los datos locales pertenecen a una versión más reciente. Actualiza GastroOS antes de continuar.' : 'No se pudieron migrar los datos locales. Exporta una copia de seguridad y comprueba el espacio disponible.'; status.hidden = false; }
+                if (migration.reason === 'future-version') return;
+            }
             registerServiceWorker();
             loadProductAllergens();
             const storedDishesSafe = safeLoadJSON('chefTrack_dishes', []);
@@ -848,28 +879,34 @@
             recipeProteinCatalog = normalizeRecipeProteinCatalog({ fish: settings.kitchenProfile.especiesPescadoPersonalizadas, meat: settings.kitchenProfile.animalesCarnePersonalizados });
             mergeRecipeProteinCatalogIntoProfile(recipeProteinCatalog);
             try {
-                window.GastroOSDataStore.set('chefTrack_dishes', JSON.stringify(dishes));
-                window.GastroOSDataStore.set('chefTrack_settings', JSON.stringify(settings));
-                window.GastroOSDataStore.set('chefTrack_rawStock', JSON.stringify(rawStock));
-                window.GastroOSDataStore.set('chefTrack_preparedStock', JSON.stringify(preparedStock));
-                window.GastroOSDataStore.set('chefTrack_historyMenus', JSON.stringify(historyMenus));
-                window.GastroOSDataStore.set('chefTrack_recipeChangeHistory', JSON.stringify(recipeChangeHistory));
-                window.GastroOSDataStore.set('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
-                if (currentMenu) window.GastroOSDataStore.set('chefTrack_currentMenu', JSON.stringify(currentMenu));
-                else window.GastroOSDataStore.remove('chefTrack_currentMenu');
+                const writes = [
+                    window.GastroOSDataStore.setJSON('chefTrack_dishes', dishes),
+                    window.GastroOSDataStore.setJSON('chefTrack_settings', settings),
+                    window.GastroOSDataStore.setJSON('chefTrack_rawStock', rawStock),
+                    window.GastroOSDataStore.setJSON('chefTrack_preparedStock', preparedStock),
+                    window.GastroOSDataStore.setJSON('chefTrack_historyMenus', historyMenus),
+                    window.GastroOSDataStore.setJSON('chefTrack_recipeChangeHistory', recipeChangeHistory),
+                    window.GastroOSDataStore.setJSON('chefTrack_productAllergens', productAllergenMap)
+                ];
+                writes.push(currentMenu ? window.GastroOSDataStore.setJSON('chefTrack_currentMenu', currentMenu) : window.GastroOSDataStore.remove('chefTrack_currentMenu'));
                 if (previousWeekMenu) {
-                    window.GastroOSDataStore.set('previousWeekMenu', JSON.stringify(previousWeekMenu));
-                    window.GastroOSDataStore.set('chefTrack_previousWeekMenu', JSON.stringify(previousWeekMenu));
+                    writes.push(window.GastroOSDataStore.setJSON('previousWeekMenu', previousWeekMenu));
+                    writes.push(window.GastroOSDataStore.setJSON('chefTrack_previousWeekMenu', previousWeekMenu));
                 } else {
-                    window.GastroOSDataStore.remove('previousWeekMenu');
-                    window.GastroOSDataStore.remove('chefTrack_previousWeekMenu');
+                    writes.push(window.GastroOSDataStore.remove('previousWeekMenu'));
+                    writes.push(window.GastroOSDataStore.remove('chefTrack_previousWeekMenu'));
                 }
+                if (writes.some(ok => ok !== true)) throw new Error('Una o más escrituras locales fallaron.');
             } catch (error) {
                 console.error('No se pudieron guardar los datos locales:', error);
-                alert('No se han podido guardar los datos en este navegador. Comprueba el espacio disponible.');
+                alert('No se han podido guardar todos los datos en este navegador. Comprueba el espacio disponible; no cierres la aplicación hasta resolverlo.');
+                updateGitHubPendingState();
+                updateAutoBackupStatus();
+                return false;
             }
             updateGitHubPendingState();
             updateAutoBackupStatus();
+            return true;
         }
 
         function toggleDarkMode() {
@@ -937,7 +974,7 @@
                     e.currentTarget.classList.add('bg-indigo-600', 'text-white', 'border-transparent', 'active');
                     activeFilterLevel1 = e.currentTarget.getAttribute('data-filter');
                     activeFilterLevel2 = 'all';
-                    
+
                     document.getElementById('filters-primeros').classList.add('hidden');
                     document.getElementById('filters-segundos').classList.add('hidden');
                     if (activeFilterLevel1 === 'Primero') {
@@ -1364,6 +1401,7 @@
             try {
                 const stored = window.GastroOSDataStore.get('chefTrack_githubSettings');
                 const github = stored ? JSON.parse(stored) : {};
+                if (github.token) { try { sessionStorage.setItem('gastroos_github_token', github.token); } catch {} delete github.token; window.GastroOSDataStore.setJSON('chefTrack_githubSettings', github); }
                 const token = document.getElementById('githubToken');
                 const owner = document.getElementById('githubOwner');
                 const repo = document.getElementById('githubRepo');
@@ -1373,7 +1411,7 @@
                 if (owner) owner.value = github.owner || "";
                 if (repo) repo.value = github.repo || "";
                 if (path) path.value = github.path || "";
-                updateGitHubSettingsStatus(github);
+                updateGitHubSettingsStatus(getGitHubSettings());
             } catch {
                 console.warn("No se pudieron cargar las credenciales de GitHub.");
             }
@@ -1382,7 +1420,9 @@
         function getGitHubSettings() {
             try {
                 const stored = window.GastroOSDataStore.get('chefTrack_githubSettings');
-                return stored ? JSON.parse(stored) : {};
+                const github = stored ? JSON.parse(stored) : {};
+                let sessionToken = ''; try { sessionToken = sessionStorage.getItem('gastroos_github_token') || ''; } catch {}
+                return { ...github, token: sessionToken };
             } catch (error) {
                 return {};
             }
@@ -1501,7 +1541,7 @@
             const status = document.getElementById('githubSettingsStatus');
             if (!status) return;
             if (github?.token && github?.owner && github?.repo && github?.path) {
-                status.textContent = "Conexión configurada ✓ Al guardar, GastroOS comprobará GitHub y cargará el recetario.";
+                status.textContent = "Conexión activa en esta sesión ✓ El token no se guarda de forma persistente en este navegador.";
                 status.className = "text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold";
             } else {
                 status.textContent = "Configura los cuatro campos para activar la sincronización remota de recetas.";
@@ -1557,13 +1597,15 @@
             };
 
             if (!github.token || !github.owner || !github.repo || !github.path) {
-                alert("Completa el propietario, el repositorio y la ruta, e introduce un token si aún no hay uno guardado.");
+                alert("Completa el propietario, el repositorio y la ruta, e introduce un token para esta sesión.");
                 return;
             }
 
             const repositoryChanged = existing.owner !== github.owner || existing.repo !== github.repo || existing.path !== github.path;
             if (repositoryChanged) window.GastroOSDataStore.remove('chefTrack_githubLastSync');
-            window.GastroOSDataStore.set('chefTrack_githubSettings', JSON.stringify(github));
+            try { sessionStorage.setItem('gastroos_github_token', github.token); } catch { alert('No se pudo guardar el token en la sesión del navegador.'); return; }
+            const persistedGitHub = { owner: github.owner, repo: github.repo, path: github.path };
+            if (!window.GastroOSDataStore.setJSON('chefTrack_githubSettings', persistedGitHub)) { alert('No se pudieron guardar los ajustes de GitHub localmente.'); return; }
             tokenInput.value = "";
             updateGitHubSettingsStatus(github);
             setGitHubSyncStatus("Comprobando conexión y cargando recetas desde GitHub…", 'loading');
@@ -3745,6 +3787,8 @@
         }
 
         function generateWeeklyMenu() {
+            const previousMenuBeforeGeneration = currentMenu;
+            try {
             const previousCandidate = getPreviousWeekCandidateMenu();
             const previousForAntiTemplate = previousCandidate?.days ? previousCandidate : null;
             const MAX_GENERATION_ATTEMPTS = 80;
@@ -3763,7 +3807,12 @@
                     currentMenu = candidate;
                     shoppingManualStockKeys.clear();
                     lastGenerationDiagnostics = { valid: true, errors: [], attempts: attempt };
-                    saveAll();
+                    if (!saveAll()) {
+                        currentMenu = previousMenuBeforeGeneration;
+                        lastGenerationDiagnostics = { valid: false, errors: ['No se pudo guardar el menú generado. Se conserva el menú anterior.'], attempts: attempt };
+                        try { renderGeneratorView(); } catch (renderError) { console.error(renderError); }
+                        return;
+                    }
                     renderGeneratorView();
                     return;
                 }
@@ -3777,8 +3826,14 @@
                 renderGeneratorView();
                 alert(`No se ha podido construir una semana que cumpla todas las reglas después de ${MAX_GENERATION_ATTEMPTS} intentos.\n\nEl menú anterior se mantiene sin cambios.\n\nPrincipales incidencias detectadas: ${bestValidation.errors.slice(0, 5).join(" | ")}`);
             }
+            } catch (error) {
+                currentMenu = previousMenuBeforeGeneration;
+                lastGenerationDiagnostics = { valid: false, errors: ['Se produjo un error interno al generar el menú. El menú anterior se mantiene sin cambios.'], attempts: 0 };
+                console.error('GastroOS: fallo controlado en el generador de menús.', error);
+                try { renderGeneratorView(); } catch (renderError) { console.error(renderError); }
+                alert('No se ha podido generar el menú por un error inesperado. El menú anterior se conserva y tus datos no se han sustituido.');
+            }
         }
-
         function buildDayRegenerationContext(dayName) {
             const originalMenu = JSON.parse(JSON.stringify(currentMenu));
             const usedDishIdsInOtherDays = new Set();
@@ -3880,6 +3935,9 @@
 
         function validateWeeklyMenu(menu) {
             const errors = [];
+            if (!menu || typeof menu !== 'object' || Array.isArray(menu) || !menu.days || typeof menu.days !== 'object' || Array.isArray(menu.days)) {
+                return { valid: false, errors: ['El menú está vacío o tiene una estructura inválida.'] };
+            }
             const days = daysList.filter(day => menu?.days?.[day]);
             if (days.length !== daysList.length) {
                 daysList.filter(day => !menu?.days?.[day]).forEach(day => errors.push(`${day}: falta el día completo.`));
@@ -4604,14 +4662,15 @@
             const recipeArrayValid = Array.isArray(importedDishes);
             const invalidRecipes = recipeArrayValid ? importedDishes.filter(recipe =>
                 !isObject(recipe) || recipe.id === undefined || !String(recipe.nombre || '').trim() ||
-                (recipe.ingredientes !== undefined && !Array.isArray(recipe.ingredientes))
+                (recipe.ingredientes !== undefined && (!Array.isArray(recipe.ingredientes) || recipe.ingredientes.some(ing => !isObject(ing) || (ing.nombre !== undefined && typeof ing.nombre !== 'string') || (ing.unidad !== undefined && typeof ing.unidad !== 'string') || (ing.cantidad !== undefined && !['string','number'].includes(typeof ing.cantidad) && ing.cantidad !== null) || (typeof ing.cantidad === 'number' && !Number.isFinite(ing.cantidad))))) || (recipe.nombre !== undefined && typeof recipe.nombre !== 'string') || (recipe.demanda !== undefined && !['Alta','Media','Baja'].includes(recipe.demanda))
             ).length : 0;
             const validArrayField = (key) => data?.[key] === undefined || Array.isArray(data[key]);
             const settingsValid = data?.settings === undefined || isObject(data.settings);
             const allergenValid = data?.productAllergenMap === undefined || isObject(data.productAllergenMap);
-            const stockValid = validArrayField('rawStock') && validArrayField('preparedStock');
-            const historyValid = validArrayField('historyMenus') && validArrayField('recipeChangeHistory') && validArrayField('historyMenus');
-            const incompatible = !versionValid || !settingsValid || !allergenValid || !stockValid || !historyValid;
+            const menuValid = ['currentMenu','previousWeekMenu'].every(key => data?.[key] === undefined || data[key] === null || (isObject(data[key]) && isObject(data[key].days)));
+            const stockValid = validArrayField('rawStock') && validArrayField('preparedStock') && (!Array.isArray(data?.rawStock) || data.rawStock.every(isObject)) && (!Array.isArray(data?.preparedStock) || data.preparedStock.every(isObject));
+            const historyValid = validArrayField('historyMenus') && validArrayField('recipeChangeHistory');
+            const incompatible = !versionValid || !settingsValid || !allergenValid || !stockValid || !historyValid || !menuValid;
             return {
                 importedDishes, full, recognizedType, versionValid, incompatible, missingRequiredDishes, recipeArrayValid, invalidRecipes,
                 recipeCount: importedDishes?.length || 0,
@@ -4628,7 +4687,7 @@
             if (!summary.recognizedType) throw new Error('El archivo parece ser JSON, pero no es un formato de copia de GastroOS reconocido.');
             if (!summary.versionValid) throw new Error('La copia pertenece a otra aplicación o a una versión futura/no compatible. No se han modificado los datos.');
             if (summary.missingRequiredDishes) throw new Error('La copia integral no contiene el catálogo de recetas obligatorio. No se han modificado los datos.');
-            if (summary.incompatible) throw new Error('La estructura de la copia está incompleta o contiene tipos incompatibles (configuración, stock, alérgenos o histórico). No se han modificado los datos.');
+            if (summary.incompatible) throw new Error('La estructura de la copia está incompleta o contiene tipos incompatibles (configuración, stock, menú, alérgenos o histórico). No se han modificado los datos.');
             if (!summary.recipeArrayValid || summary.invalidRecipes > 0) throw new Error(`El archivo contiene ${summary.invalidRecipes} receta(s) con estructura básica inválida.`);
             pendingImportData = { data, fileName, summary };
             const el = document.getElementById('importPreviewContent');
@@ -4653,46 +4712,90 @@
 
         async function confirmPendingImport() {
             if (!pendingImportData) return;
-            const { data, summary } = pendingImportData;
-            const safetyBackup = createAutoBackup(`antes de restaurar ${pendingImportData.fileName || 'una copia JSON'}`);
+            const pending = pendingImportData;
+            const { data, summary } = pending;
+            const safetyBackup = createAutoBackup(`antes de restaurar ${pending.fileName || 'una copia JSON'}`);
             if (!safetyBackup) {
                 alert('No se pudo crear la copia de seguridad previa. La restauración se ha cancelado para proteger los datos actuales.');
                 return;
             }
-            if (summary.full && data.settings && typeof data.settings === 'object') settings = { ...defaultSettings, ...data.settings };
-            if (summary.full && data.productAllergenMap && typeof data.productAllergenMap === 'object') productAllergenMap = data.productAllergenMap;
-            if (summary.full && data.proteinCatalog) mergeRecipeProteinCatalogIntoProfile(data.proteinCatalog);
-            const importedDishes = summary.importedDishes;
-            if (importedDishes) {
-                dishes = importedDishes.map(normalizeDishData);
-                logRecipeChange('import', null, `${dishes.length} recetas importadas`);
+            const storageSnapshot = window.GastroOSDataStore.createSnapshot();
+            if (!storageSnapshot) {
+                alert('No se pudo crear una instantánea de seguridad del almacenamiento. La restauración se ha cancelado.');
+                return;
             }
-            if (summary.full && Array.isArray(data.rawStock)) rawStock = data.rawStock;
-            if (summary.full && Array.isArray(data.preparedStock)) preparedStock = data.preparedStock;
-            if (summary.full && Object.prototype.hasOwnProperty.call(data, 'currentMenu')) currentMenu = data.currentMenu;
-            if (summary.full && Object.prototype.hasOwnProperty.call(data, 'previousWeekMenu')) previousWeekMenu = data.previousWeekMenu;
-            if (summary.full && Array.isArray(data.historyMenus)) historyMenus = data.historyMenus;
-            if (summary.full && Array.isArray(data.recipeChangeHistory)) recipeChangeHistory = data.recipeChangeHistory;
-
-            saveAll();
-            applyDarkMode();
-            updateFormVisibility();
-            renderDishes(); renderStockView(); renderGeneratorView(); renderHistorySection(); renderMigrationUI(); renderRecipeDiagnostics(); renderRecipeChangeHistory();
-            closeImportPreview();
-
-            if (importedDishes) {
-                const syncResult = await syncImportedDishesToGitHub(dishes);
-                if (syncResult.success) alert('Datos restaurados correctamente y recetas sincronizadas con GitHub.');
-                else if (syncResult.skipped) {
-                    setGitHubSyncStatus('Restauración guardada localmente. GitHub no está configurado en este navegador.', 'warning');
-                    alert('Datos restaurados correctamente. GitHub no está configurado, así que las recetas quedan solo en este navegador.');
-                } else {
-                    setGitHubSyncStatus('La restauración está guardada localmente, pero no se pudo sincronizar con GitHub.', 'error');
-                    alert(`Datos restaurados localmente, pero no se pudieron sincronizar con GitHub.\n\nMotivo: ${syncResult.message}`);
+            const previousState = { dishes, settings, productAllergenMap, rawStock, preparedStock, currentMenu, previousWeekMenu, historyMenus, recipeChangeHistory, recipeProteinCatalog };
+            try {
+                if (summary.full && data.settings && typeof data.settings === 'object') settings = { ...defaultSettings, ...data.settings };
+                if (summary.full && data.productAllergenMap && typeof data.productAllergenMap === 'object') productAllergenMap = data.productAllergenMap;
+                if (summary.full && data.proteinCatalog) mergeRecipeProteinCatalogIntoProfile(data.proteinCatalog);
+                const importedDishes = summary.importedDishes;
+                if (importedDishes) {
+                    dishes = importedDishes.map(normalizeDishData);
+                    logRecipeChange('import', null, `${dishes.length} recetas importadas`);
                 }
-            } else {
-                alert('Datos restaurados correctamente.');
+                if (summary.full && Array.isArray(data.rawStock)) rawStock = data.rawStock.map(normalizeImportedStockItem);
+                if (summary.full && Array.isArray(data.preparedStock)) preparedStock = data.preparedStock.map(normalizeImportedStockItem);
+                if (summary.full && Object.prototype.hasOwnProperty.call(data, 'currentMenu')) currentMenu = validateImportedMenu(data.currentMenu, 'menú actual');
+                if (summary.full && Object.prototype.hasOwnProperty.call(data, 'previousWeekMenu')) previousWeekMenu = validateImportedMenu(data.previousWeekMenu, 'menú anterior');
+                if (summary.full && Array.isArray(data.historyMenus)) historyMenus = data.historyMenus;
+                if (summary.full && Array.isArray(data.recipeChangeHistory)) recipeChangeHistory = data.recipeChangeHistory;
+
+                if (!saveAll()) throw new Error('El navegador no pudo guardar todos los datos restaurados.');
+                applyDarkMode();
+                updateFormVisibility();
+                renderDishes(); renderStockView(); renderGeneratorView(); renderHistorySection(); renderMigrationUI(); renderRecipeDiagnostics(); renderRecipeChangeHistory();
+                closeImportPreview();
+
+                if (importedDishes) {
+                    const syncResult = await syncImportedDishesToGitHub(dishes);
+                    if (syncResult.success) alert('Datos restaurados correctamente y recetas sincronizadas con GitHub.');
+                    else if (syncResult.skipped) {
+                        setGitHubSyncStatus('Restauración guardada localmente. GitHub no está configurado en esta sesión.', 'warning');
+                        alert('Datos restaurados correctamente. GitHub no está configurado en esta sesión, así que las recetas quedan solo en este navegador.');
+                    } else {
+                        setGitHubSyncStatus('La restauración está guardada localmente, pero no se pudo sincronizar con GitHub.', 'error');
+                        alert(`Datos restaurados localmente, pero no se pudieron sincronizar con GitHub.\n\nMotivo: ${syncResult.message}`);
+                    }
+                } else alert('Datos restaurados correctamente.');
+            } catch (error) {
+                dishes = previousState.dishes; settings = previousState.settings; productAllergenMap = previousState.productAllergenMap;
+                rawStock = previousState.rawStock; preparedStock = previousState.preparedStock; currentMenu = previousState.currentMenu;
+                previousWeekMenu = previousState.previousWeekMenu; historyMenus = previousState.historyMenus;
+                recipeChangeHistory = previousState.recipeChangeHistory; recipeProteinCatalog = previousState.recipeProteinCatalog;
+                const restored = window.GastroOSDataStore.restoreSnapshot(storageSnapshot);
+                console.error('GastroOS: restauración revertida por un error.', error);
+                try { renderDishes(); renderStockView(); renderGeneratorView(); renderHistorySection(); renderRecipeDiagnostics(); } catch (renderError) { console.error(renderError); }
+                alert(`No se pudo completar la restauración. ${restored ? 'Los datos anteriores se han recuperado.' : 'No se pudo recuperar automáticamente el almacenamiento; descarga la copia de seguridad automática antes de continuar.'}\n\nMotivo: ${error.message || 'error inesperado'}`);
             }
+        }
+
+        function normalizeImportedStockItem(item) {
+            if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error('El stock contiene un registro que no es un objeto válido.');
+            const copy = { ...item };
+            for (const key of ['nombre', 'unidad', 'categoria_proveedor', 'conservacion', 'asignacion']) {
+                if (copy[key] !== undefined && typeof copy[key] !== 'string') throw new Error(`El campo ${key} del stock debe ser texto.`);
+            }
+            for (const key of ['cantidad', 'stock', 'cantidad_actual', 'cantidadDisponible']) {
+                if (copy[key] !== undefined && copy[key] !== null && typeof copy[key] === 'number' && (!Number.isFinite(copy[key]) || copy[key] < 0)) throw new Error(`El campo ${key} del stock debe ser un número no negativo.`);
+            }
+            return copy;
+        }
+
+        function validateImportedMenu(menu, label) {
+            if (menu === null) return null;
+            if (!menu || typeof menu !== 'object' || Array.isArray(menu) || !menu.days || typeof menu.days !== 'object' || Array.isArray(menu.days)) {
+                throw new Error(`La estructura de ${label} no es válida.`);
+            }
+            if (menu.days) {
+                for (const [day, slots] of Object.entries(menu.days)) {
+                    if (!daysList.includes(day) || !Array.isArray(slots)) throw new Error(`La estructura de ${label} contiene un día o lista de platos inválida.`);
+                    for (const slot of slots) {
+                        if (!slot || typeof slot !== 'object' || Array.isArray(slot) || (slot.dish !== undefined && (!slot.dish || typeof slot.dish !== 'object' || Array.isArray(slot.dish)))) throw new Error(`Un plato de ${label} tiene una estructura inválida.`);
+                    }
+                }
+            }
+            return menu;
         }
 
         function importData(e) {
@@ -4751,5 +4854,3 @@
         window.downloadShoppingListTxt = downloadShoppingListTxt;
 
         init();
-    
-    
