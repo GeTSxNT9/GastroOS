@@ -3913,23 +3913,14 @@
 
                 const firsts = slots.filter(s => s.cat === 'Primero').map(s => s.dish).filter(Boolean);
                 const seconds = slots.filter(s => s.cat === 'Segundo').map(s => s.dish).filter(Boolean);
-                const verdura = firsts.find(d => d?.subcategoria_primero === 'Verdura');
-                const cuchara = firsts.find(d => d?.subcategoria_primero === 'Cuchara');
-                const tenedor = firsts.find(d => d?.subcategoria_primero === 'Tenedor');
-                const expectedFirstParents = structure.firstSpecs.map(spec => spec.allowedParents[0]);
-                expectedFirstParents.forEach((parent, idx) => {
-                    const dish = firsts[idx];
-                    if (dish?.subcategoria_primero !== parent) errors.push(`${dayName}: el primero ${idx + 1} no es compatible con ${parent}.`);
+                const dailyRules = window.GastroOSMenuDailyRules.validateDayComposition({
+                    dayName, firsts, seconds, structure,
+                    avoidLiquidFirsts: getKitchenRule('evitarLiquidosEnPrimeros', true),
+                    liquidFirstSubtypes: Array.from(LIQUID_FIRST_SUBTYPES),
+                    avoidRepeatedSecondPreparation: getKitchenRule('evitarPresentacionSegundoRepetida', true),
+                    getSecondPreparationFamily
                 });
-                if (getKitchenRule('evitarLiquidosEnPrimeros', true) && firsts.filter(d => LIQUID_FIRST_SUBTYPES.has(d?.subtipo_primero)).length > 1) {
-                    errors.push(`${dayName}: no se pueden combinar crema de verduras y sopas o caldos en los primeros.`);
-                }
-                const hasCream = firsts.some(d => d?.subtipo_primero === 'cremas');
-                const hasHeavySpoon = firsts.some(d => ['guisos', 'legumbres'].includes(d?.subtipo_primero));
-                const hasTenedor = firsts.some(d => d?.subcategoria_primero === 'Tenedor');
-                if (hasCream && hasHeavySpoon && !hasTenedor) {
-                    errors.push(`${dayName}: hay una crema y un plato de cuchara, debe existir al menos un hidrato tipo arroz o pasta.`);
-                }
+                errors.push(...dailyRules.errors);
 
                 firsts.filter(d => d?.subcategoria_primero === 'Verdura').forEach(vegetableDish => {
                     const vegetableKey = getPrimaryVegetableKey(vegetableDish);
@@ -3941,15 +3932,8 @@
 
                 const meats = seconds.filter(m => m?.proteina_segundo === 'Carne');
                 const fishOptions = seconds.filter(m => m?.proteina_segundo === 'Pescado');
-                if (meats.length !== structure.secondSpecs.filter(s => s.protein === 'Carne').length) errors.push(`${dayName}: la cantidad de carnes no coincide con la configuración.`);
-                if (fishOptions.length !== structure.secondSpecs.filter(s => s.protein === 'Pescado').length) errors.push(`${dayName}: la cantidad de pescados no coincide con la configuración.`);
-                const meatAnimals = meats.map(m => m?.animal_carne).filter(Boolean);
-                if (new Set(meatAnimals).size !== meatAnimals.length) errors.push(`${dayName}: no se puede repetir el mismo animal entre las carnes del día.`);
-
-                const dayGuisos = meats.filter(m => m?.tecnica_cocina === "tecnica_guiso").length;
-                const dayFritos = seconds.filter(m => m?.tecnica_cocina === "tecnica_frito_rebozado").length;
-                if (dayGuisos > 1) errors.push(`${dayName}: hay dos carnes guisadas.`);
-                if (dayFritos > 1) errors.push(`${dayName}: hay dos fritos o rebozados.`);
+                const dayGuisos = dailyRules.guisos;
+                const dayFritos = dailyRules.fritos;
                 weeklyGuisos += dayGuisos;
                 weeklyFritos += dayFritos;
 
@@ -3961,11 +3945,6 @@
                         fishSpecies.add(fishKey);
                     }
                 });
-
-                const secondFamilies = seconds.map(d => getSecondPreparationFamily(d)).filter(Boolean);
-                if (getKitchenRule('evitarPresentacionSegundoRepetida', true) && new Set(secondFamilies).size !== secondFamilies.length) {
-                    errors.push(`${dayName}: no se puede repetir la misma forma de preparación en los segundos.`);
-                }
 
                 errors.push(...window.GastroOSMenuContinuityRules.validateDayContinuity({
                     dayName,
