@@ -30,14 +30,14 @@
 
         html.dark {
             color-scheme: dark;
-            --g-bg: #0b0b0d;
-            --g-surface: rgba(28,28,30,.82);
-            --g-surface-strong: rgba(30,30,32,.94);
-            --g-border: rgba(255,255,255,.09);
+            --g-bg: #050505;
+            --g-surface: rgba(17,17,17,.96);
+            --g-surface-strong: rgba(22,22,22,.99);
+            --g-border: rgba(255,255,255,.14);
             --g-text: #f5f5f7;
-            --g-muted: #a1a1aa;
-            --g-accent: #2997ff;
-            --g-accent-soft: rgba(41,151,255,.14);
+            --g-muted: #b0b0b0;
+            --g-accent: #bdbdbd;
+            --g-accent-soft: rgba(255,255,255,.08);
             --g-shadow: 0 14px 40px rgba(0,0,0,.24);
             --g-shadow-sm: 0 5px 20px rgba(0,0,0,.2);
             --g-control: rgba(39,39,42,.82);
@@ -3529,3 +3529,46 @@ html.dark button.bg-teal-600, html.dark button.bg-sky-600 {
   color: #fff !important;
   border-color: rgba(255,255,255,.18) !important;
 }
+
+
+/* Modo oscuro de alto contraste: paleta grafito neutra y texto legible en todos los botones.
+   Esta capa va al final para prevalecer sobre utilidades Tailwind y estilos anteriores. */
+html.dark {
+  --g-bg: #050505 !important;
+  --g-surface: #111111 !important;
+  --g-surface-strong: #171717 !important;
+  --g-border: #383838 !important;
+  --g-text: #f5f5f5 !important;
+  --g-muted: #b8b8b8 !important;
+  --g-accent: #d4d4d4 !important;
+  --g-accent-soft: #242424 !important;
+}
+html.dark button,
+html.dark button *,
+html.dark [role="button"],
+html.dark [role="button"] *,
+html.dark input[type="button"],
+html.dark input[type="submit"],
+html.dark input[type="reset"] {
+  text-shadow: none !important;
+}
+html.dark button:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600),
+html.dark [role="button"]:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600),
+html.dark input[type="button"],
+html.dark input[type="reset"] {
+  background: #202020 !important;
+  color: #f5f5f5 !important;
+  border: 1px solid #454545 !important;
+}
+html.dark button:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600) *,
+html.dark [role="button"]:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600) * {
+  color: #f5f5f5 !important;
+}
+html.dark button:not(:disabled):hover, html.dark [role="button"]:not([aria-disabled="true"]):hover {
+  filter: brightness(1.18);
+}
+/* Las acciones de color conservan su fondo semántico y siempre llevan texto blanco. */
+html.dark button.bg-indigo-600, html.dark button.bg-indigo-500, html.dark button.bg-blue-600, html.dark button.bg-blue-500,
+html.dark button.bg-green-600, html.dark button.bg-emerald-600, html.dark button.bg-red-600, html.dark button.bg-rose-600,
+html.dark button.bg-orange-500, html.dark button.bg-amber-500, html.dark button.bg-purple-600, html.dark button.bg-violet-600,
+html.dark button.bg-teal-600, html.dark button.bg-sky-600 { color: #fff !important; }
