@@ -3572,3 +3572,90 @@ html.dark button.bg-indigo-600, html.dark button.bg-indigo-500, html.dark button
 html.dark button.bg-green-600, html.dark button.bg-emerald-600, html.dark button.bg-red-600, html.dark button.bg-rose-600,
 html.dark button.bg-orange-500, html.dark button.bg-amber-500, html.dark button.bg-purple-600, html.dark button.bg-violet-600,
 html.dark button.bg-teal-600, html.dark button.bg-sky-600 { color: #fff !important; }
+
+/* ===== MODO OSCURO v51: controles de Stock, Recetario y formularios ===== */
+html.dark {
+  color-scheme: dark;
+  --gastro-bg: #080808;
+  --gastro-panel: #151515;
+  --gastro-control: #202020;
+  --gastro-border: #454545;
+  --gastro-text: #f5f5f5;
+  --gastro-muted: #b8b8b8;
+}
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html.dark select,
+html.dark textarea,
+html.dark #rawStockForm input,
+html.dark #rawStockForm select,
+html.dark #prepStockForm input,
+html.dark #prepStockForm select,
+html.dark #bulkToolbar select,
+html.dark #view-banco input,
+html.dark #view-banco select {
+  color: var(--gastro-text) !important;
+  -webkit-text-fill-color: var(--gastro-text) !important;
+  background-color: var(--gastro-control) !important;
+  border-color: var(--gastro-border) !important;
+  caret-color: var(--gastro-text) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder,
+html.dark select:invalid {
+  color: var(--gastro-muted) !important;
+  -webkit-text-fill-color: var(--gastro-muted) !important;
+  opacity: 1 !important;
+}
+html.dark select option,
+html.dark select optgroup {
+  color: #f5f5f5 !important;
+  background: #202020 !important;
+}
+html.dark input[type="checkbox"],
+html.dark input[type="radio"] {
+  color-scheme: dark !important;
+  accent-color: #d4d4d4 !important;
+  background-color: #202020 !important;
+  border-color: #8a8a8a !important;
+  forced-color-adjust: none;
+}
+html.dark input[type="checkbox"]:focus-visible,
+html.dark input[type="radio"]:focus-visible,
+html.dark select:focus-visible,
+html.dark input:focus-visible,
+html.dark textarea:focus-visible {
+  outline: 2px solid #d4d4d4 !important;
+  outline-offset: 2px !important;
+}
+/* Neutraliza clases Tailwind claras en controles y filtros, no solo en main. */
+html.dark button.bg-white, html.dark button.bg-gray-50, html.dark button.bg-gray-100,
+html.dark button.bg-slate-50, html.dark button.bg-slate-100,
+html.dark label.bg-white, html.dark label.bg-gray-50, html.dark label.bg-gray-100,
+html.dark [role="button"].bg-white, html.dark [role="button"].bg-gray-50,
+html.dark [role="button"].bg-gray-100,
+html.dark .filter-lvl1:not(.active), html.dark .filter-lvl2:not(.active),
+html.dark #bulkToolbar select {
+  background-color: #202020 !important;
+  color: #f5f5f5 !important;
+  border-color: #454545 !important;
+}
+html.dark button.bg-white *, html.dark button.bg-gray-50 *, html.dark button.bg-gray-100 *,
+html.dark label.bg-white *, html.dark label.bg-gray-50 *, html.dark label.bg-gray-100 *,
+html.dark [role="button"].bg-white *, html.dark [role="button"].bg-gray-50 *,
+html.dark [role="button"].bg-gray-100 * {
+  color: #f5f5f5 !important;
+}
+/* Las opciones de color para categorías/acciones mantienen su color, con texto legible. */
+html.dark button[class*="bg-green-"], html.dark button[class*="bg-emerald-"],
+html.dark button[class*="bg-red-"], html.dark button[class*="bg-rose-"],
+html.dark button[class*="bg-blue-"], html.dark button[class*="bg-indigo-"],
+html.dark button[class*="bg-purple-"], html.dark button[class*="bg-violet-"],
+html.dark button[class*="bg-teal-"], html.dark button[class*="bg-sky-"],
+html.dark button[class*="bg-orange-"], html.dark button[class*="bg-amber-"] {
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+html.dark button:disabled, html.dark input:disabled, html.dark select:disabled {
+  opacity: .62;
+  cursor: not-allowed;
+}
