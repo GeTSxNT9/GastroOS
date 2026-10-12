@@ -4313,121 +4313,21 @@
             downloadTextFile(text, `menu_semanal_${new Date().toISOString().slice(0,10)}.txt`);
         }
 
-        // --- LISTA DE COMPRA CON REDONDEO ESTRICTO HACIA ARRIBA ---
-        function createStockLedger() {
-            return rawStock.map(stock => {
-                const unit = String(stock?.unidad || '').toLowerCase();
-                const dimension = ['kg', 'g'].includes(unit) ? 'weight' : (['l', 'ml'].includes(unit) ? 'volume' : null);
-                const baseQty = dimension ? ((unit === 'kg' || unit === 'l') ? Number(stock.cantidad) * 1000 : Number(stock.cantidad)) : 0;
-                return { stock, key: normalizeFoodKey(stock?.nombre), category: String(stock?.categoria_proveedor || ''), dimension, remaining: Math.max(0, baseQty) };
-            });
-        }
-
-        function deductFromStockLedger(ledger, ingredientName, requiredQtyBase, unit, category) {
-            const name = normalizeFoodKey(ingredientName);
-            if (!name || requiredQtyBase <= 0) return 0;
-            const dimension = ['kg', 'g'].includes(String(unit).toLowerCase()) ? 'weight' : 'volume';
-            let remaining = requiredQtyBase;
-            for (const entry of ledger) {
-                if (remaining <= 0) break;
-                if (!entry.key || entry.remaining <= 0 || entry.dimension !== dimension || entry.category !== category) continue;
-                if (!(entry.key === name || entry.key.includes(name) || name.includes(entry.key))) continue;
-                const used = Math.min(remaining, entry.remaining);
-                entry.remaining -= used;
-                remaining -= used;
-            }
-            return requiredQtyBase - remaining;
-        }
-
+        // --- LISTA DE COMPRA ---
+        // El cálculo vive en shopping-engine.js; aquí solo se inyecta el estado actual.
         function buildShoppingData() {
-            const totalRacionesPorComida = getTotalRaciones();
-            const aggregated = {};
-            const stockLedger = createStockLedger();
-            daysList.forEach(dayName => {
-                const slots = currentMenu.days[dayName] || [];
-                slots.forEach(slot => {
-                    if (slot.isPreparedStock) return;
-                    (slot.dish?.ingredientes || []).forEach(ing => {
-                        const rawName = String(ing?.nombre || '').trim();
-                        if (!rawName) return;
-
-                        const unit = String(ing?.unidad || '').trim().toLowerCase();
-                        const rawQuantityText = String(ing?.cantidad ?? '').trim().replace(',', '.');
-                        const rawQty = Number(rawQuantityText);
-                        const dimensionKey = window.GastroOSStockUtils.getUnitDimension(unit);
-                        const isWeight = dimensionKey === 'weight';
-                        const isVolume = dimensionKey === 'volume';
-                        const hasCalculableQuantity = rawQuantityText !== '' && Number.isFinite(rawQty) && rawQty > 0 && (isWeight || isVolume);
-                        const category = proveedorCategorias.includes(ing?.categoria_proveedor) ? ing.categoria_proveedor : 'Secos';
-                        const foodKey = normalizeFoodKey(rawName);
-                        if (!foodKey) return;
-                        // No sumar unidades dimensionalmente incompatibles (p. ej. kg y litros)
-                        // bajo un mismo producto; cada dimensión queda separada para revisión.
-                        const key = `${foodKey}::${dimensionKey}`;
-
-                        if (!aggregated[key]) {
-                            aggregated[key] = {
-                                nombre: rawName,
-                                totalBaseQty: 0,
-                                requiredBaseQty: 0,
-                                stockUsedBaseQty: 0,
-                                cat: category,
-                                baseUnit: window.GastroOSStockUtils.getBaseUnit(unit),
-                                needsManualPurchase: false,
-                                manualStock: shoppingManualStockKeys.has(foodKey)
-                            };
-                        }
-
-                        aggregated[key].manualStock = shoppingManualStockKeys.has(foodKey);
-
-                        // Una cantidad vacía NO significa que el ingrediente deba desaparecer
-                        // de la lista: debe aparecer como "Por comprar" para recordar la compra.
-                        if (!hasCalculableQuantity) {
-                            aggregated[key].needsManualPurchase = true;
-                            if (!aggregated[key].baseUnit) aggregated[key].baseUnit = '';
-                            return;
-                        }
-
-                        const demandFactor = getDemandPortionFactor(slot.dish?.demanda || 'Media');
-                        const estimatedDishRations = totalRacionesPorComida * demandFactor;
-                        const purchaseAdjustment = getKitchenProfile().ajusteCompraPorcentaje / 100;
-                        const totalForMeal = rawQty * estimatedDishRations * purchaseAdjustment;
-                        const baseQty = totalForMeal * ((unit === 'kg' || unit === 'l') ? 1000 : 1);
-                        const stockUsed = aggregated[key].manualStock ? 0 : deductFromStockLedger(stockLedger, rawName, baseQty, unit, category);
-                        const netQty = aggregated[key].manualStock ? 0 : Math.max(0, baseQty - stockUsed);
-                        aggregated[key].requiredBaseQty += baseQty;
-                        aggregated[key].stockUsedBaseQty += stockUsed;
-                        aggregated[key].totalBaseQty += netQty;
-                        aggregated[key].baseUnit = window.GastroOSStockUtils.getBaseUnit(unit);
-                    });
-                });
+            return window.GastroOSShoppingEngine.buildShoppingData({
+                currentMenu,
+                daysList,
+                proveedorCategorias,
+                rawStock,
+                normalizeFoodKey,
+                getTotalRaciones,
+                getDemandPortionFactor,
+                purchaseAdjustment: getKitchenProfile().ajusteCompraPorcentaje,
+                manualStockKeys: shoppingManualStockKeys,
+                stockUtils: window.GastroOSStockUtils
             });
-
-            const groupedByCategory = {};
-            proveedorCategorias.forEach(cat => groupedByCategory[cat] = []);
-            Object.values(aggregated).forEach(item => {
-                if (item.totalBaseQty <= 0 && !item.needsManualPurchase && !item.manualStock) return;
-                let cantidad = '';
-                let unidad = '';
-                if (item.totalBaseQty > 0) {
-                    cantidad = Math.ceil(item.totalBaseQty / 1000);
-                    unidad = item.baseUnit;
-                    if (item.needsManualPurchase) unidad = `${unidad} + revisar`;
-                } else {
-                    cantidad = 'Por comprar';
-                }
-                groupedByCategory[item.cat].push({
-                    nombre: item.nombre,
-                    cantidad,
-                    unidad,
-                    necesario: item.requiredBaseQty,
-                    disponible: item.stockUsedBaseQty,
-                    comprar: item.totalBaseQty,
-                    dimension: item.baseUnit,
-                    manualStock: item.manualStock
-                });
-            });
-            return { totalRacionesPorComida, groupedByCategory };
         }
 
         function renderShoppingListUI() {
