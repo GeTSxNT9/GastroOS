@@ -2,7 +2,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v40';
+const CACHE_NAME = 'gastroos-v41';
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,7 +10,7 @@ const APP_SHELL = [
   './recipes.json',
   './css/gastroos.css',
   './js/gastroos.js',
-  './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js',
+  './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js',
   './js/data-store-facade.js',
   './js/menu-engine-facade.js',
   './js/github-facade.js',
@@ -20,7 +20,7 @@ const APP_SHELL = [
   './icon-512.png',
   'https://cdn.tailwindcss.com'
 ];
-const CORE = ['./index.html', './css/gastroos.css', './js/gastroos.js', './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/data-store-facade.js'];
+const CORE = ['./index.html', './css/gastroos.css', './js/gastroos.js', './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js', './js/data-store-facade.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
