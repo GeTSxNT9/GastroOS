@@ -2,13 +2,12 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v52';
+const CACHE_NAME = 'gastroos-v53';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './recipes.json',
-  './product-allergens.json',
   './css/gastroos.css',
   './js/gastroos.js',
   './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js', './js/menu-daily-rules.js',
