@@ -1,6 +1,44 @@
 {
   "app": "GastroOS",
   "schemaVersion": 1,
-  "updatedAt": null,
-  "products": {}
+  "updatedAt": "2026-10-13T19:46:36.235Z",
+  "products": {
+    "canelones de carne": {
+      "name": "Canelones de carne",
+      "allergens": [
+        "gluten",
+        "crustaceos",
+        "huevos",
+        "pescado",
+        "soja",
+        "lacteo",
+        "apio",
+        "moluscos"
+      ]
+    },
+    "fideos": {
+      "name": "Fideos",
+      "allergens": [
+        "gluten"
+      ]
+    },
+    "nata": {
+      "name": "Nata",
+      "allergens": [
+        "lacteo"
+      ]
+    },
+    "pan": {
+      "name": "Pan",
+      "allergens": [
+        "gluten"
+      ]
+    },
+    "pasta": {
+      "name": "Pasta",
+      "allergens": [
+        "gluten"
+      ]
+    }
+  }
 }
