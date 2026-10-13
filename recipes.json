@@ -5080,25 +5080,6 @@
           "categoria_proveedor": "Verduras"
         }
       ]
-    },
-    {
-      "id": "1791920757254",
-      "nombre": "Prueba",
-      "categoria": "Primero",
-      "subcategoria_primero": "Cuchara",
-      "subtipo_primero": "legumbres",
-      "proteina_segundo": "",
-      "animal_carne": "",
-      "especie_pescado": "",
-      "especie_animal": "",
-      "tecnica_cocina": "",
-      "tecnica": "",
-      "precocinado": false,
-      "plato_elaborado": false,
-      "demanda": "Media",
-      "alergenosManuales": [],
-      "alergenos": [],
-      "ingredientes": []
     }
   ]
 }
