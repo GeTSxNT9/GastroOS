@@ -1459,7 +1459,7 @@
             try {
                 const stored = window.GastroOSDataStore.get('chefTrack_githubSettings');
                 const github = stored ? JSON.parse(stored) : {};
-                if (github.token) { try { sessionStorage.setItem('gastroos_github_token', github.token); } catch {} delete github.token; window.GastroOSDataStore.setJSON('chefTrack_githubSettings', github); }
+                if (github.token) { try { localStorage.setItem('gastroos_github_token', github.token); } catch {} delete github.token; window.GastroOSDataStore.setJSON('chefTrack_githubSettings', github); }
                 const token = document.getElementById('githubToken');
                 const owner = document.getElementById('githubOwner');
                 const repo = document.getElementById('githubRepo');
@@ -1479,8 +1479,12 @@
             try {
                 const stored = window.GastroOSDataStore.get('chefTrack_githubSettings');
                 const github = stored ? JSON.parse(stored) : {};
-                let sessionToken = ''; try { sessionToken = sessionStorage.getItem('gastroos_github_token') || ''; } catch {}
-                return { ...github, token: sessionToken };
+                let savedToken = '';
+                // Persistir el token entre aperturas de la PWA. El token queda en el almacenamiento
+                // local de este navegador/dispositivo; no se sube al repositorio.
+                try { savedToken = localStorage.getItem('gastroos_github_token') || ''; } catch {}
+                if (!savedToken) { try { savedToken = sessionStorage.getItem('gastroos_github_token') || ''; if (savedToken) localStorage.setItem('gastroos_github_token', savedToken); } catch {} }
+                return { ...github, token: savedToken };
             } catch (error) {
                 return {};
             }
@@ -1606,7 +1610,7 @@
             const status = document.getElementById('githubSettingsStatus');
             if (!status) return;
             if (github?.token && github?.owner && github?.repo && github?.path) {
-                status.textContent = "Conexión activa en esta sesión ✓ El token no se guarda de forma persistente en este navegador.";
+                status.textContent = "GitHub configurado ✓ La conexión se conserva en este dispositivo.";
                 status.className = "text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold";
             } else {
                 status.textContent = "Configura los cuatro campos para activar la sincronización remota de recetas.";
@@ -1662,13 +1666,13 @@
             };
 
             if (!github.token || !github.owner || !github.repo || !github.path) {
-                alert("Completa el propietario, el repositorio y la ruta, e introduce un token para esta sesión.");
+                alert("Completa el propietario, el repositorio y la ruta, e introduce un token de GitHub. Se conservará en este dispositivo hasta que borres los datos del navegador o lo desconectes.");
                 return;
             }
 
             const repositoryChanged = existing.owner !== github.owner || existing.repo !== github.repo || existing.path !== github.path;
             if (repositoryChanged) window.GastroOSDataStore.remove('chefTrack_githubLastSync');
-            try { sessionStorage.setItem('gastroos_github_token', github.token); } catch { alert('No se pudo guardar el token en la sesión del navegador.'); return; }
+            try { localStorage.setItem('gastroos_github_token', github.token); } catch { alert('No se pudo guardar el token en este dispositivo. Comprueba el almacenamiento del navegador.'); return; }
             const persistedGitHub = { owner: github.owner, repo: github.repo, path: github.path };
             if (!window.GastroOSDataStore.setJSON('chefTrack_githubSettings', persistedGitHub)) { alert('No se pudieron guardar los ajustes de GitHub localmente.'); return; }
             tokenInput.value = "";
