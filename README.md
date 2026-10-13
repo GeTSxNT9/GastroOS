@@ -1,101 +1,77 @@
 # GastroOS
 
-**GastroOS** is a Progressive Web Application (PWA) to manage recipes, plan Monday-to-Friday menus, track inventory, calculate shopping lists, and apply the rules of a self-service kitchen.
+**GastroOS** is a Progressive Web Application (PWA) for managing recipes, planning Monday-to-Friday menus, tracking stock, calculating shopping lists, and applying the rules of a self-service kitchen.
 
-It is built with HTML, CSS, and JavaScript without an application framework or its own backend. Working information is stored in the browser; synchronization with GitHub is optional.
+It uses HTML, CSS, and JavaScript without an application framework or backend. The app works locally in the browser; GitHub synchronization is optional.
 
 ## Main Features
 
-- Recipe catalog: creation, editing, filters, batch editing, techniques, classifications, ingredients, and allergens.
-- Generation and validation of weekly menus with configurable structure, daily and weekly rules, repetition limits, meat and fish restrictions, stews, and stock availability.
-- Day regeneration and search for alternatives that respect the configured rules.
-- Differentiated management of raw materials/pre-cooked products and prepared dishes.
-- Shopping list calculation, grouping by supplier category, quantity adjustment, and TXT export.
-- Editable catalogs of meat and fish species.
-- Allergens per product, local history, diagnostics, backups, and restoration.
-- Installable PWA, local storage, and optional synchronization of `recipes.json` with the GitHub Contents API.
+- Recipe catalog with creation, editing, search, filters, ingredients, classifications, and recipe allergens.
+- Weekly menu generation, validation, day regeneration, and rule-based alternatives.
+- Raw-material and pre-cooked stock, prepared dishes, and shopping lists with quantity adjustment and TXT export.
+- Product and raw-material allergens, stored locally while editing and shared through `product-allergens.json` when synchronized.
+- Editable meat and fish catalogs, local history, backups, and restore tools.
+- Installable PWA with offline support after the app shell has been cached.
 
-## Current Architecture
+## Project Structure
 
 ```text
 GastroOS-main/
-├── index.html                  # Interface, views, and ordered module loading
-├── css/gastroos.css            # Application-specific styles
+├── index.html                    # Interface and ordered script loading
+├── css/gastroos.css              # Application styles and themes
 ├── js/
-│   ├── gastroos.js             # App state, interface, and main orchestration
-│   ├── data-store-facade.js    # localStorage access and migrations
-│   ├── kitchen-rules.js        # Kitchen rules profile and configuration
-│   ├── stock-utils.js          # Normalization and validation of stock records
-│   ├── shopping-engine.js      # Needs and shopping calculations
-│   ├── menu-generation-engine.js # Weekly generation attempt orchestration
-│   ├── menu-selection-rules.js # Structural rules for choosing dishes
-│   ├── menu-structure-validator.js # Structural validation of the week
-│   ├── menu-daily-rules.js     # Daily composition restrictions
-│   ├── menu-frequency-rules.js # Weekly limits and frequencies
-│   ├── menu-continuity-rules.js # Restrictions between consecutive days
-│   ├── menu-engine-facade.js   # Facade over existing engine functions
-│   ├── github-network.js       # Construction of paths and GitHub network timeout
-│   └── github-facade.js        # Facade for synchronization operations
-├── recipes.json                # Seed recipe book and shared catalog metadata
-├── manifest.json               # PWA installation metadata
-├── sw.js                       # Installation, update, and offline cache
-├── icon-192.png
-├── icon-512.png
-├── apple-touch-icon.png
-├── favicon-32.png
-└── README.md
+│   ├── gastroos.js               # App state, UI, persistence, and orchestration
+│   ├── data-store-facade.js       # localStorage access and migrations
+│   ├── kitchen-rules.js           # Kitchen rule configuration
+│   ├── stock-utils.js             # Stock normalization and validation
+│   ├── shopping-engine.js         # Shopping calculations
+│   ├── menu-generation-engine.js  # Weekly generation orchestration
+│   ├── menu-selection-rules.js    # Dish selection constraints
+│   ├── menu-structure-validator.js# Weekly structure validation
+│   ├── menu-daily-rules.js        # Daily menu restrictions
+│   ├── menu-frequency-rules.js    # Weekly frequencies and limits
+│   ├── menu-continuity-rules.js   # Consecutive-day restrictions
+│   ├── menu-engine-facade.js      # Menu engine facade
+│   ├── github-network.js          # GitHub API URLs and request timeout
+│   └── github-facade.js           # GitHub integration facade
+├── recipes.json                  # Initial recipe catalog and shared recipe data
+├── product-allergens.json        # Shared product/raw-material allergen catalog
+├── manifest.json                 # PWA metadata
+├── sw.js                         # Offline cache and application updates
+└── icon-*.png, favicon-32.png, apple-touch-icon.png
 ```
 
-### Responsibilities and Limits
-
-- `gastroos.js` remains the main module and contains important parts of the culinary engine and the interface. Facades are not duplicated engines: they expose existing functions to facilitate gradual separation.
-- The `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js`, and `shopping-engine.js` modules isolate checks or calculations so they can be tested separately.
-- `index.html` scripts are loaded in a deliberate order: utilities and rules first, then `gastroos.js`, and finally the facades that expose their functions.
-- `recipes.json` is used as an initial source when there is no usable local recipe book. Service Worker installation treats it as an essential resource along with the application modules.
+`gastroos.js` remains the main application module; the smaller rule and utility modules isolate selected responsibilities. Scripts in `index.html` must remain in their current loading order.
 
 ## Data and Persistence
 
-- `localStorage` stores the working recipe book, configuration, inventory, current and historical menu, allergens, automatic backups, and synchronization metadata.
-- Schema migrations are performed via `data-store-facade.js`. Do not manually delete `chefTrack_*` keys if you want to keep the data.
-- Exported backups are the recommended way to move or recover data. Make an export before updating the application or restoring old data.
-- The GitHub token is kept in `sessionStorage` for the browser tab/session. Non-secret repository configuration is stored separately in `localStorage`. When closing the browser session, it may be necessary to re-enter the token.
+- `localStorage` holds the working recipe book, settings, stock, menus, history, product-allergen assignments, backups, and sync metadata.
+- `recipes.json` provides the initial recipe catalog and is the shared GitHub recipe file when synchronization is configured.
+- `product-allergens.json` is the shared GitHub catalog for allergens assigned to products and raw materials. Local changes are retained on the device and are uploaded when GitHub synchronization succeeds.
+- The GitHub token is stored in this browser's `localStorage` so the connection can persist between app launches. It is not written to repository files. Anyone able to run script on the same origin may be able to access it.
+- Export a backup before updating the app or restoring data. Do not delete `chefTrack_*` storage keys if you need to preserve local work.
 
 ## GitHub Synchronization
 
-Integration is optional and uses the GitHub Contents API to read and update the configured file (usually `recipes.json`). GitHub is not needed to use local features.
+GitHub integration uses the Contents API directly from the browser and is optional. Local recipe editing does not require a connection. When connecting, GastroOS reads the remote recipe file and merges local recipes whose IDs are not present remotely; for matching IDs, the remote recipe currently takes precedence. Product allergens are merged into `product-allergens.json` during synchronization.
 
-Security recommendations:
-
-1. Use a fine-grained token with access only to the required repository and the minimum Contents permissions needed to read/write.
-2. Do not include the token in repository files, screenshots, issues, or documentation.
-3. The token is available to the application's JavaScript during the session; a malicious script executed on the same origin could access it. Publish only trusted code and revoke the token if you suspect it has been exposed.
-4. GitHub Pages does not provide a secret backend: authentication is done from the browser.
-
-`github-network.js` validates the owner/repository/path format and applies a timeout to requests. This improves robustness, but does not eliminate network errors, API limits, or simultaneous write conflicts.
+Use a fine-grained token restricted to the required repository, with only the necessary Contents permissions. GitHub Pages has no secret backend, so do not share the token or publish it in files, screenshots, or issues. Concurrent edits and same-ID recipe conflicts still require care; keep backups before synchronization.
 
 ## PWA and Offline Operation
 
-The Service Worker uses versioned caching and deletes old GastroOS caches upon activation. During installation, it preloads essential resources; if an essential resource is missing, it cancels the installation instead of leaving an incomplete shell. The Tailwind CDN is optional during installation and is attempted to be cached when available.
+The Service Worker caches essential application files and removes older GastroOS caches when a new version activates. `product-allergens.json` is included in the application cache. Tailwind is loaded from a CDN and its cache is best-effort, so a first offline installation or external CDN change may affect styling. Fully predictable offline styling would require a locally compiled stylesheet.
 
-**Known limit:** `index.html` loads Tailwind from `https://cdn.tailwindcss.com`. The cached copy is best-effort and does not guarantee full styling on a first offline installation or against external provider changes. For predictable offline use, the next improvement would be to compile Tailwind as local CSS and test installation, updating, and use without a network in real browsers.
+## Checks and Deployment
 
-Existing data is in `localStorage`, but the availability of the interface and resources in an initial offline installation depends on having previously loaded the application and its essential resources successfully.
-
-## Development and Checks
-
-Node.js is not needed to run the published PWA. Node.js can be used for static checks and automated tests if they are present in the repository:
+Serve the contents of this folder as a static site, for example with GitHub Pages. No build step is required. Before publishing changes, run:
 
 ```bash
 node --check js/gastroos.js
 node --check sw.js
 ```
 
-Before publishing changes, check that all modules referenced by `index.html` exist and are included in the essential resource list of `sw.js`. Then test in the published application: weekly generation, regeneration of a single day, shopping list, persistence after reloading, and GitHub synchronization if configured.
+Also verify that scripts referenced by `index.html` exist and that essential resources are listed in `sw.js`. Test recipe editing, menu generation, stock and shopping calculations, persistence after reload, and GitHub synchronization in the deployed app.
 
-## Deployment
+## Design Goal
 
-The application can be served as a static site with GitHub Pages. Publish the contents of this folder while keeping the file structure. It does not require a build process for its current operation.
-
-## Design and Goal
-
-GastroOS prioritizes clarity, compact controls, and explicit configuration. Its goal is to automate repetitive planning and shopping tasks without hiding the rules that condition dish selection or taking away the user's final control.
+GastroOS aims to keep kitchen planning and stock management clear, configurable, and under the user's control while automating repetitive work.
