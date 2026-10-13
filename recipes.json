@@ -2645,21 +2645,32 @@
       "tecnica_cocina": "",
       "tecnica": "",
       "precocinado": false,
+      "plato_elaborado": false,
       "demanda": "Media",
-      "alergenos": [
+      "alergenosManuales": [
         "gluten",
-        "lacteo",
         "crustaceos",
         "huevos",
         "pescado",
         "soja",
+        "lacteo",
+        "apio",
+        "moluscos"
+      ],
+      "alergenos": [
+        "gluten",
+        "crustaceos",
+        "huevos",
+        "pescado",
+        "soja",
+        "lacteo",
         "apio",
         "moluscos"
       ],
       "ingredientes": [
         {
           "nombre": "Canelones de carne",
-          "cantidad": 200,
+          "cantidad": 160,
           "unidad": "g",
           "categoria_proveedor": "Congelados"
         },
@@ -2675,11 +2686,6 @@
           "unidad": "",
           "categoria_proveedor": "Secos"
         }
-      ],
-      "plato_elaborado": false,
-      "alergenosManuales": [
-        "gluten",
-        "lacteo"
       ]
     },
     {
