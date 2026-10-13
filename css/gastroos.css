@@ -30,14 +30,14 @@
 
         html.dark {
             color-scheme: dark;
-            --g-bg: #050505;
-            --g-surface: rgba(17,17,17,.96);
-            --g-surface-strong: rgba(22,22,22,.99);
-            --g-border: rgba(255,255,255,.14);
+            --g-bg: #0b0b0d;
+            --g-surface: rgba(28,28,30,.82);
+            --g-surface-strong: rgba(30,30,32,.94);
+            --g-border: rgba(255,255,255,.09);
             --g-text: #f5f5f7;
-            --g-muted: #b0b0b0;
-            --g-accent: #bdbdbd;
-            --g-accent-soft: rgba(255,255,255,.08);
+            --g-muted: #a1a1aa;
+            --g-accent: #2997ff;
+            --g-accent-soft: rgba(41,151,255,.14);
             --g-shadow: 0 14px 40px rgba(0,0,0,.24);
             --g-shadow-sm: 0 5px 20px rgba(0,0,0,.2);
             --g-control: rgba(39,39,42,.82);
@@ -3264,398 +3264,62 @@ input, select, textarea { max-width: 100%; }
     *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
-/* GastroOS v48: corrección integral del tema oscuro en todas las vistas y modales.
-   Estas reglas se sitúan al final para prevalecer sobre antiguos ajustes visuales claros. */
+/* ===== GastroOS: contraste oscuro definitivo (Recetario, Stock, filtros y navegación móvil) ===== */
 html.dark {
-  color-scheme: dark;
-  --g-bg: #0b1220;
-  --g-surface: #111c2b;
-  --g-surface-strong: #152235;
-  --g-border: #29394d;
-  --g-text: #e7eef8;
-  --g-muted: #a3b2c6;
-  --g-accent: #78b7ff;
-  --g-accent-hover: #9acaff;
-  --g-accent-soft: #182e49;
-  --g-control: #172538;
-  --g-navy: #23466f;
-  --g-navy-hover: #2d5889;
-}
-html.dark body,
-html.dark #main-container,
-html.dark #view-banco,
-html.dark #view-form,
-html.dark #view-stock,
-html.dark #view-generator,
-html.dark #view-settings {
-  background-color: var(--g-bg) !important;
-  color: var(--g-text) !important;
-}
-html.dark body > header,
-html.dark header,
-html.dark body > nav,
-html.dark nav.fixed,
-html.dark nav.fixed.bottom-0.left-0.right-0.z-50 {
-  background: rgba(12, 22, 36, .97) !important;
-  color: var(--g-text) !important;
-  border-color: var(--g-border) !important;
-  box-shadow: 0 -4px 18px rgba(0,0,0,.22) !important;
-}
-html.dark header h1,
-html.dark header svg,
-html.dark main > h2,
-html.dark main h2,
-html.dark main h3,
-html.dark .view-title,
-html.dark #view-form > h2,
-html.dark #view-stock h2,
-html.dark #view-generator h2,
-html.dark #view-settings h2,
-html.dark #view-generator .gastro-generator-title {
-  color: var(--g-text) !important;
-}
-html.dark .view-subtitle,
-html.dark #recipeResultsSummary,
-html.dark #view-generator .gastro-generator-description,
-html.dark #view-settings .settings-card-description,
-html.dark #view-settings .setting-help,
-html.dark #view-settings .field-label,
-html.dark #view-settings .settings-section-kicker,
-html.dark #view-settings .setting-group-title,
-html.dark #rawStockForm label,
-html.dark #prepStockForm label,
-html.dark #dishForm label,
-html.dark #view-form label {
-  color: var(--g-muted) !important;
-}
-html.dark #dishesList > div,
-html.dark #generatedMenuContainer > div,
-html.dark #historyListContainer > div,
-html.dark #rawStockList > div,
-html.dark #prepStockList > div,
-html.dark #shoppingListBreakdown > div,
-html.dark main section,
-html.dark #dishForm,
-html.dark #subtab-shopping-content > div,
-html.dark #view-stock section,
-html.dark #view-stock .settings-card,
-html.dark #view-stock form,
-html.dark #view-settings section,
-html.dark #view-settings .settings-card,
-html.dark #view-settings .settings-forecast-card,
-html.dark #view-settings .setting-group,
-html.dark #view-settings .settings-accordion,
-html.dark #view-generator > div:first-child > div:first-child,
-html.dark #view-generator .generator-header,
-html.dark #view-generator .gastro-generator-header,
-html.dark #historyListContainer > div {
-  background: var(--g-surface) !important;
-  color: var(--g-text) !important;
-  border-color: var(--g-border) !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,.16) !important;
-}
-html.dark #bulkToolbar,
-html.dark #rawStockForm,
-html.dark #prepStockForm,
-html.dark #view-settings .settings-input,
-html.dark #view-settings input,
-html.dark #view-settings select,
-html.dark #view-settings .settings-accordion > summary,
-html.dark #bulkField,
-html.dark #bulkValue {
-  background: var(--g-control) !important;
-  color: var(--g-text) !important;
-  border-color: var(--g-border) !important;
-}
-html.dark input:not([type=checkbox]):not([type=radio]):not([type=file]),
-html.dark select,
-html.dark textarea,
-html.dark #searchInput,
-html.dark .ingredient-name-input,
-html.dark .ingredient-category-select {
-  background: var(--g-control) !important;
-  color: var(--g-text) !important;
-  border-color: var(--g-border) !important;
-  caret-color: var(--g-text);
-}
-html.dark input::placeholder,
-html.dark textarea::placeholder,
-html.dark #searchInput::placeholder { color: #91a2b8 !important; opacity: 1 !important; }
-html.dark input:focus,
-html.dark select:focus,
-html.dark textarea:focus,
-html.dark #searchInput:focus {
-  background: #1b2b40 !important;
-  color: var(--g-text) !important;
-  border-color: #4f83ba !important;
-  box-shadow: 0 0 0 3px rgba(86,157,230,.18) !important;
-}
-html.dark .filter-lvl1:not(.active),
-html.dark .filter-lvl2:not(.active),
-html.dark .generator-day-tab:not(.active) {
-  background: #172538 !important;
-  border-color: var(--g-border) !important;
-  color: #c2d0e2 !important;
-}
-html.dark .filter-lvl1.active,
-html.dark .filter-lvl2.active,
-html.dark .generator-day-tab.active {
-  background: #24466e !important;
-  border-color: #3b6594 !important;
-  color: #fff !important;
-}
-html.dark .nav-btn { color: #91a2b8 !important; }
-html.dark .nav-btn.active,
-html.dark .nav-btn.text-indigo-600,
-html.dark .nav-btn.text-indigo-400 { color: #8fc4ff !important; }
-html.dark #themeToggleBtn { background: #24364b !important; color: #e7eef8 !important; border-color: var(--g-border) !important; }
-html.dark #themeToggleBtn:hover { background: #304760 !important; }
-html.dark #btnSaveToHistory,
-html.dark #btnDownloadMenuTxt,
-html.dark #shoppingRacionesBadge {
-  background: #1c3048 !important;
-  color: #a9d2ff !important;
-  border-color: #314b68 !important;
-}
-html.dark .text-gray-900,
-html.dark .text-gray-800,
-html.dark .text-gray-700,
-html.dark .text-gray-600 { color: var(--g-text) !important; }
-html.dark .text-gray-500,
-html.dark .text-gray-400 { color: var(--g-muted) !important; }
-html.dark .border-gray-100,
-html.dark .border-gray-200,
-html.dark .border-gray-300,
-html.dark .border-gray-400,
-html.dark .border-t,
-html.dark .border-b { border-color: var(--g-border) !important; }
-/* Modales y ventanas secundarias: alérgenos, importación, cambio de plato y regeneración diaria. */
-html.dark #modalProductAllergens > div,
-html.dark #modalImportPreview > div,
-html.dark #modalChangeDish > div,
-html.dark #modalChangeDish #modalDishList > div,
-html.dark .day-regeneration-modal-panel {
-  background: var(--g-surface-strong) !important;
-  color: var(--g-text) !important;
-  border-color: var(--g-border) !important;
-}
-html.dark #modalProductAllergens > div > div:first-child,
-html.dark #modalProductAllergens > div > div:first-child h3,
-html.dark #modalProductAllergens > div > div:first-child p,
-html.dark #modalProductAllergens > div > div:first-child button,
-html.dark .day-regeneration-modal-header,
-html.dark .day-regeneration-modal-header h3,
-html.dark .day-regeneration-modal-header p {
-  background: #172538 !important;
-  color: var(--g-text) !important;
-  border-color: var(--g-border) !important;
-}
-html.dark #modalProductAllergens > div > div:first-child p,
-html.dark #modalProductAllergens .text-indigo-200,
-html.dark #modalProductAllergens .text-indigo-100 { color: var(--g-muted) !important; }
-html.dark #modalProductAllergens .bg-gray-50,
-html.dark #modalImportPreview .bg-gray-50,
-html.dark #modalChangeDish .bg-gray-50,
-html.dark #modalChangeDish .bg-gray-100,
-html.dark .day-regeneration-modal .day-regeneration-option,
-html.dark .day-regeneration-modal .day-regeneration-dish {
-  background: #1a2a3e !important;
-  color: var(--g-text) !important;
-  border-color: var(--g-border) !important;
-}
-html.dark .day-regeneration-modal .day-regeneration-group-label,
-html.dark .day-regeneration-modal .day-regeneration-option-note { color: var(--g-muted) !important; }
-html.dark .day-regeneration-close { background: #263a52 !important; color: var(--g-text) !important; border-color: var(--g-border) !important; }
-html.dark #modalChangeDish { background: rgba(0,0,0,.68) !important; }
-html.dark #recipeList span.border.bg-green-100,
-html.dark #recipeList span.bg-green-100.border { background: #17372e !important; color: #a7e8c7 !important; border-color: #285844 !important; }
-html.dark #recipeList span.border.bg-yellow-100,
-html.dark #recipeList span.bg-yellow-100.border { background: #3b321c !important; color: #f6d98c !important; border-color: #5b4b27 !important; }
-html.dark #recipeList span.border.bg-red-100,
-html.dark #recipeList span.bg-red-100.border { background: #40232a !important; color: #ffb8c1 !important; border-color: #63333d !important; }
-html.dark .bg-indigo-50,
-html.dark .bg-indigo-100 { background-color: #1b304b !important; }
-html.dark .text-indigo-600,
-html.dark .text-indigo-700 { color: #8fc4ff !important; }
-html.dark .border-indigo-100,
-html.dark .border-indigo-200 { border-color: #314d6b !important; }
-html.dark #view-generator .dark\:bg-gray-900,
-html.dark #view-settings .dark\:bg-gray-900,
-html.dark #view-settings .bg-white,
-html.dark #view-settings .bg-gray-50,
-html.dark #view-settings .bg-gray-100 {
-  background-color: var(--g-surface) !important;
-  color: var(--g-text) !important;
-  border-color: var(--g-border) !important;
-}
-
-/* Corrección global de botones en modo oscuro.
-   Las clases de color de Tailwind suelen ganar a las reglas genéricas; se neutralizan
-   aquí los fondos claros y se conservan colores semánticos para acciones principales. */
-html.dark button,
-html.dark [role="button"],
-html.dark input[type="button"],
-html.dark input[type="submit"],
-html.dark input[type="reset"] {
-  color: var(--g-text, #e7eef8);
-  border-color: var(--g-border, #30445c);
-}
-html.dark button:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600),
-html.dark [role="button"]:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600),
-html.dark input[type="button"],
-html.dark input[type="reset"] {
-  background-color: #1a2a3e !important;
-  color: #e7eef8 !important;
-  border-color: #344a63 !important;
-}
-html.dark button:not(:disabled):not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600):hover,
-html.dark [role="button"]:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600):hover {
-  background-color: #263b54 !important;
-  border-color: #496584 !important;
-}
-html.dark button:disabled,
-html.dark [role="button"][aria-disabled="true"] {
-  opacity: .55;
-  filter: saturate(.65);
-}
-/* Acciones principales mantienen su color, pero con contraste de texto explícito. */
-html.dark button.bg-indigo-600, html.dark button.bg-indigo-500,
-html.dark button.bg-blue-600, html.dark button.bg-blue-500,
-html.dark button.bg-green-600, html.dark button.bg-emerald-600,
-html.dark button.bg-red-600, html.dark button.bg-rose-600,
-html.dark button.bg-orange-500, html.dark button.bg-amber-500,
-html.dark button.bg-purple-600, html.dark button.bg-violet-600,
-html.dark button.bg-teal-600, html.dark button.bg-sky-600 {
-  color: #fff !important;
-  border-color: rgba(255,255,255,.18) !important;
-}
-
-
-/* Modo oscuro de alto contraste: paleta grafito neutra y texto legible en todos los botones.
-   Esta capa va al final para prevalecer sobre utilidades Tailwind y estilos anteriores. */
-html.dark {
+  color-scheme: dark !important;
   --g-bg: #050505 !important;
   --g-surface: #111111 !important;
   --g-surface-strong: #171717 !important;
-  --g-border: #383838 !important;
+  --g-border: #3b3b3b !important;
   --g-text: #f5f5f5 !important;
   --g-muted: #b8b8b8 !important;
   --g-accent: #d4d4d4 !important;
-  --g-accent-soft: #242424 !important;
+  --g-accent-soft: #292929 !important;
+  --g-control: #1d1d1d !important;
 }
-html.dark button,
-html.dark button *,
-html.dark [role="button"],
-html.dark [role="button"] *,
-html.dark input[type="button"],
-html.dark input[type="submit"],
-html.dark input[type="reset"] {
-  text-shadow: none !important;
+html.dark #main-container,
+html.dark #view-banco, html.dark #view-form, html.dark #view-stock,
+html.dark #view-generator, html.dark #view-settings { background: #050505 !important; color: #f5f5f5 !important; }
+html.dark body > nav, html.dark nav.fixed {
+  background: #111111 !important; border-top: 1px solid #454545 !important;
+  box-shadow: 0 -8px 24px rgba(0,0,0,.72) !important;
 }
-html.dark button:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600),
-html.dark [role="button"]:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600),
-html.dark input[type="button"],
-html.dark input[type="reset"] {
-  background: #202020 !important;
-  color: #f5f5f5 !important;
-  border: 1px solid #454545 !important;
+html.dark .nav-btn { background: #171717 !important; color: #d8d8d8 !important; border-color: #414141 !important; }
+html.dark .nav-btn.active, html.dark .nav-btn.text-indigo-600, html.dark .nav-btn.text-indigo-400 {
+  background: #343434 !important; color: #ffffff !important; border-color: #737373 !important;
 }
-html.dark button:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600) *,
-html.dark [role="button"]:not(.bg-indigo-600):not(.bg-indigo-500):not(.bg-blue-600):not(.bg-blue-500):not(.bg-green-600):not(.bg-emerald-600):not(.bg-red-600):not(.bg-rose-600):not(.bg-orange-500):not(.bg-amber-500):not(.bg-purple-600):not(.bg-violet-600):not(.bg-teal-600):not(.bg-sky-600) * {
-  color: #f5f5f5 !important;
+html.dark .filter-lvl1, html.dark .filter-lvl2, html.dark .generator-day-tab {
+  background: #191919 !important; border: 1px solid #555 !important; color: #f0f0f0 !important;
 }
-html.dark button:not(:disabled):hover, html.dark [role="button"]:not([aria-disabled="true"]):hover {
-  filter: brightness(1.18);
+html.dark .filter-lvl1.active, html.dark .filter-lvl2.active, html.dark .generator-day-tab.active {
+  background: #454545 !important; border-color: #8a8a8a !important; color: #ffffff !important;
 }
-/* Las acciones de color conservan su fondo semántico y siempre llevan texto blanco. */
-html.dark button.bg-indigo-600, html.dark button.bg-indigo-500, html.dark button.bg-blue-600, html.dark button.bg-blue-500,
-html.dark button.bg-green-600, html.dark button.bg-emerald-600, html.dark button.bg-red-600, html.dark button.bg-rose-600,
-html.dark button.bg-orange-500, html.dark button.bg-amber-500, html.dark button.bg-purple-600, html.dark button.bg-violet-600,
-html.dark button.bg-teal-600, html.dark button.bg-sky-600 { color: #fff !important; }
-
-/* ===== MODO OSCURO v51: controles de Stock, Recetario y formularios ===== */
-html.dark {
-  color-scheme: dark;
-  --gastro-bg: #080808;
-  --gastro-panel: #151515;
-  --gastro-control: #202020;
-  --gastro-border: #454545;
-  --gastro-text: #f5f5f5;
-  --gastro-muted: #b8b8b8;
+html.dark input:not([type=checkbox]):not([type=radio]):not([type=file]),
+html.dark select, html.dark textarea, html.dark .settings-input,
+html.dark .settings-textarea, html.dark .day-regeneration-select,
+html.dark #searchInput, html.dark #bulkField, html.dark #bulkValue {
+  background-color: #1b1b1b !important; color: #f5f5f5 !important;
+  border-color: #555 !important; -webkit-text-fill-color: #f5f5f5 !important;
 }
-html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-html.dark select,
-html.dark textarea,
-html.dark #rawStockForm input,
-html.dark #rawStockForm select,
-html.dark #prepStockForm input,
-html.dark #prepStockForm select,
-html.dark #bulkToolbar select,
-html.dark #view-banco input,
-html.dark #view-banco select {
-  color: var(--gastro-text) !important;
-  -webkit-text-fill-color: var(--gastro-text) !important;
-  background-color: var(--gastro-control) !important;
-  border-color: var(--gastro-border) !important;
-  caret-color: var(--gastro-text) !important;
-}
-html.dark input::placeholder,
-html.dark textarea::placeholder,
-html.dark select:invalid {
-  color: var(--gastro-muted) !important;
-  -webkit-text-fill-color: var(--gastro-muted) !important;
-  opacity: 1 !important;
-}
-html.dark select option,
-html.dark select optgroup {
-  color: #f5f5f5 !important;
-  background: #202020 !important;
-}
-html.dark input[type="checkbox"],
-html.dark input[type="radio"] {
-  color-scheme: dark !important;
-  accent-color: #d4d4d4 !important;
-  background-color: #202020 !important;
-  border-color: #8a8a8a !important;
-  forced-color-adjust: none;
-}
-html.dark input[type="checkbox"]:focus-visible,
-html.dark input[type="radio"]:focus-visible,
-html.dark select:focus-visible,
-html.dark input:focus-visible,
-html.dark textarea:focus-visible {
-  outline: 2px solid #d4d4d4 !important;
-  outline-offset: 2px !important;
-}
-/* Neutraliza clases Tailwind claras en controles y filtros, no solo en main. */
-html.dark button.bg-white, html.dark button.bg-gray-50, html.dark button.bg-gray-100,
-html.dark button.bg-slate-50, html.dark button.bg-slate-100,
-html.dark label.bg-white, html.dark label.bg-gray-50, html.dark label.bg-gray-100,
-html.dark [role="button"].bg-white, html.dark [role="button"].bg-gray-50,
-html.dark [role="button"].bg-gray-100,
-html.dark .filter-lvl1:not(.active), html.dark .filter-lvl2:not(.active),
-html.dark #bulkToolbar select {
-  background-color: #202020 !important;
-  color: #f5f5f5 !important;
-  border-color: #454545 !important;
-}
-html.dark button.bg-white *, html.dark button.bg-gray-50 *, html.dark button.bg-gray-100 *,
-html.dark label.bg-white *, html.dark label.bg-gray-50 *, html.dark label.bg-gray-100 *,
-html.dark [role="button"].bg-white *, html.dark [role="button"].bg-gray-50 *,
-html.dark [role="button"].bg-gray-100 * {
+html.dark select option, html.dark optgroup { background: #1b1b1b !important; color: #f5f5f5 !important; }
+html.dark input::placeholder, html.dark textarea::placeholder { color: #b0b0b0 !important; opacity: 1 !important; }
+html.dark input[type=checkbox], html.dark input[type=radio] { color-scheme: dark !important; accent-color: #d4d4d4 !important; }
+html.dark button:not(.nav-btn):not(.filter-lvl1):not(.filter-lvl2):not(.generator-day-tab):not(#themeToggleBtn) {
   color: #f5f5f5 !important;
 }
-/* Las opciones de color para categorías/acciones mantienen su color, con texto legible. */
-html.dark button[class*="bg-green-"], html.dark button[class*="bg-emerald-"],
-html.dark button[class*="bg-red-"], html.dark button[class*="bg-rose-"],
-html.dark button[class*="bg-blue-"], html.dark button[class*="bg-indigo-"],
-html.dark button[class*="bg-purple-"], html.dark button[class*="bg-violet-"],
-html.dark button[class*="bg-teal-"], html.dark button[class*="bg-sky-"],
-html.dark button[class*="bg-orange-"], html.dark button[class*="bg-amber-"] {
-  color: #fff !important;
-  -webkit-text-fill-color: #fff !important;
+html.dark #btnBulkEdit, html.dark #btnBulkSelectAll, html.dark #btnBulkClear, html.dark #btnExitBulkEdit,
+html.dark #btnApplyBulkEdit, html.dark #btnGenerateMenu, html.dark #btnAddRawStock, html.dark #btnAddPrepStock {
+  background: #292929 !important; color: #ffffff !important; border-color: #5b5b5b !important;
 }
-html.dark button:disabled, html.dark input:disabled, html.dark select:disabled {
-  opacity: .62;
-  cursor: not-allowed;
+html.dark #dishesList > div, html.dark #rawStockList > div, html.dark #prepStockList > div,
+html.dark #bulkToolbar, html.dark #view-stock section, html.dark #dishForm,
+html.dark #modalProductAllergens > div, html.dark #modalChangeDish > div {
+  background: #111111 !important; color: #f5f5f5 !important; border-color: #3c3c3c !important;
 }
+html.dark #dishesList h3, html.dark #view-stock label, html.dark #view-stock p,
+html.dark #view-banco label, html.dark #view-banco h2, html.dark #view-banco h3 { color: #f1f1f1 !important; }
+html.dark #dishesList .absolute button:first-child { background: #292929 !important; color: #ffffff !important; }
+html.dark #dishesList .absolute button:last-child { background: #302323 !important; color: #ffdada !important; }
+html.dark #themeToggleBtn { background: #292929 !important; color: #f5f5f5 !important; border-color: #555 !important; }
+html.dark .product-allergen-chip { background: #202020 !important; color: #f5f5f5 !important; border-color: #555 !important; }
+html.dark .product-allergen-chip.is-selected { background: #343434 !important; color: #fff !important; border-color: #999 !important; }
