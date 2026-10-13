@@ -240,7 +240,56 @@
             document.getElementById('modalProductAllergens')?.classList.remove('hidden');
         }
         function closeProductAllergenManager() { document.getElementById('modalProductAllergens')?.classList.add('hidden'); }
-        function saveProductAllergens() {
+        async function syncProductAllergensToGitHub() {
+            const github = getGitHubSettings();
+            if (!github.token || !github.owner || !github.repo) return { success: false, skipped: true };
+            const path = 'product-allergens.json';
+            const apiUrl = window.GastroOSGitHubNetwork.buildContentsUrl({ ...github, path });
+            const headers = { Accept: 'application/vnd.github+json', Authorization: `Bearer ${github.token}`, 'X-GitHub-Api-Version': '2022-11-28' };
+            try {
+                const get = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'GET', headers });
+                let data = await get.json().catch(() => ({}));
+                let remote = {}, sha = null;
+                if (get.status === 404) {
+                    remote = {};
+                } else {
+                    if (!get.ok || typeof data.content !== 'string') throw new Error(data.message || `HTTP ${get.status}`);
+                    sha = data.sha;
+                    const parsed = JSON.parse(base64ToUtf8(data.content));
+                    const products = parsed?.products && typeof parsed.products === 'object' ? parsed.products : parsed;
+                    Object.entries(products || {}).forEach(([key, value]) => {
+                        const arr = Array.isArray(value) ? value : (Array.isArray(value?.allergens) ? value.allergens : (Array.isArray(value?.alergenos) ? value.alergenos : []));
+                        remote[normalizeFoodKey(key)] = arr.filter(a => ALLERGEN_LABELS[a]);
+                    });
+                }
+                const merged = { ...remote };
+                Object.entries(productAllergenMap || {}).forEach(([key, values]) => {
+                    const normalizedKey = normalizeFoodKey(key);
+                    const union = new Set([...(merged[normalizedKey] || []), ...(Array.isArray(values) ? values : [])].filter(a => ALLERGEN_LABELS[a]));
+                    if (union.size) merged[normalizedKey] = [...union];
+                });
+                const names = new Map();
+                collectAllergenProducts().forEach(([key, name]) => names.set(key, name));
+                const products = {};
+                Object.entries(merged).forEach(([key, allergens]) => {
+                    if (allergens.length) products[key] = { name: names.get(key) || key, allergens };
+                });
+                const content = JSON.stringify({ app: 'GastroOS', schemaVersion: 1, updatedAt: new Date().toISOString(), products }, null, 2) + '\n';
+                const payload = { message: 'Sincronizados alérgenos de productos desde GastroOS', content: utf8ToBase64(content) };
+                if (sha) payload.sha = sha;
+                const put = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const result = await put.json().catch(() => ({}));
+                if (!put.ok) throw new Error(result.message || `HTTP ${put.status}`);
+                productAllergenMap = merged;
+                window.GastroOSDataStore.set('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
+                return { success: true };
+            } catch (error) {
+                console.error('No se pudieron sincronizar los alérgenos de productos:', error);
+                return { success: false, message: error?.message || 'Error desconocido' };
+            }
+        }
+
+        async function saveProductAllergens() {
             const next = {};
             document.querySelectorAll('#productAllergenList input[data-product-key]').forEach(input => {
                 if (!input.checked) return;
@@ -252,16 +301,12 @@
             applyProductAllergensToRecipes();
             window.GastroOSDataStore.set('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
             saveAll();
-            const githubForAllergens = getGitHubSettings();
-            if (githubForAllergens.token && githubForAllergens.owner && githubForAllergens.repo) {
-                syncProductAllergensToGitHub(githubForAllergens).then(result => {
-                    if (!result.success) setGitHubSyncStatus(`Alérgenos guardados localmente; falta sincronizarlos: ${result.message || 'error de GitHub'}`, 'warning');
-                });
-            }
             renderDishes(); renderGeneratorView();
+            const sync = await syncProductAllergensToGitHub();
             closeProductAllergenManager();
             const status = document.getElementById('productAllergenStatus');
-            if (status) status.textContent = `${Object.keys(productAllergenMap).length} productos con alérgenos configurados.`;
+            if (status) status.textContent = `${Object.keys(productAllergenMap).length} productos con alérgenos configurados${sync.success ? ' · sincronizados con GitHub' : (sync.skipped ? ' · guardados en este dispositivo' : ' · error al sincronizar con GitHub')}.`;
+            if (!sync.success && !sync.skipped) alert(`Los alérgenos se guardaron localmente, pero no se pudieron subir a product-allergens.json.\n\n${sync.message}`);
         }
 
         function loadProductAllergens() {
@@ -1505,44 +1550,39 @@
                 const content = base64ToUtf8(data.content);
                 const parsedFile = parseGitHubRecipeFile(content, github.path);
 
-                // La copia remota pasa a ser la copia de trabajo de este navegador.
-                // Al cargar, también migramos los antiguos identificadores técnicos
-                // para que el archivo compartido quede alineado con los textos visibles.
-                // Al conectar, fusionar remoto y local por ID. Nunca sustituir sin más
-                // recetas creadas localmente mientras no había conexión.
-                const localDishesBeforeConnect = Array.isArray(dishes) ? dishes.map(normalizeDishData) : [];
-                const remoteDishes = parsedFile.recipes.map(normalizeDishData);
+                // Fusión no destructiva: GitHub es la base compartida; las recetas locales
+                // que todavía no existen allí se añaden sin eliminar recetas remotas.
+                // En IDs coincidentes gana la versión remota para evitar sobrescribir cambios compartidos.
+                const localBeforeConnect = Array.isArray(dishes) ? dishes.map(normalizeDishData) : [];
+                const remoteRecipes = parsedFile.recipes.map(normalizeDishData);
                 mergeRecipeProteinCatalogIntoProfile(parsedFile.proteinCatalog);
-                const mergedById = new Map();
-                remoteDishes.forEach(recipe => mergedById.set(String(recipe.id), recipe));
-                // El remoto prevalece si el ID ya existe; las recetas locales nuevas se conservan.
-                localDishesBeforeConnect.forEach(recipe => {
-                    const key = String(recipe.id);
-                    if (!mergedById.has(key)) mergedById.set(key, recipe);
+                const remoteIds = new Set(remoteRecipes.map(r => String(r?.id ?? '')).filter(Boolean));
+                const localOnly = localBeforeConnect.filter(r => {
+                    const id = String(r?.id ?? '');
+                    return id && !remoteIds.has(id);
                 });
-                dishes = [...mergedById.values()];
-                const originalSerialized = JSON.stringify(parsedFile.recipes);
+                dishes = [...remoteRecipes, ...localOnly];
                 const normalizedSerialized = JSON.stringify(dishes);
-                const normalizedRemoteOnly = JSON.stringify(remoteDishes);
+                const remoteNormalizedSerialized = JSON.stringify(remoteRecipes);
 
-                if (originalSerialized !== normalizedRemoteOnly || JSON.stringify(remoteDishes) !== normalizedSerialized) {
-                    try {
-                        const updatedContent = buildGitHubRecipeFile(parsedFile, null, dishes);
-                        const putPayload = {
-                            message: "Actualizados datos y etiquetas del recetario desde GastroOS",
-                            content: utf8ToBase64(updatedContent),
-                            sha: data.sha
-                        };
-                        const putResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {
-                            method: 'PUT',
-                            headers: { ...headers, "Content-Type": "application/json" },
-                            body: JSON.stringify(putPayload)
-                        });
-                        if (!putResponse.ok) {
-                            console.warn("Las recetas se cargaron, pero no se pudo guardar en GitHub la migración de identificadores.");
-                        }
-                    } catch (migrationError) {
-                        console.warn("Las recetas se cargaron, pero falló la migración remota de identificadores:", migrationError);
+                // Si había recetas locales nuevas o una migración de formato, escribir la unión
+                // usando el SHA recién leído. Nunca escribir la copia local completa a ciegas.
+                if (localOnly.length || JSON.stringify(parsedFile.recipes) !== remoteNormalizedSerialized) {
+                    const updatedContent = buildGitHubRecipeFile(parsedFile, null, dishes);
+                    const putPayload = {
+                        message: localOnly.length
+                            ? `Fusionado recetario sin pérdida desde GastroOS (${localOnly.length} recetas locales añadidas)`
+                            : "Normalizados datos del recetario desde GastroOS",
+                        content: utf8ToBase64(updatedContent),
+                        sha: data.sha
+                    };
+                    const putResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {
+                        method: 'PUT', headers: { ...headers, "Content-Type": "application/json" },
+                        body: JSON.stringify(putPayload)
+                    });
+                    if (!putResponse.ok) {
+                        const putError = await putResponse.json().catch(() => ({}));
+                        throw new Error(`No se pudo guardar la fusión de recetas en GitHub: ${putError.message || putResponse.status}`);
                     }
                 }
 
@@ -1611,45 +1651,6 @@
             setGitHubSyncStatus(`${message} ${new Date(now).toLocaleString('es-ES')} · ${dishes.length} recetas.`, 'success');
         }
 
-        async function syncProductAllergensToGitHub(github = getGitHubSettings()) {
-            if (!github.token || !github.owner || !github.repo) return { success: false, skipped: true };
-            const pathName = 'product-allergens.json';
-            const url = window.GastroOSGitHubNetwork.buildContentsUrl({ ...github, path: pathName });
-            const headers = { Accept: 'application/vnd.github+json', Authorization: `Bearer ${github.token}`, 'X-GitHub-Api-Version': '2022-11-28' };
-            try {
-                const response = await window.GastroOSGitHubNetwork.fetchWithTimeout(url, { method: 'GET', headers });
-                let remoteDocument = {}, sha = null;
-                if (response.ok) {
-                    const data = await response.json();
-                    if (typeof data.content === 'string') remoteDocument = JSON.parse(base64ToUtf8(data.content));
-                    sha = data.sha || null;
-                } else if (response.status !== 404) {
-                    throw new Error(`No se pudo leer product-allergens.json (HTTP ${response.status}).`);
-                }
-                if (!remoteDocument || typeof remoteDocument !== 'object' || Array.isArray(remoteDocument)) remoteDocument = {};
-                const remote = remoteDocument.products && typeof remoteDocument.products === 'object'
-                    ? remoteDocument.products : remoteDocument;
-                // Unir claves: nunca perder alérgenos locales o remotos; combinar etiquetas por producto.
-                const merged = { ...remote };
-                Object.entries(productAllergenMap || {}).forEach(([key, values]) => {
-                    merged[key] = [...new Set([...(Array.isArray(remote[key]) ? remote[key] : []), ...(Array.isArray(values) ? values : [])])];
-                });
-                const documentToSave = { app: 'GastroOS', schemaVersion: 1, updatedAt: new Date().toISOString(), products: merged };
-                const payload = { message: 'Sincronizar alérgenos de productos desde GastroOS', content: utf8ToBase64(JSON.stringify(documentToSave, null, 2)) };
-                if (sha) payload.sha = sha;
-                const put = await window.GastroOSGitHubNetwork.fetchWithTimeout(url, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!put.ok) { let err = {}; try { err = await put.json(); } catch {} throw new Error(err.message || `HTTP ${put.status}`); }
-                productAllergenMap = merged;
-                applyProductAllergensToRecipes();
-                window.GastroOSDataStore.set('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
-                saveAll();
-                return { success: true };
-            } catch (error) {
-                console.warn('No se pudieron sincronizar los alérgenos de productos:', error);
-                return { success: false, message: error.message };
-            }
-        }
-
         async function saveGitHubSettings() {
             const existing = getGitHubSettings();
             const tokenInput = document.getElementById('githubToken');
@@ -1681,13 +1682,14 @@
                 renderStockView();
                 renderGeneratorView();
                 renderHistorySection();
-                markGitHubSyncSuccess("Conexión comprobada; recetario fusionado sin borrar recetas locales.");
-                const allergenSync = await syncProductAllergensToGitHub(github);
-                if (allergenSync.success) {
-                    alert("Conexión con GitHub comprobada. Se han fusionado las recetas locales y remotas y sincronizado los alérgenos de productos.");
-                } else {
-                    alert(`Recetas fusionadas y conexión comprobada, pero no se pudieron sincronizar los alérgenos: ${allergenSync.message || 'error de conexión/permisos'}.`);
+                const allergenSync = await syncProductAllergensToGitHub();
+                markGitHubSyncSuccess("Conexión comprobada y recetario fusionado con GitHub.");
+                if (!allergenSync.success && !allergenSync.skipped) {
+                    setGitHubSyncStatus(`Recetario sincronizado; los alérgenos de productos no se pudieron subir: ${allergenSync.message}`, 'warning');
                 }
+                alert(allergenSync.success
+                    ? "Conexión con GitHub comprobada. Recetas fusionadas y alérgenos de productos sincronizados."
+                    : "Conexión con GitHub comprobada y recetas fusionadas. Revisa el estado de los alérgenos de productos.");
             } else if (githubLastLoadIssue === "missing-file") {
                 setGitHubSyncStatus("Conexión guardada. Aún no existe el archivo del recetario; se creará al guardar la primera receta o importar un JSON.", 'warning');
                 alert("La configuración se ha guardado, pero todavía no existe el archivo del recetario en esa ruta. GastroOS lo creará automáticamente al guardar la primera receta o importar un JSON.");
