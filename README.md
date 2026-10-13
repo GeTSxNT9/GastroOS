@@ -61,16 +61,9 @@ Use a fine-grained token restricted to the required repository, with only the ne
 
 The Service Worker caches essential application files and removes older GastroOS caches when a new version activates. `product-allergens.json` is included in the application cache. Tailwind is loaded from a CDN and its cache is best-effort, so a first offline installation or external CDN change may affect styling. Fully predictable offline styling would require a locally compiled stylesheet.
 
-## Checks and Deployment
+## Deployment
 
-Serve the contents of this folder as a static site, for example with GitHub Pages. No build step is required. Before publishing changes, run:
-
-```bash
-node --check js/gastroos.js
-node --check sw.js
-```
-
-Also verify that scripts referenced by `index.html` exist and that essential resources are listed in `sw.js`. Test recipe editing, menu generation, stock and shopping calculations, persistence after reload, and GitHub synchronization in the deployed app.
+Serve the contents of this folder as a static site, for example with GitHub Pages. No build step is required. Keep the local JavaScript files referenced by `index.html` and the essential application resources listed in `sw.js` in their existing paths.
 
 ## Design Goal
 
