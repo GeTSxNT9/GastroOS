@@ -5019,7 +5019,7 @@
       "subtipo_primero": "",
       "proteina_segundo": "Pescado",
       "animal_carne": "",
-      "especie_pescado": "custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_pescado",
+      "especie_pescado": "custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_pescado",
       "especie_animal": "Pescado",
       "tecnica_cocina": "tecnica_seco_asado",
       "tecnica": "tecnica_seco_asado",
@@ -5057,7 +5057,7 @@
       "subtipo_primero": "",
       "proteina_segundo": "Pescado",
       "animal_carne": "",
-      "especie_pescado": "custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_pescado",
+      "especie_pescado": "custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_custom_pescado_pescado",
       "especie_animal": "Pescado",
       "tecnica_cocina": "tecnica_seco_asado",
       "tecnica": "tecnica_seco_asado",
@@ -5080,6 +5080,25 @@
           "categoria_proveedor": "Verduras"
         }
       ]
+    },
+    {
+      "id": "1791920757254",
+      "nombre": "Prueba",
+      "categoria": "Primero",
+      "subcategoria_primero": "Cuchara",
+      "subtipo_primero": "legumbres",
+      "proteina_segundo": "",
+      "animal_carne": "",
+      "especie_pescado": "",
+      "especie_animal": "",
+      "tecnica_cocina": "",
+      "tecnica": "",
+      "precocinado": false,
+      "plato_elaborado": false,
+      "demanda": "Media",
+      "alergenosManuales": [],
+      "alergenos": [],
+      "ingredientes": []
     }
   ]
 }
