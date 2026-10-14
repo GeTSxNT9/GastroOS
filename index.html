@@ -376,7 +376,14 @@
                     </div>
                 </div>
 
-                <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1" id="dayTabsContainer" aria-label="Días del menú"></div>
+                <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1" id="dayTabsContainer">
+                    <button class="generator-day-tab active bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap" data-day="Lunes">Lunes</button>
+                    <button class="generator-day-tab bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap" data-day="Martes">Martes</button>
+                    <button class="generator-day-tab bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap" data-day="Miércoles">Miércoles</button>
+                    <button class="generator-day-tab bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap" data-day="Jueves">Jueves</button>
+                    <button class="generator-day-tab bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap" data-day="Viernes">Viernes</button>
+
+                </div>
 
                 <div id="generatedMenuContainer" class="space-y-6"></div>
             </div>
@@ -399,15 +406,6 @@
         <!-- VISTA 5: AJUSTES Y HISTÓRICO -->
         <main id="view-settings" class="p-4 hidden space-y-5">
             <div class="view-heading-row"><div><h2 class="view-title">Ajustes</h2><p class="view-subtitle">Normas, datos y conexiones de esta cocina.</p></div></div>
-            <section class="settings-card" id="generationDaysSection">
-                <div class="settings-card-heading"><h3 class="settings-card-title">Días de generación del menú</h3><p class="settings-card-description">Por defecto se generan menús de lunes a viernes. Puedes incluir fines de semana y definir excepciones para semanas festivas sin cambiar tu calendario habitual.</p></div>
-                <div class="p-3 space-y-4">
-                    <div><h4 class="font-semibold text-sm mb-2">Días habituales</h4><div id="generationHabitualDays" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div></div>
-                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3"><label class="field-label" for="generationExceptionWeek">Semana con excepción (elige el lunes de esa semana)</label><input id="generationExceptionWeek" type="date" class="settings-input"><p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Marca los días que deben generarse solo durante esa semana. Si coincide con los días habituales, no se guarda una excepción.</p><div id="generationExceptionDays" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3"></div></div>
-                    <p id="generationDaysStatus" class="text-xs text-indigo-700 dark:text-indigo-300" aria-live="polite"></p>
-                    <button id="btnSaveGenerationDays" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 text-sm font-bold">Guardar días de generación</button>
-                </div>
-            </section>
             <section class="bg-white dark:bg-gray-900 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">
                 <div class="flex items-center gap-2 mb-3">
                     <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
