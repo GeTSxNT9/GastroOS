@@ -20,7 +20,8 @@ It is built with HTML, CSS, and JavaScript without an application framework or i
 ```text
 GastroOS-main/
 ├── index.html                  # Interface, views, and ordered module loading
-├── css/gastroos.css            # Application-specific styles
+├── css/
+│   └── gastroos.css            # Visual design, layout, responsive rules, and app-specific styles
 ├── js/
 │   ├── gastroos.js             # App state, interface, and main orchestration
 │   ├── data-store-facade.js    # localStorage access and migrations
@@ -37,6 +38,7 @@ GastroOS-main/
 │   ├── github-network.js       # Construction of paths and GitHub network timeout
 │   └── github-facade.js        # Facade for synchronization operations
 ├── recipes.json                # Seed recipe book and shared catalog metadata
+├── product-allergens.json      # Initial product-level allergen mapping
 ├── manifest.json               # PWA installation metadata
 ├── sw.js                       # Installation, update, and offline cache
 ├── icon-192.png
@@ -49,9 +51,11 @@ GastroOS-main/
 ### Responsibilities and Limits
 
 - `gastroos.js` remains the main module and contains important parts of the culinary engine and the interface. Facades are not duplicated engines: they expose existing functions to facilitate gradual separation.
-- The `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js`, and `shopping-engine.js` modules isolate checks or calculations so they can be tested separately.
+- The `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js`, and `shopping-engine.js` modules separate specific rules and calculations from the main interface logic. This is an architectural separation, not a claim that a test suite is included in the repository.
 - `index.html` scripts are loaded in a deliberate order: utilities and rules first, then `gastroos.js`, and finally the facades that expose their functions.
+- `css/gastroos.css` contains the application styles: layout, component appearance, responsive behavior, and theme-specific presentation. It is separate from the HTML so visual changes can be maintained without editing the application logic.
 - `recipes.json` is used as an initial source when there is no usable local recipe book. Service Worker installation treats it as an essential resource along with the application modules.
+- `product-allergens.json` provides initial product-level allergen data; user changes are stored locally by the application.
 
 ## Data and Persistence
 
@@ -81,17 +85,6 @@ The Service Worker uses versioned caching and deletes old GastroOS caches upon a
 **Known limit:** `index.html` loads Tailwind from `https://cdn.tailwindcss.com`. The cached copy is best-effort and does not guarantee full styling on a first offline installation or against external provider changes. For predictable offline use, the next improvement would be to compile Tailwind as local CSS and test installation, updating, and use without a network in real browsers.
 
 Existing data is in `localStorage`, but the availability of the interface and resources in an initial offline installation depends on having previously loaded the application and its essential resources successfully.
-
-## Development and Checks
-
-Node.js is not needed to run the published PWA. For a quick local syntax check (without adding test or script files to the repository), run:
-
-```bash
-node --check js/gastroos.js
-node --check sw.js
-```
-
-Before publishing changes, check that all modules referenced by `index.html` exist and are included in the essential resource list of `sw.js`. Then test in the published application: weekly generation, regeneration of a single day, shopping list, persistence after reloading, and GitHub synchronization if configured.
 
 ## Deployment
 
