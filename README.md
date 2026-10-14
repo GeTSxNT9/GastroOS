@@ -7,7 +7,7 @@ It is built with HTML, CSS, and JavaScript without an application framework or i
 ## Main Features
 
 - Recipe catalog: creation, editing, filters, batch editing, techniques, classifications, ingredients, and allergens.
-- Generation and validation of weekly menus with configurable structure, daily and weekly rules, repetition limits, meat and fish restrictions, stews, and stock availability.
+- Generation and validation of weekly menus with configurable structure, daily and weekly rules, repetition limits, meat and fish restrictions, stews, and stock availability. Service days default to Monday–Friday; habitual days can include weekends, with week-specific overrides for holidays.
 - Day regeneration and search for alternatives that respect the configured rules.
 - Differentiated management of raw materials/pre-cooked products and prepared dishes.
 - Shopping list calculation, grouping by supplier category, quantity adjustment, and TXT export.
@@ -53,6 +53,10 @@ GastroOS-main/
 - The `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js`, and `shopping-engine.js` modules isolate checks or calculations so they can be tested separately.
 - `index.html` scripts are loaded in a deliberate order: utilities and rules first, then `gastroos.js`, and finally the facades that expose their functions.
 - `recipes.json` is used as an initial source when there is no usable local recipe book. `product-allergens.json` provides the initial product/allergen mapping. Both JSON files are precached when available and refreshed from the network when online.
+
+## Service-day configuration
+
+The Settings view lets you choose the habitual generation days (Monday–Friday by default) and define a one-week exception by selecting that week’s Monday and marking the days to generate. Week overrides are stored with the local settings and do not change the habitual schedule. The generator tabs follow the active day selection.
 
 ## Data and Persistence
 
