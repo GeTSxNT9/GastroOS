@@ -2,7 +2,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v58';
+const CACHE_NAME = 'gastroos-v55';
 const APP_SHELL = [
   './',
   './index.html',
@@ -100,8 +100,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Datos JSON: Network First para evitar servir catálogos obsoletos cuando hay conexión.
-  // Si la red falla, conserva el último JSON válido disponible para uso offline.
+  // Los datos JSON cambian con más frecuencia que los recursos estáticos: red primero,
+  // con fallback a la última copia cacheada cuando no hay conexión.
   const isJsonData = url.origin === self.location.origin && /\.json$/i.test(url.pathname);
   if (isJsonData) {
     event.respondWith((async () => {
@@ -110,10 +110,9 @@ self.addEventListener('fetch', event => {
         if (response.ok && response.type === 'basic') {
           const cache = await caches.open(CACHE_NAME);
           await cache.put(request, response.clone());
-          return response;
         }
-        const cached = await caches.match(request);
-        return cached || response;
+        if (response.ok) return response;
+        return (await caches.match(request)) || response;
       } catch (_) {
         return (await caches.match(request)) || Response.error();
       }

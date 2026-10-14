@@ -1,13 +1,13 @@
 # GastroOS
 
-**GastroOS** is a Progressive Web Application (PWA) to manage recipes, plan menus for the configured service days (Monday to Friday by default), track inventory, calculate shopping lists, and apply the rules of a self-service kitchen.
+**GastroOS** is a Progressive Web Application (PWA) to manage recipes, plan Monday-to-Friday menus by default, track inventory, calculate shopping lists, and apply the rules of a self-service kitchen.
 
 It is built with HTML, CSS, and JavaScript without an application framework or its own backend. Working information is stored in the browser; synchronization with GitHub is optional.
 
 ## Main Features
 
 - Recipe catalog: creation, editing, filters, batch editing, techniques, classifications, ingredients, and allergens.
-- Generation and validation of weekly menus with configurable structure, daily and weekly rules, repetition limits, meat and fish restrictions, stews, and stock availability. Service days default to Monday–Friday; habitual days can include weekends, with week-specific overrides for holidays.
+- Generation and validation of weekly menus with configurable structure, daily and weekly rules, repetition limits, meat and fish restrictions, stews, and stock availability.
 - Day regeneration and search for alternatives that respect the configured rules.
 - Differentiated management of raw materials/pre-cooked products and prepared dishes.
 - Shopping list calculation, grouping by supplier category, quantity adjustment, and TXT export.
@@ -37,7 +37,6 @@ GastroOS-main/
 │   ├── github-network.js       # Construction of paths and GitHub network timeout
 │   └── github-facade.js        # Facade for synchronization operations
 ├── recipes.json                # Seed recipe book and shared catalog metadata
-├── product-allergens.json      # Default product-to-allergen mapping
 ├── manifest.json               # PWA installation metadata
 ├── sw.js                       # Installation, update, and offline cache
 ├── icon-192.png
@@ -52,15 +51,12 @@ GastroOS-main/
 - `gastroos.js` remains the main module and contains important parts of the culinary engine and the interface. Facades are not duplicated engines: they expose existing functions to facilitate gradual separation.
 - The `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js`, and `shopping-engine.js` modules isolate checks or calculations so they can be tested separately.
 - `index.html` scripts are loaded in a deliberate order: utilities and rules first, then `gastroos.js`, and finally the facades that expose their functions.
-- `recipes.json` is used as an initial source when there is no usable local recipe book. `product-allergens.json` provides the initial product/allergen mapping. Both JSON files are precached when available and refreshed from the network when online.
-
-## Service-day configuration
-
-The Settings view lets you choose the habitual generation days (Monday–Friday by default) and define a one-week exception by selecting that week’s Monday and marking the days to generate. Week overrides are stored with the local settings and do not change the habitual schedule. The generator tabs follow the active day selection.
+- `recipes.json` is used as an initial source when there is no usable local recipe book. Service Worker installation treats it as an essential resource along with the application modules.
 
 ## Data and Persistence
 
 - `localStorage` stores the working recipe book, configuration, inventory, current and historical menu, allergens, automatic backups, and synchronization metadata.
+- `product-allergens.json` is an optional seed/data resource for product-level allergen metadata; it is included in the Service Worker app shell.
 - Schema migrations are performed via `data-store-facade.js`. Do not manually delete `chefTrack_*` keys if you want to keep the data.
 - Exported backups are the recommended way to move or recover data. Make an export before updating the application or restoring old data.
 - The GitHub token is kept in `sessionStorage` for the browser tab/session. Non-secret repository configuration is stored separately in `localStorage`. When closing the browser session, it may be necessary to re-enter the token.
@@ -80,11 +76,22 @@ Security recommendations:
 
 ## PWA and Offline Operation
 
-The Service Worker uses versioned caching and deletes old GastroOS caches upon activation. During installation, it preloads essential resources; if an essential resource is missing, it cancels the installation instead of leaving an incomplete shell. JSON data uses Network First: the app tries to refresh it when online and falls back to the cached copy when offline. The Tailwind CDN is optional during installation and is attempted to be cached when available.
+The Service Worker uses versioned caching and deletes old GastroOS caches upon activation. Static application resources use cache-first with background refresh; same-origin JSON data uses network-first and falls back to the last cached copy when offline. During installation, it preloads essential resources; if an essential resource is missing, it cancels the installation instead of leaving an incomplete shell. The Tailwind CDN is optional during installation and is attempted to be cached when available.
 
 **Known limit:** `index.html` loads Tailwind from `https://cdn.tailwindcss.com`. The cached copy is best-effort and does not guarantee full styling on a first offline installation or against external provider changes. For predictable offline use, the next improvement would be to compile Tailwind as local CSS and test installation, updating, and use without a network in real browsers.
 
 Existing data is in `localStorage`, but the availability of the interface and resources in an initial offline installation depends on having previously loaded the application and its essential resources successfully.
+
+## Development and Checks
+
+Node.js is not needed to run the published PWA. For a quick local syntax check (without adding test or script files to the repository), run:
+
+```bash
+node --check js/gastroos.js
+node --check sw.js
+```
+
+Before publishing changes, check that all modules referenced by `index.html` exist and are included in the essential resource list of `sw.js`. Then test in the published application: weekly generation, regeneration of a single day, shopping list, persistence after reloading, and GitHub synchronization if configured.
 
 ## Deployment
 
