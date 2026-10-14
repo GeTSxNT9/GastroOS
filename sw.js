@@ -2,13 +2,12 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v58';
+const CACHE_NAME = 'gastroos-v54';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './recipes.json',
-  './product-allergens.json',
   './css/gastroos.css',
   './js/gastroos.js',
   './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js', './js/menu-daily-rules.js',
@@ -95,6 +94,26 @@ self.addEventListener('fetch', event => {
         return (await caches.match(request)) || (await caches.match('./index.html')) || response;
       } catch (_) {
         return (await caches.match(request)) || (await caches.match('./index.html')) || Response.error();
+      }
+    })());
+    return;
+  }
+
+  // JSON de datos: Network First para no servir catálogos antiguos cuando hay conexión.
+  // Si no hay red, se conserva el último JSON válido en caché para el modo offline.
+  const isDataJson = url.origin === self.location.origin && /\.json$/i.test(url.pathname) && !url.pathname.endsWith('/manifest.json');
+  if (isDataJson) {
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(request, { cache: 'no-store' });
+        if (response.ok && response.type === 'basic') {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(request, response.clone());
+        }
+        if (response.ok) return response;
+        return (await caches.match(request)) || response;
+      } catch (_) {
+        return (await caches.match(request)) || Response.error();
       }
     })());
     return;
