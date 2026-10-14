@@ -1,6 +1,6 @@
 # GastroOS
 
-**GastroOS** is a Progressive Web Application (PWA) to manage recipes, plan Monday-to-Friday menus, track inventory, calculate shopping lists, and apply the rules of a self-service kitchen.
+**GastroOS** is a Progressive Web Application (PWA) to manage recipes, plan Monday-to-Friday menus by default, track inventory, calculate shopping lists, and apply the rules of a self-service kitchen.
 
 It is built with HTML, CSS, and JavaScript without an application framework or its own backend. Working information is stored in the browser; synchronization with GitHub is optional.
 
@@ -56,6 +56,7 @@ GastroOS-main/
 ## Data and Persistence
 
 - `localStorage` stores the working recipe book, configuration, inventory, current and historical menu, allergens, automatic backups, and synchronization metadata.
+- `product-allergens.json` is an optional seed/data resource for product-level allergen metadata; it is included in the Service Worker app shell.
 - Schema migrations are performed via `data-store-facade.js`. Do not manually delete `chefTrack_*` keys if you want to keep the data.
 - Exported backups are the recommended way to move or recover data. Make an export before updating the application or restoring old data.
 - The GitHub token is kept in `sessionStorage` for the browser tab/session. Non-secret repository configuration is stored separately in `localStorage`. When closing the browser session, it may be necessary to re-enter the token.
@@ -75,7 +76,7 @@ Security recommendations:
 
 ## PWA and Offline Operation
 
-The Service Worker uses versioned caching and deletes old GastroOS caches upon activation. During installation, it preloads essential resources; if an essential resource is missing, it cancels the installation instead of leaving an incomplete shell. JSON data resources use Network First: when online, GastroOS requests the current file and refreshes its cache; when offline or the request fails, it falls back to the last cached copy. The Tailwind CDN is optional during installation and is attempted to be cached when available.
+The Service Worker uses versioned caching and deletes old GastroOS caches upon activation. Static application resources use cache-first with background refresh; same-origin JSON data uses network-first and falls back to the last cached copy when offline. During installation, it preloads essential resources; if an essential resource is missing, it cancels the installation instead of leaving an incomplete shell. The Tailwind CDN is optional during installation and is attempted to be cached when available.
 
 **Known limit:** `index.html` loads Tailwind from `https://cdn.tailwindcss.com`. The cached copy is best-effort and does not guarantee full styling on a first offline installation or against external provider changes. For predictable offline use, the next improvement would be to compile Tailwind as local CSS and test installation, updating, and use without a network in real browsers.
 
@@ -83,7 +84,7 @@ Existing data is in `localStorage`, but the availability of the interface and re
 
 ## Development and Checks
 
-Node.js is not needed to run the published PWA. If Node.js is available locally, these syntax checks can be run from the project root:
+Node.js is not needed to run the published PWA. For a quick local syntax check (without adding test or script files to the repository), run:
 
 ```bash
 node --check js/gastroos.js
