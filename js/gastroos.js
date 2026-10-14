@@ -32,7 +32,66 @@
         // Marcas temporales de la lista de compra: no modifican el stock real ni se guardan.
         let shoppingManualStockKeys = new Set();
         const proveedorCategorias = ["Carne", "Pescado", "Lácteos", "Verduras", "Secos", "Congelados"];
-        const daysList = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+        const ALL_GENERATION_DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+        let daysList = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
+        function normalizeGenerationDays(value, fallback = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]) {
+            const valid = ALL_GENERATION_DAYS.filter(day => Array.isArray(value) && value.includes(day));
+            return valid.length ? valid : [...fallback];
+        }
+        function weekKeyFromDate(value) {
+            const date = value ? new Date(`${value}T12:00:00`) : new Date();
+            if (Number.isNaN(date.getTime())) return '';
+            const day = (date.getDay() + 6) % 7;
+            date.setDate(date.getDate() - day);
+            return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+        }
+        function applyGenerationDaysForSelectedWeek() {
+            const weekInput = document.getElementById('generationExceptionWeek');
+            const weekKey = weekKeyFromDate(weekInput?.value);
+            const overrides = settings.generationWeekOverrides && typeof settings.generationWeekOverrides === 'object' ? settings.generationWeekOverrides : {};
+            const base = normalizeGenerationDays(settings.generationDays);
+            daysList = normalizeGenerationDays(overrides[weekKey], base);
+            updateGeneratorDayTabs();
+            return daysList;
+        }
+        function updateGeneratorDayTabs() {
+            const container = document.getElementById('dayTabsContainer');
+            if (!container) return;
+            if (!daysList.includes(selectedGeneratorDay)) selectedGeneratorDay = daysList[0];
+            container.innerHTML = daysList.map((day, index) => `<button type="button" class="generator-day-tab ${index === 0 ? 'active bg-indigo-600 text-white' : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-700'} px-3 py-1.5 rounded-lg text-xs font-${index === 0 ? 'bold' : 'semibold'} whitespace-nowrap" data-day="${day}">${day}</button>`).join('');
+            container.querySelectorAll('.generator-day-tab').forEach(tab => tab.addEventListener('click', e => {
+                container.querySelectorAll('.generator-day-tab').forEach(t => { t.classList.remove('bg-indigo-600','text-white','active'); t.classList.add('bg-white','dark:bg-gray-900','text-gray-600','dark:text-gray-300','border','border-gray-300','dark:border-gray-700'); });
+                e.currentTarget.classList.remove('bg-white','dark:bg-gray-900','text-gray-600','dark:text-gray-300','border','border-gray-300','dark:border-gray-700');
+                e.currentTarget.classList.add('bg-indigo-600','text-white','active'); selectedGeneratorDay = e.currentTarget.dataset.day; renderGeneratorView();
+            }));
+        }
+        function renderGenerationDaysSettings() {
+            const habitual = document.getElementById('generationHabitualDays');
+            const exception = document.getElementById('generationExceptionDays');
+            if (!habitual || !exception) return;
+            const base = normalizeGenerationDays(settings.generationDays);
+            const key = weekKeyFromDate(document.getElementById('generationExceptionWeek')?.value);
+            const overrides = settings.generationWeekOverrides && typeof settings.generationWeekOverrides === 'object' ? settings.generationWeekOverrides : {};
+            const special = normalizeGenerationDays(overrides[key], base);
+            habitual.innerHTML = ALL_GENERATION_DAYS.map(day => `<label class="flex items-center gap-2 text-sm"><input type="checkbox" value="${day}" ${base.includes(day)?'checked':''} class="generation-habitual-day"> ${day}</label>`).join('');
+            exception.innerHTML = ALL_GENERATION_DAYS.map(day => `<label class="flex items-center gap-2 text-sm"><input type="checkbox" value="${day}" ${special.includes(day)?'checked':''} class="generation-exception-day"> ${day}</label>`).join('');
+        }
+        function saveGenerationDaysSettings() {
+            const habitual = [...document.querySelectorAll('.generation-habitual-day:checked')].map(el => el.value);
+            if (!habitual.length) { alert('Selecciona al menos un día habitual.'); return; }
+            settings.generationDays = normalizeGenerationDays(habitual);
+            const key = weekKeyFromDate(document.getElementById('generationExceptionWeek')?.value);
+            const special = [...document.querySelectorAll('.generation-exception-day:checked')].map(el => el.value);
+            settings.generationWeekOverrides = settings.generationWeekOverrides && typeof settings.generationWeekOverrides === 'object' ? settings.generationWeekOverrides : {};
+            if (special.length && special.join('|') !== settings.generationDays.join('|')) settings.generationWeekOverrides[key] = normalizeGenerationDays(special);
+            else delete settings.generationWeekOverrides[key];
+            applyGenerationDaysForSelectedWeek(); saveAll(); renderGeneratorDaySettingsStatus(); if (currentMenu) renderGeneratorView();
+            alert('Días de generación guardados. La excepción seleccionada se aplica a la semana indicada.');
+        }
+        function renderGeneratorDaySettingsStatus() {
+            const node = document.getElementById('generationDaysStatus');
+            if (node) node.textContent = `Semana seleccionada: ${weekKeyFromDate(document.getElementById('generationExceptionWeek')?.value)} · Días activos: ${daysList.join(', ')}`;
+        }
         const FIRST_SUBCATEGORIES = {
             cuchara: ["legumbres", "guisos", "sopas_o_caldos"],
             verdura: ["cremas", "verduras_enteras"],
@@ -240,56 +299,7 @@
             document.getElementById('modalProductAllergens')?.classList.remove('hidden');
         }
         function closeProductAllergenManager() { document.getElementById('modalProductAllergens')?.classList.add('hidden'); }
-        async function syncProductAllergensToGitHub() {
-            const github = getGitHubSettings();
-            if (!github.token || !github.owner || !github.repo) return { success: false, skipped: true };
-            const path = 'product-allergens.json';
-            const apiUrl = window.GastroOSGitHubNetwork.buildContentsUrl({ ...github, path });
-            const headers = { Accept: 'application/vnd.github+json', Authorization: `Bearer ${github.token}`, 'X-GitHub-Api-Version': '2022-11-28' };
-            try {
-                const get = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'GET', headers });
-                let data = await get.json().catch(() => ({}));
-                let remote = {}, sha = null;
-                if (get.status === 404) {
-                    remote = {};
-                } else {
-                    if (!get.ok || typeof data.content !== 'string') throw new Error(data.message || `HTTP ${get.status}`);
-                    sha = data.sha;
-                    const parsed = JSON.parse(base64ToUtf8(data.content));
-                    const products = parsed?.products && typeof parsed.products === 'object' ? parsed.products : parsed;
-                    Object.entries(products || {}).forEach(([key, value]) => {
-                        const arr = Array.isArray(value) ? value : (Array.isArray(value?.allergens) ? value.allergens : (Array.isArray(value?.alergenos) ? value.alergenos : []));
-                        remote[normalizeFoodKey(key)] = arr.filter(a => ALLERGEN_LABELS[a]);
-                    });
-                }
-                const merged = { ...remote };
-                Object.entries(productAllergenMap || {}).forEach(([key, values]) => {
-                    const normalizedKey = normalizeFoodKey(key);
-                    const union = new Set([...(merged[normalizedKey] || []), ...(Array.isArray(values) ? values : [])].filter(a => ALLERGEN_LABELS[a]));
-                    if (union.size) merged[normalizedKey] = [...union];
-                });
-                const names = new Map();
-                collectAllergenProducts().forEach(([key, name]) => names.set(key, name));
-                const products = {};
-                Object.entries(merged).forEach(([key, allergens]) => {
-                    if (allergens.length) products[key] = { name: names.get(key) || key, allergens };
-                });
-                const content = JSON.stringify({ app: 'GastroOS', schemaVersion: 1, updatedAt: new Date().toISOString(), products }, null, 2) + '\n';
-                const payload = { message: 'Sincronizados alérgenos de productos desde GastroOS', content: utf8ToBase64(content) };
-                if (sha) payload.sha = sha;
-                const put = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, { method: 'PUT', headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                const result = await put.json().catch(() => ({}));
-                if (!put.ok) throw new Error(result.message || `HTTP ${put.status}`);
-                productAllergenMap = merged;
-                window.GastroOSDataStore.set('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
-                return { success: true };
-            } catch (error) {
-                console.error('No se pudieron sincronizar los alérgenos de productos:', error);
-                return { success: false, message: error?.message || 'Error desconocido' };
-            }
-        }
-
-        async function saveProductAllergens() {
+        function saveProductAllergens() {
             const next = {};
             document.querySelectorAll('#productAllergenList input[data-product-key]').forEach(input => {
                 if (!input.checked) return;
@@ -302,11 +312,9 @@
             window.GastroOSDataStore.set('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
             saveAll();
             renderDishes(); renderGeneratorView();
-            const sync = await syncProductAllergensToGitHub();
             closeProductAllergenManager();
             const status = document.getElementById('productAllergenStatus');
-            if (status) status.textContent = `${Object.keys(productAllergenMap).length} productos con alérgenos configurados${sync.success ? ' · sincronizados con GitHub' : (sync.skipped ? ' · guardados en este dispositivo' : ' · error al sincronizar con GitHub')}.`;
-            if (!sync.success && !sync.skipped) alert(`Los alérgenos se guardaron localmente, pero no se pudieron subir a product-allergens.json.\n\n${sync.message}`);
+            if (status) status.textContent = `${Object.keys(productAllergenMap).length} productos con alérgenos configurados.`;
         }
 
         function loadProductAllergens() {
@@ -853,6 +861,11 @@
             dishes = (Array.isArray(storedDishesSafe) ? storedDishesSafe : []).map(normalizeDishData);
             const storedSettingsSafe = safeLoadJSON('chefTrack_settings', {});
             settings = { ...defaultSettings, ...(storedSettingsSafe && typeof storedSettingsSafe === 'object' && !Array.isArray(storedSettingsSafe) ? storedSettingsSafe : {}) };
+            settings.generationDays = normalizeGenerationDays(settings.generationDays);
+            settings.generationWeekOverrides = settings.generationWeekOverrides && typeof settings.generationWeekOverrides === 'object' ? settings.generationWeekOverrides : {};
+            const exceptionWeekInput = document.getElementById('generationExceptionWeek');
+            if (exceptionWeekInput && !exceptionWeekInput.value) { const now = new Date(); const offset = (now.getDay()+6)%7; now.setDate(now.getDate()-offset); exceptionWeekInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`; }
+            applyGenerationDaysForSelectedWeek(); renderGenerationDaysSettings(); renderGeneratorDaySettingsStatus();
             if (storedSettingsSafe?.margenSeguridadPorcentaje === undefined) {
                 const legacyMargin = Number(settings.kitchenProfile?.margenCompraPorcentaje);
                 settings.margenSeguridadPorcentaje = settings.margenActivo && Number.isFinite(legacyMargin) ? legacyMargin : (storedSettingsSafe && Object.keys(storedSettingsSafe).length ? 0 : 30);
@@ -1094,24 +1107,15 @@
             // Los exportadores se enlazan también mediante onclick inline en index.html.
             // En iOS/PWA esto evita perder el gesto de usuario que necesita Web Share.
 
-            document.querySelectorAll('.generator-day-tab').forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    document.querySelectorAll('.generator-day-tab').forEach(t => {
-                        t.classList.remove('bg-indigo-600', 'text-white', 'active');
-                        t.classList.add('bg-white', 'dark:bg-gray-900', 'text-gray-600', 'dark:text-gray-300', 'border', 'border-gray-300', 'dark:border-gray-700');
-                    });
-                    e.currentTarget.classList.remove('bg-white', 'dark:bg-gray-900', 'text-gray-600', 'dark:text-gray-300', 'border', 'border-gray-300', 'dark:border-gray-700');
-                    e.currentTarget.classList.add('bg-indigo-600', 'text-white', 'active');
-                    selectedGeneratorDay = e.currentTarget.getAttribute('data-day');
-                    renderGeneratorView();
-                });
-            });
+            updateGeneratorDayTabs();
 
             document.getElementById('modalSearchInput').addEventListener('input', renderModalDishList);
             document.getElementById('btnExport').addEventListener('click', exportData);
             document.getElementById('fileImport').addEventListener('change', importData);
             document.getElementById('btnWipeData').addEventListener('click', wipeData);
             document.getElementById('btnSaveGithubSettings').addEventListener('click', saveGitHubSettings);
+            document.getElementById('btnSaveGenerationDays')?.addEventListener('click', saveGenerationDaysSettings);
+            document.getElementById('generationExceptionWeek')?.addEventListener('change', () => { renderGenerationDaysSettings(); applyGenerationDaysForSelectedWeek(); renderGeneratorDaySettingsStatus(); });
             document.getElementById('btnRefreshGitHub').addEventListener('click', refreshDishesFromGitHub);
             document.getElementById('btnExportRecipes').addEventListener('click', exportRecipesOnly);
             document.getElementById('btnDownloadAutoBackup').addEventListener('click', downloadAutoBackup);
@@ -1459,7 +1463,7 @@
             try {
                 const stored = window.GastroOSDataStore.get('chefTrack_githubSettings');
                 const github = stored ? JSON.parse(stored) : {};
-                if (github.token) { try { localStorage.setItem('gastroos_github_token', github.token); } catch {} delete github.token; window.GastroOSDataStore.setJSON('chefTrack_githubSettings', github); }
+                if (github.token) { try { sessionStorage.setItem('gastroos_github_token', github.token); } catch {} delete github.token; window.GastroOSDataStore.setJSON('chefTrack_githubSettings', github); }
                 const token = document.getElementById('githubToken');
                 const owner = document.getElementById('githubOwner');
                 const repo = document.getElementById('githubRepo');
@@ -1479,12 +1483,8 @@
             try {
                 const stored = window.GastroOSDataStore.get('chefTrack_githubSettings');
                 const github = stored ? JSON.parse(stored) : {};
-                let savedToken = '';
-                // Persistir el token entre aperturas de la PWA. El token queda en el almacenamiento
-                // local de este navegador/dispositivo; no se sube al repositorio.
-                try { savedToken = localStorage.getItem('gastroos_github_token') || ''; } catch {}
-                if (!savedToken) { try { savedToken = sessionStorage.getItem('gastroos_github_token') || ''; if (savedToken) localStorage.setItem('gastroos_github_token', savedToken); } catch {} }
-                return { ...github, token: savedToken };
+                let sessionToken = ''; try { sessionToken = sessionStorage.getItem('gastroos_github_token') || ''; } catch {}
+                return { ...github, token: sessionToken };
             } catch (error) {
                 return {};
             }
@@ -1554,39 +1554,32 @@
                 const content = base64ToUtf8(data.content);
                 const parsedFile = parseGitHubRecipeFile(content, github.path);
 
-                // Fusión no destructiva: GitHub es la base compartida; las recetas locales
-                // que todavía no existen allí se añaden sin eliminar recetas remotas.
-                // En IDs coincidentes gana la versión remota para evitar sobrescribir cambios compartidos.
-                const localBeforeConnect = Array.isArray(dishes) ? dishes.map(normalizeDishData) : [];
-                const remoteRecipes = parsedFile.recipes.map(normalizeDishData);
+                // La copia remota pasa a ser la copia de trabajo de este navegador.
+                // Al cargar, también migramos los antiguos identificadores técnicos
+                // para que el archivo compartido quede alineado con los textos visibles.
+                const originalSerialized = JSON.stringify(parsedFile.recipes);
                 mergeRecipeProteinCatalogIntoProfile(parsedFile.proteinCatalog);
-                const remoteIds = new Set(remoteRecipes.map(r => String(r?.id ?? '')).filter(Boolean));
-                const localOnly = localBeforeConnect.filter(r => {
-                    const id = String(r?.id ?? '');
-                    return id && !remoteIds.has(id);
-                });
-                dishes = [...remoteRecipes, ...localOnly];
+                dishes = parsedFile.recipes.map(normalizeDishData);
                 const normalizedSerialized = JSON.stringify(dishes);
-                const remoteNormalizedSerialized = JSON.stringify(remoteRecipes);
 
-                // Si había recetas locales nuevas o una migración de formato, escribir la unión
-                // usando el SHA recién leído. Nunca escribir la copia local completa a ciegas.
-                if (localOnly.length || JSON.stringify(parsedFile.recipes) !== remoteNormalizedSerialized) {
-                    const updatedContent = buildGitHubRecipeFile(parsedFile, null, dishes);
-                    const putPayload = {
-                        message: localOnly.length
-                            ? `Fusionado recetario sin pérdida desde GastroOS (${localOnly.length} recetas locales añadidas)`
-                            : "Normalizados datos del recetario desde GastroOS",
-                        content: utf8ToBase64(updatedContent),
-                        sha: data.sha
-                    };
-                    const putResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {
-                        method: 'PUT', headers: { ...headers, "Content-Type": "application/json" },
-                        body: JSON.stringify(putPayload)
-                    });
-                    if (!putResponse.ok) {
-                        const putError = await putResponse.json().catch(() => ({}));
-                        throw new Error(`No se pudo guardar la fusión de recetas en GitHub: ${putError.message || putResponse.status}`);
+                if (originalSerialized !== normalizedSerialized) {
+                    try {
+                        const updatedContent = buildGitHubRecipeFile(parsedFile, null, dishes);
+                        const putPayload = {
+                            message: "Actualizados datos y etiquetas del recetario desde GastroOS",
+                            content: utf8ToBase64(updatedContent),
+                            sha: data.sha
+                        };
+                        const putResponse = await window.GastroOSGitHubNetwork.fetchWithTimeout(apiUrl, {
+                            method: 'PUT',
+                            headers: { ...headers, "Content-Type": "application/json" },
+                            body: JSON.stringify(putPayload)
+                        });
+                        if (!putResponse.ok) {
+                            console.warn("Las recetas se cargaron, pero no se pudo guardar en GitHub la migración de identificadores.");
+                        }
+                    } catch (migrationError) {
+                        console.warn("Las recetas se cargaron, pero falló la migración remota de identificadores:", migrationError);
                     }
                 }
 
@@ -1610,7 +1603,7 @@
             const status = document.getElementById('githubSettingsStatus');
             if (!status) return;
             if (github?.token && github?.owner && github?.repo && github?.path) {
-                status.textContent = "GitHub configurado ✓ La conexión se conserva en este dispositivo.";
+                status.textContent = "Conexión activa en esta sesión ✓ El token no se guarda de forma persistente en este navegador.";
                 status.className = "text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold";
             } else {
                 status.textContent = "Configura los cuatro campos para activar la sincronización remota de recetas.";
@@ -1666,13 +1659,13 @@
             };
 
             if (!github.token || !github.owner || !github.repo || !github.path) {
-                alert("Completa el propietario, el repositorio y la ruta, e introduce un token de GitHub. Se conservará en este dispositivo hasta que borres los datos del navegador o lo desconectes.");
+                alert("Completa el propietario, el repositorio y la ruta, e introduce un token para esta sesión.");
                 return;
             }
 
             const repositoryChanged = existing.owner !== github.owner || existing.repo !== github.repo || existing.path !== github.path;
             if (repositoryChanged) window.GastroOSDataStore.remove('chefTrack_githubLastSync');
-            try { localStorage.setItem('gastroos_github_token', github.token); } catch { alert('No se pudo guardar el token en este dispositivo. Comprueba el almacenamiento del navegador.'); return; }
+            try { sessionStorage.setItem('gastroos_github_token', github.token); } catch { alert('No se pudo guardar el token en la sesión del navegador.'); return; }
             const persistedGitHub = { owner: github.owner, repo: github.repo, path: github.path };
             if (!window.GastroOSDataStore.setJSON('chefTrack_githubSettings', persistedGitHub)) { alert('No se pudieron guardar los ajustes de GitHub localmente.'); return; }
             tokenInput.value = "";
@@ -1686,14 +1679,8 @@
                 renderStockView();
                 renderGeneratorView();
                 renderHistorySection();
-                const allergenSync = await syncProductAllergensToGitHub();
-                markGitHubSyncSuccess("Conexión comprobada y recetario fusionado con GitHub.");
-                if (!allergenSync.success && !allergenSync.skipped) {
-                    setGitHubSyncStatus(`Recetario sincronizado; los alérgenos de productos no se pudieron subir: ${allergenSync.message}`, 'warning');
-                }
-                alert(allergenSync.success
-                    ? "Conexión con GitHub comprobada. Recetas fusionadas y alérgenos de productos sincronizados."
-                    : "Conexión con GitHub comprobada y recetas fusionadas. Revisa el estado de los alérgenos de productos.");
+                markGitHubSyncSuccess("Conexión comprobada y recetario actualizado desde GitHub.");
+                alert("Conexión con GitHub comprobada y recetas cargadas correctamente.");
             } else if (githubLastLoadIssue === "missing-file") {
                 setGitHubSyncStatus("Conexión guardada. Aún no existe el archivo del recetario; se creará al guardar la primera receta o importar un JSON.", 'warning');
                 alert("La configuración se ha guardado, pero todavía no existe el archivo del recetario en esa ruta. GastroOS lo creará automáticamente al guardar la primera receta o importar un JSON.");
