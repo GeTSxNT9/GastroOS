@@ -400,7 +400,11 @@
             if (match) return match.id;
             if (!raw) return '';
             const slug = v.replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
-            return slug ? `custom_pescado_${slug}` : '';
+            if (!slug) return '';
+            // Debe ser idempotente: si ya lleva el prefijo (una o varias veces, por datos dañados
+            // de versiones anteriores), se normaliza a un único prefijo en lugar de añadir otro.
+            if (slug.startsWith('custom_pescado_')) return slug.replace(/^(?:custom_pescado_)+/, 'custom_pescado_');
+            return `custom_pescado_${slug}`;
         }
 
         function hasCompleteTechnicalTags(d) {
@@ -876,7 +880,7 @@
             currentMenu = safeLoadJSON('chefTrack_currentMenu', null);
             previousWeekMenu = safeLoadJSON('previousWeekMenu', safeLoadJSON('chefTrack_previousWeekMenu', null));
             const storedHistorySafe = safeLoadJSON('chefTrack_historyMenus', []);
-            historyMenus = Array.isArray(storedHistorySafe) ? storedHistorySafe : [];
+            historyMenus = Array.isArray(storedHistorySafe) ? storedHistorySafe.filter(isValidHistoryItem) : [];
             const storedRecipeHistorySafe = safeLoadJSON('chefTrack_recipeChangeHistory', []);
             recipeChangeHistory = Array.isArray(storedRecipeHistorySafe) ? storedRecipeHistorySafe : [];
 
@@ -1438,7 +1442,7 @@
             row.dataset.categoriaTouched = 'false';
             row.innerHTML = `
                 <input type="text" placeholder="Ingrediente..." value="${escapeHtml(nombre)}" required class="ingredient-name-input flex-[4] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                <input type="text" inputmode="decimal" placeholder="Cant." value="${cantidad !== '' && cantidad !== undefined ? cantidad : ''}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <input type="text" inputmode="decimal" placeholder="Cant." value="${escapeHtml(cantidad !== '' && cantidad !== undefined ? cantidad : '')}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                 <select class="w-14 min-w-[3.5rem] flex-[0_0_3.5rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                     ${legacyUnit ? `<option value="${legacyUnit}" selected>${legacyUnit}</option>` : ''}
                     <option value="g" ${unidad==='g'?'selected':''}>g</option>
@@ -2737,7 +2741,7 @@
                         const ingredientDimension = ['kg', 'g'].includes(ingredientUnit) ? 'weight' : (['l', 'ml'].includes(ingredientUnit) ? 'volume' : null);
                         const quantity = Number(String(ing?.cantidad ?? '').replace(',', '.'));
                         if (!ingredientName || ingredientDimension !== stockDimension || !Number.isFinite(quantity) || quantity <= 0) return;
-                        if (!(ingredientName === stockName || ingredientName.includes(stockName) || stockName.includes(ingredientName))) return;
+                        if (!(ingredientName === stockName || window.GastroOSStockUtils.foodNamesMatch(ingredientName, stockName))) return;
                         const basePerServing = (ingredientUnit === 'kg' || ingredientUnit === 'l') ? quantity * 1000 : quantity;
                         perServingAmounts.push(basePerServing);
                     });
@@ -3436,12 +3440,12 @@
                     return conservation.includes("Refrigerado") &&
                         Number(r?.cantidad) > 0;
                 })
-                .map(r => String(r?.nombre || "").toLowerCase())
+                .map(r => normalizeFoodKey(r?.nombre))
                 .filter(Boolean);
 
             return dish.ingredientes.some(ing => {
-                const ingredientName = String(ing?.nombre || "").toLowerCase();
-                return ingredientName && freshNames.some(raw => ingredientName.includes(raw) || raw.includes(ingredientName));
+                const ingredientName = normalizeFoodKey(ing?.nombre);
+                return ingredientName && freshNames.some(raw => window.GastroOSStockUtils.foodNamesMatch(ingredientName, raw));
             });
         }
 
@@ -4460,6 +4464,12 @@
             alert("Menú guardado en el histórico correctamente.");
         }
 
+        // Un elemento del historial dañado (sin id o sin menú) no debe romper la pantalla de ajustes.
+        function isValidHistoryItem(item) {
+            return !!item && typeof item === 'object' && item.id !== undefined && item.id !== null &&
+                !!item.menu && typeof item.menu === 'object' && !!item.menu.days && typeof item.menu.days === 'object';
+        }
+
         function renderHistorySection() {
             const container = document.getElementById('historyListContainer');
             if (!container) return;
@@ -4475,7 +4485,7 @@
                 row.className = "bg-white/80 p-3.5 rounded-2xl flex justify-between items-center transition-all";
                 row.innerHTML = `
                     <div>
-                        <h4 class="font-bold text-gray-800 dark:text-gray-100 text-xs">Menú del ${item.date}</h4>
+                        <h4 class="font-bold text-gray-800 dark:text-gray-100 text-xs">Menú del ${escapeHtml(item.date)}</h4>
                         <span class="text-[10px] text-gray-500">Planificación semanal completa</span>
                     </div>
                     <div class="flex gap-1.5">
@@ -4626,7 +4636,7 @@
                 if (summary.full && Array.isArray(data.preparedStock)) preparedStock = data.preparedStock.map(normalizeImportedStockItem);
                 if (summary.full && Object.prototype.hasOwnProperty.call(data, 'currentMenu')) currentMenu = validateImportedMenu(data.currentMenu, 'menú actual');
                 if (summary.full && Object.prototype.hasOwnProperty.call(data, 'previousWeekMenu')) previousWeekMenu = validateImportedMenu(data.previousWeekMenu, 'menú anterior');
-                if (summary.full && Array.isArray(data.historyMenus)) historyMenus = data.historyMenus;
+                if (summary.full && Array.isArray(data.historyMenus)) historyMenus = data.historyMenus.filter(isValidHistoryItem);
                 if (summary.full && Array.isArray(data.recipeChangeHistory)) recipeChangeHistory = data.recipeChangeHistory;
 
                 if (!saveAll()) throw new Error('El navegador no pudo guardar todos los datos restaurados.');
@@ -4704,7 +4714,10 @@
 
         function wipeData() {
             if (confirm("¿Estás completamente seguro de borrar los datos locales y restaurar valores iniciales? La conexión con GitHub se conservará para poder volver a cargar el recetario.")) {
-                createAutoBackup('antes de borrar todos los datos locales');
+                if (!createAutoBackup('antes de borrar todos los datos locales')) {
+                    alert('No se pudo crear la copia de seguridad previa (puede que el almacenamiento del navegador esté lleno). No se ha borrado nada. Exporta una copia manual antes de continuar.');
+                    return;
+                }
                 const cleared = window.GastroOSDataStore.clearOwned({ preserve: ['chefTrack_autoBackup', 'chefTrack_autoBackupAt', 'chefTrack_githubSettings', 'chefTrack_dataSchemaVersion'] });
                 if (!cleared.ok) {
                     alert('No se pudieron borrar todos los datos. No se recargará la aplicación para evitar mostrar un estado parcial.');
