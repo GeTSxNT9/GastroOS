@@ -24,7 +24,13 @@ GastroOS-main/
 ├── css/
 │   └── gastroos.css            # Visual design, layout, responsive rules, and app-specific styles
 ├── js/
-│   ├── gastroos.js             # App state, interface, and main orchestration
+│   ├── app-core.js             # State, catalogs, kitchen profile, data loading
+│   ├── app-views.js            # Events and view switching
+│   ├── app-recipes.js          # Recipe bank, form, GitHub recipe sync
+│   ├── app-stock.js            # Stock and forecasting
+│   ├── app-menu-engine.js      # Menu generation engine and validation
+│   ├── app-menu-ui.js          # TXT export, shopping list, dish swap
+│   ├── app-history-backup.js   # History, backups, import, app startup (init)
 │   ├── data-store-facade.js    # localStorage access and migrations
 │   ├── kitchen-rules.js        # Kitchen rules profile and configuration
 │   ├── stock-utils.js          # Normalization and validation of stock records
@@ -51,9 +57,9 @@ GastroOS-main/
 
 ### Responsibilities and Limits
 
-- `gastroos.js` remains the main module and contains important parts of the culinary engine and the interface. Facades are not duplicated engines: they expose existing functions to facilitate gradual separation.
+- The `app-*.js` files are the main application (formerly a single `gastroos.js`): they contain the interface and important parts of the culinary engine. They are plain scripts that share the global scope and **must be loaded in the order listed in `index.html`**. Facades are not duplicated engines: they expose existing functions to facilitate gradual separation.
 - The `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js`, and `shopping-engine.js` modules separate specific rules and calculations from the main interface logic. This is an architectural separation, not a claim that a test suite is included in the repository.
-- `index.html` scripts are loaded in a deliberate order: utilities and rules first, then `gastroos.js`, and finally the facades that expose their functions.
+- `index.html` scripts are loaded in a deliberate order: utilities and rules first, then the `app-*.js` files, and finally the facades that expose their functions.
 - `css/gastroos.css` contains the application styles: layout, component appearance, responsive behavior, and theme-specific presentation. It is separate from the HTML so visual changes can be maintained without editing the application logic.
 - `recipes.json` is used as an initial source when there is no usable local recipe book. Service Worker installation treats it as an essential resource along with the application modules.
 - `product-allergens.json` provides initial product-level allergen data; user changes are stored locally by the application.

@@ -2,7 +2,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v56';
+const CACHE_NAME = 'gastroos-v57';
 const APP_SHELL = [
   './',
   './index.html',
@@ -10,7 +10,7 @@ const APP_SHELL = [
   './recipes.json',
   './product-allergens.json',
   './css/gastroos.css',
-  './js/gastroos.js',
+  './js/app-core.js', './js/app-views.js', './js/app-recipes.js', './js/app-stock.js', './js/app-menu-engine.js', './js/app-menu-ui.js', './js/app-history-backup.js',
   './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js', './js/menu-daily-rules.js',
   './js/github-network.js',
   './js/data-store-facade.js',
@@ -22,7 +22,7 @@ const APP_SHELL = [
   './icon-512.png',
   'https://cdn.tailwindcss.com'
 ];
-const CORE = ['./index.html', './js/github-network.js', './css/gastroos.css', './js/gastroos.js', './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js', './js/menu-daily-rules.js', './js/data-store-facade.js'];
+const CORE = ['./index.html', './js/github-network.js', './css/gastroos.css', './js/app-core.js', './js/app-views.js', './js/app-recipes.js', './js/app-stock.js', './js/app-menu-engine.js', './js/app-menu-ui.js', './js/app-history-backup.js', './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js', './js/menu-daily-rules.js', './js/data-store-facade.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {

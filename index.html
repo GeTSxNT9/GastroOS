@@ -586,16 +586,21 @@
                             <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Ruta del archivo del recetario</label>
                             <input type="text" id="githubPath" autocomplete="off" placeholder="recipes.json" class="w-full p-2.5 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-indigo-500">
                         </div>
+                        <label class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
+                            <input type="checkbox" id="githubRememberToken" checked>
+                            <span>Recordar el token en este dispositivo (si no, se olvida al cerrar la pestaña)</span>
+                        </label>
                         <div class="grid grid-cols-2 gap-2">
                             <button type="button" id="btnSaveGithubSettings" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg font-bold text-sm shadow-md">Guardar conexión</button>
                             <button type="button" id="btnRefreshGitHub" class="w-full border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 py-2.5 rounded-lg font-bold text-sm">Actualizar ↻</button>
                         </div>
+                        <button type="button" id="btnDisconnectGitHub" class="w-full border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 py-2 rounded-lg font-bold text-xs">Desconectar y olvidar el token</button>
                         <p id="githubSettingsStatus" class="text-[11px] text-gray-500 dark:text-gray-400"></p>
                         <div id="githubSyncPanel" class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-3">
                             <p class="text-[11px] font-bold text-gray-700 dark:text-gray-200 mb-1">Estado de sincronización</p>
                             <p id="githubSyncStatus" aria-live="polite" class="text-xs text-gray-600 dark:text-gray-300">Todavía no se ha comprobado la sincronización.</p>
                         </div>
-                        <p class="text-[10px] leading-relaxed text-amber-700 dark:text-amber-300">Seguridad: esta versión HTML guarda el token en el almacenamiento local de este navegador. Usa un token de acceso personal de granularidad fina, limitado a este repositorio y con permiso de lectura y escritura de Contents. No compartas este archivo con el token incluido ni uses un token con acceso a otros repositorios.</p>
+                        <p class="text-[10px] leading-relaxed text-amber-700 dark:text-amber-300">Seguridad: el token se guarda en el almacenamiento local de este navegador (puedes desmarcar «Recordar» para que solo dure mientras la pestaña esté abierta, o usar «Desconectar» para borrarlo). Usa un token de acceso personal de granularidad fina, limitado a este repositorio y con permiso de lectura y escritura de Contents. No compartas este archivo con el token incluido ni uses un token con acceso a otros repositorios.</p>
                     </div>
                 </div>
             </details>
@@ -767,7 +772,13 @@
     <script src="js/menu-frequency-rules.js"></script>
     <script src="js/menu-continuity-rules.js"></script>
     <script src="js/menu-daily-rules.js"></script>
-    <script src="js/gastroos.js"></script>
+    <script src="js/app-core.js"></script>
+    <script src="js/app-views.js"></script>
+    <script src="js/app-recipes.js"></script>
+    <script src="js/app-stock.js"></script>
+    <script src="js/app-menu-engine.js"></script>
+    <script src="js/app-menu-ui.js"></script>
+    <script src="js/app-history-backup.js"></script>
     <script src="js/menu-engine-facade.js"></script>
     <script src="js/github-facade.js"></script>
 </body>
