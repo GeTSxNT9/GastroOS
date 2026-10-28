@@ -3,7 +3,7 @@
  * Fachada del motor de generación de menús.
  *
  * IMPORTANTE: esta capa NO contiene una copia de la lógica del generador.
- * Expone las funciones que ya existen en gastroos.js bajo un único namespace,
+ * Expone las funciones que ya existen en los archivos app-*.js bajo un único namespace,
  * para poder desacoplarlas gradualmente en fases posteriores sin duplicar
  * ni modificar el motor que ya funciona.
  */
