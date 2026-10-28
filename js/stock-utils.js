@@ -57,5 +57,33 @@
         throw new TypeError(`Unidad no convertible: ${normalized || '(vacía)'}.`);
     }
 
-    return { normalizeImportedStockItem, getUnitDimension, getBaseUnit, toBaseQuantity };
+
+    // Comparación de nombres de alimentos ya normalizados (sin acentos, minúsculas).
+    // Antes se usaba "includes" sobre el texto, lo que hacía que el stock de "pan"
+    // descontara "panga" o que "jamón" descontara "jamoncitos de pollo".
+    // Ahora se compara por palabras completas, tolerando plurales sencillos.
+    const FOOD_STOPWORDS = new Set(['de', 'del', 'la', 'el', 'los', 'las', 'en', 'con', 'al', 'a', 'y']);
+
+    function stemFoodToken(token) {
+        if (token.length > 4 && /(on|or|al|el|ur|ez|iz)es$/.test(token)) return token.slice(0, -2); // limones -> limon
+        if (token.length > 3 && token.endsWith('s')) return token.slice(0, -1);                    // huevos -> huevo
+        return token;
+    }
+
+    function foodTokens(key) {
+        return String(key ?? '').split(' ')
+            .filter(token => token && !FOOD_STOPWORDS.has(token))
+            .map(stemFoodToken);
+    }
+
+    function foodNamesMatch(keyA, keyB) {
+        const a = foodTokens(keyA);
+        const b = foodTokens(keyB);
+        if (!a.length || !b.length) return false;
+        const [shorter, longer] = a.length <= b.length ? [a, b] : [b, a];
+        const pool = new Set(longer);
+        return shorter.every(token => pool.has(token));
+    }
+
+    return { normalizeImportedStockItem, getUnitDimension, getBaseUnit, toBaseQuantity, foodNamesMatch };
 });

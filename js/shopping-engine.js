@@ -32,7 +32,7 @@
         for (const entry of ledger) {
             if (remaining <= 0) break;
             if (!entry.key || entry.remaining <= 0 || entry.dimension !== dimension || entry.category !== category) continue;
-            if (!(entry.key === name || entry.key.includes(name) || name.includes(entry.key))) continue;
+            if (!(entry.key === name || stockUtils.foodNamesMatch(entry.key, name))) continue;
             const used = Math.min(remaining, entry.remaining);
             entry.remaining -= used;
             remaining -= used;
