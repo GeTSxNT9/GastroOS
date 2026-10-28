@@ -167,34 +167,6 @@
         }
     }
 
-    // Validación ligera de los archivos compartidos antes de incorporarlos al estado.
-    function validateRecipesPayload(value) {
-        if (!Array.isArray(value)) return { ok: false, reason: 'recipes-not-array' };
-        const invalidIndex = value.findIndex((item) => {
-            if (!item || typeof item !== 'object' || Array.isArray(item)) return true;
-            const id = item.id ?? item.ID;
-            const name = item.nombre ?? item.name;
-            return (typeof id !== 'string' && typeof id !== 'number') ||
-                typeof name !== 'string' || !name.trim();
-        });
-        return invalidIndex < 0 ? { ok: true } : { ok: false, reason: 'invalid-recipe', index: invalidIndex };
-    }
-
-    function validateProductAllergensPayload(value) {
-        if (!value || typeof value !== 'object' || Array.isArray(value)) return { ok: false, reason: 'allergens-not-object' };
-        if (value.products !== undefined && (!value.products || typeof value.products !== 'object' || Array.isArray(value.products))) {
-            return { ok: false, reason: 'invalid-products-map' };
-        }
-        const products = value.products || value;
-        for (const [key, allergens] of Object.entries(products)) {
-            if (['app', 'schemaVersion', 'updatedAt'].includes(key)) continue;
-            if (!Array.isArray(allergens) || allergens.some((item) => typeof item !== 'string')) {
-                return { ok: false, reason: 'invalid-product-allergens', product: key };
-            }
-        }
-        return { ok: true };
-    }
-
     // Copia preventiva antes de operaciones de sincronización o fusión.
     function createPreSyncBackup(extraKeys = []) {
         const keys = [...new Set([
@@ -267,8 +239,6 @@
         createSnapshot,
         restoreSnapshot,
         createPreSyncBackup,
-        validateRecipesPayload,
-        validateProductAllergensPayload,
         migrateSchema
     });
 })();
