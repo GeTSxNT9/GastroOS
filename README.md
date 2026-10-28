@@ -10,6 +10,7 @@ It is built with HTML, CSS, and JavaScript without an application framework or i
 - Generation and validation of weekly menus with configurable structure, daily and weekly rules, repetition limits, meat and fish restrictions, stews, and stock availability.
 - Day regeneration and search for alternatives that respect the configured rules.
 - Differentiated management of raw materials/pre-cooked products and prepared dishes.
+- Stock and ingredient names are matched by whole words (tolerating simple plurals), so "pan" never matches "panga" and "jamón" never matches "jamoncitos de pollo".
 - Shopping list calculation, grouping by supplier category, quantity adjustment, and TXT export.
 - Editable catalogs of meat and fish species.
 - Allergens per product, local history, diagnostics, backups, and restoration.
@@ -63,7 +64,7 @@ GastroOS-main/
 - `product-allergens.json` is an optional seed/data resource for product-level allergen metadata; it is included in the Service Worker app shell.
 - Schema migrations are performed via `data-store-facade.js`. Do not manually delete `chefTrack_*` keys if you want to keep the data.
 - Exported backups are the recommended way to move or recover data. Make an export before updating the application or restoring old data.
-- The GitHub token is kept in `sessionStorage` for the browser tab/session. Non-secret repository configuration is stored separately in `localStorage`. When closing the browser session, it may be necessary to re-enter the token.
+- The GitHub token is stored in this device's `localStorage` (key `gastroos_github_token`) so the installed PWA does not ask for it on every launch; a token left in `sessionStorage` by older versions is migrated automatically. Non-secret repository configuration is stored separately under `chefTrack_githubSettings`. The token is never included in exported backups. Anyone with access to the unlocked device/browser profile can read it, so use a fine-grained, read/write-Contents-only token and revoke it if the device is lost.
 
 ## GitHub Synchronization
 
@@ -73,7 +74,7 @@ Security recommendations:
 
 1. Use a fine-grained token with access only to the required repository and the minimum Contents permissions needed to read/write.
 2. Do not include the token in repository files, screenshots, issues, or documentation.
-3. The token is available to the application's JavaScript during the session; a malicious script executed on the same origin could access it. Publish only trusted code and revoke the token if you suspect it has been exposed.
+3. The token is available to the application's JavaScript and persists in the browser's `localStorage`; a malicious script executed on the same origin could access it. Publish only trusted code and revoke the token if you suspect it has been exposed.
 4. GitHub Pages does not provide a secret backend: authentication is done from the browser.
 
 `github-network.js` validates the owner/repository/path format and applies a timeout to requests. This improves robustness, but does not eliminate network errors, API limits, or simultaneous write conflicts.

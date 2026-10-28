@@ -13,7 +13,8 @@
     <title>GastroOS - Gestión de Menús, Stock y Compras</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
+        // Si la CDN de Tailwind no está disponible (sin red), no debe lanzarse un error aquí.
+        if (window.tailwind) tailwind.config = {
             darkMode: 'class',
         }
     </script>
