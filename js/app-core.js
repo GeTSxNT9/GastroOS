@@ -814,21 +814,48 @@
             if (!cards || !details) return;
             const ids = new Set(); let duplicateIds = 0; let incomplete = 0; let blankQuantities = 0; let ingredients = 0;
             const incompleteNames = [];
-            dishes.forEach(raw => {
+            const validDishes = dishes.filter(d => d && typeof d === 'object');
+            validDishes.forEach(raw => {
                 const d = normalizeDishData(raw); const id = String(d.id ?? '');
                 if (ids.has(id)) duplicateIds++; else ids.add(id);
                 if (!hasCompleteTechnicalTags(d)) { incomplete++; if (incompleteNames.length < 6) incompleteNames.push(d.nombre || `ID ${id}`); }
                 (d.ingredientes || []).forEach(i => { ingredients++; if (i.cantidad === '' || i.cantidad === null || i.cantidad === undefined) blankQuantities++; });
             });
-            const firsts = dishes.filter(d => d.categoria === 'Primero').length;
-            const seconds = dishes.filter(d => d.categoria === 'Segundo').length;
+            const firsts = validDishes.filter(d => d.categoria === 'Primero').length;
+            const seconds = validDishes.filter(d => d.categoria === 'Segundo').length;
             const backupStamp = window.GastroOSDataStore.get('chefTrack_autoBackupAt');
             const backupAge = backupStamp ? Math.max(0, Date.now() - new Date(backupStamp).getTime()) : null;
             const backupLabel = backupAge === null ? 'Sin copia' : backupAge < 86400000 ? 'Actual' : `${Math.floor(backupAge / 86400000)} d`;
             const backupTone = backupAge === null || backupAge > 7 * 86400000 ? 'text-amber-600' : 'text-emerald-600';
             const metric = (label, value, tone='') => `<div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-2.5"><div class="text-[9px] uppercase font-bold text-gray-400">${label}</div><div class="text-lg font-black ${tone}">${value}</div></div>`;
-            cards.innerHTML = metric('Recetas', dishes.length) + metric('Etiquetas pendientes', incomplete, incomplete ? 'text-amber-600' : 'text-emerald-600') + metric('IDs duplicados', duplicateIds, duplicateIds ? 'text-red-600' : 'text-emerald-600') + metric('Cantidades en blanco', blankQuantities, blankQuantities ? 'text-amber-600' : 'text-emerald-600');
+            cards.innerHTML = metric('Recetas', validDishes.length) + metric('Etiquetas pendientes', incomplete, incomplete ? 'text-amber-600' : 'text-emerald-600') + metric('IDs duplicados', duplicateIds, duplicateIds ? 'text-red-600' : 'text-emerald-600') + metric('Cantidades en blanco', blankQuantities, blankQuantities ? 'text-amber-600' : 'text-emerald-600');
             details.innerHTML = `<div class="space-y-1"><div>${firsts} primeros · ${seconds} segundos · ${ingredients} ingredientes registrados.</div>${incompleteNames.length ? `<div>Ejemplos pendientes: ${incompleteNames.map(escapeHtml).join(', ')}${incomplete > incompleteNames.length ? '…' : ''}</div>` : '<div class="text-emerald-600 dark:text-emerald-400 font-semibold">No se detectan etiquetas técnicas incompletas.</div>'}<div>Última copia automática: <span class="font-semibold ${backupTone}">${escapeHtml(backupLabel)}</span>${backupStamp ? ` · ${new Date(backupStamp).toLocaleString('es-ES')}` : ''}.</div></div>`;
+        }
+
+        // Botón «Actualizar» de Salud del recetario: recalcula y deja un aviso visible,
+        // incluso si los números no cambian o si algo falla.
+        function runRecipeDiagnostics() {
+            const status = document.getElementById('recipeDiagnosticsStatus');
+            const button = document.getElementById('btnRunDiagnostics');
+            const setStatus = (text, tone) => {
+                if (!status) return;
+                status.textContent = text;
+                status.style.color = tone === 'error' ? '#dc2626' : '';
+            };
+            if (button) { button.disabled = true; button.textContent = 'Actualizando…'; }
+            setStatus('Recalculando…');
+            // Se cede un instante al navegador para que se vea el cambio de estado en el móvil.
+            window.setTimeout(() => {
+                try {
+                    renderRecipeDiagnostics();
+                    setStatus(`Actualizado ✓ ${new Date().toLocaleTimeString('es-ES')} · ${dishes.length} recetas revisadas.`);
+                } catch (error) {
+                    console.error('No se pudo actualizar el diagnóstico', error);
+                    setStatus('No se pudo actualizar el diagnóstico. Exporta una copia de seguridad y vuelve a intentarlo.', 'error');
+                } finally {
+                    if (button) { button.disabled = false; button.textContent = 'Actualizar'; }
+                }
+            }, 150);
         }
 
         const APP_SPLASH_MIN_MS = 1600;
@@ -971,6 +998,8 @@
             }
             updateGitHubPendingState();
             updateAutoBackupStatus();
+            // La salud del recetario se mantiene al día sin tener que pulsar «Actualizar».
+            try { renderRecipeDiagnostics(); } catch {}
             return true;
         }
 

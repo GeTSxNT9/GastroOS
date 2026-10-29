@@ -134,7 +134,7 @@
             document.getElementById('btnDisconnectGitHub').addEventListener('click', disconnectGitHub);
             document.getElementById('btnExportRecipes').addEventListener('click', exportRecipesOnly);
             document.getElementById('btnDownloadAutoBackup').addEventListener('click', downloadAutoBackup);
-            document.getElementById('btnRunDiagnostics').addEventListener('click', renderRecipeDiagnostics);
+            document.getElementById('btnRunDiagnostics').addEventListener('click', runRecipeDiagnostics);
             document.getElementById('btnClearRecipeHistory').addEventListener('click', () => {
                 if (!recipeChangeHistory.length || !confirm('¿Vaciar el historial local de cambios del recetario?')) return;
                 recipeChangeHistory = []; saveAll(); renderRecipeChangeHistory();
