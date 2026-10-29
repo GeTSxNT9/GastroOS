@@ -3300,3 +3300,130 @@ html.dark nav.fixed.bottom-0 .nav-btn.active, html.dark nav.fixed.bottom-0 .nav-
 html.dark .recipe-card, html.dark #dishesList > div { background-color: #111113 !important; border-color: #38383d !important; color: #f4f4f5 !important; }
 html.dark .recipe-card *, html.dark #dishesList > div { --tw-text-opacity: 1; }
 html.dark [role="dialog"], html.dark .modal-content, html.dark .modal-content > div { background-color: #111113 !important; color: #f4f4f5 !important; border-color: #3f3f46 !important; }
+
+/* GastroOS v58 — revisión completa del modo oscuro.
+   Las capas visuales claras (renovación v27–v30) fijaban colores con !important sin versión
+   oscura: títulos azul marino sobre fondo negro, paneles de Ajustes blancos, botones azules con
+   texto blanco ilegible y cabeceras de ventanas blancas. Este bloque va al final y usa
+   html.dark:not(#a):not(#b) para ganar en especificidad a las reglas con identificador (#id). */
+html.dark:not(#dk-a):not(#dk-b) header,
+html.dark:not(#dk-a):not(#dk-b) body > header { background: rgba(16,16,18,.94) !important; border-bottom-color: #2a2a2e !important; box-shadow: none !important; }
+html.dark:not(#dk-a):not(#dk-b) header h1,
+html.dark:not(#dk-a):not(#dk-b) main > h2,
+html.dark:not(#dk-a):not(#dk-b) main h2,
+html.dark:not(#dk-a):not(#dk-b) main h3,
+html.dark:not(#dk-a):not(#dk-b) .view-title,
+html.dark:not(#dk-a):not(#dk-b) #view-form > h2,
+html.dark:not(#dk-a):not(#dk-b) #view-stock h2,
+html.dark:not(#dk-a):not(#dk-b) #view-generator h2,
+html.dark:not(#dk-a):not(#dk-b) #view-settings h2,
+html.dark:not(#dk-a):not(#dk-b) #view-generator .gastro-generator-title,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-card-title,
+html.dark:not(#dk-a):not(#dk-b) .settings-card-title,
+html.dark:not(#dk-a):not(#dk-b) .setting-group-title { color: #f5f5f7 !important; }
+html.dark:not(#dk-a):not(#dk-b) header svg { color: #d4d4d8 !important; }
+
+/* Textos secundarios y etiquetas de formulario */
+html.dark:not(#dk-a):not(#dk-b) .view-subtitle,
+html.dark:not(#dk-a):not(#dk-b) #recipeResultsSummary,
+html.dark:not(#dk-a):not(#dk-b) #view-generator .gastro-generator-description,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-card-description,
+html.dark:not(#dk-a):not(#dk-b) .settings-card-description,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .setting-help,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .field-label,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-section-kicker,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .setting-group-title,
+html.dark:not(#dk-a):not(#dk-b) #dishForm label,
+html.dark:not(#dk-a):not(#dk-b) #view-form label,
+html.dark:not(#dk-a):not(#dk-b) #rawStockForm label,
+html.dark:not(#dk-a):not(#dk-b) #prepStockForm label,
+html.dark:not(#dk-a):not(#dk-b) .settings-section-kicker,
+html.dark:not(#dk-a):not(#dk-b) .day-regeneration-option-note,
+html.dark:not(#dk-a):not(#dk-b) .day-regeneration-loading,
+html.dark:not(#dk-a):not(#dk-b) .day-regeneration-empty { color: #a1a1aa !important; }
+html.dark:not(#dk-a):not(#dk-b) .shopping-number { color: #d4d4d8 !important; }
+html.dark:not(#dk-a):not(#dk-b) #dishForm .pt-4 { border-top-color: #2a2a2e !important; }
+
+/* Ajustes: tarjetas, grupos, acordeones y reglas de cocina */
+html.dark:not(#dk-a):not(#dk-b) #view-settings section,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-card { background: #101012 !important; border-color: #353539 !important; box-shadow: none !important; color: #f4f4f5 !important; }
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-forecast-card,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .setting-group,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-accordion { background: #17171a !important; border-color: #353539 !important; box-shadow: none !important; color: #f4f4f5 !important; }
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-accordion > summary { background: #1c1c20 !important; color: #f4f4f5 !important; }
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-accordion[open] > summary { border-bottom-color: #2a2a2e !important; }
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-accordion > summary b,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-accordion > summary span { color: #f4f4f5 !important; }
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-accordion > summary small,
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-accordion summary small { color: #a1a1aa !important; }
+html.dark:not(#dk-a):not(#dk-b) #kitchenRulesSection b,
+html.dark:not(#dk-a):not(#dk-b) #kitchenRulesSection strong,
+html.dark:not(#dk-a):not(#dk-b) #kitchenRulesSection span { color: inherit; }
+html.dark:not(#dk-a):not(#dk-b) #kitchenRulesSection small { color: #a1a1aa !important; }
+html.dark:not(#dk-a):not(#dk-b) #view-settings .settings-input,
+html.dark:not(#dk-a):not(#dk-b) .ingredient-name-input,
+html.dark:not(#dk-a):not(#dk-b) .ingredient-category-select { background: #202023 !important; color: #f4f4f5 !important; border-color: #48484f !important; }
+html.dark:not(#dk-a):not(#dk-b) #historyListContainer > div { background: #17171a !important; border-color: #353539 !important; }
+html.dark:not(#dk-a):not(#dk-b) #bulkToolbar { background: #17171a !important; border-color: #353539 !important; }
+html.dark:not(#dk-a):not(#dk-b) .secondary-action { background: #202023 !important; color: #c7d2fe !important; border-color: #48484f !important; }
+
+/* Cabecera del generador y pestañas no activas */
+html.dark:not(#dk-a):not(#dk-b) #view-generator > div:first-child > div:first-child,
+html.dark:not(#dk-a):not(#dk-b) #view-generator .generator-header,
+html.dark:not(#dk-a):not(#dk-b) #view-generator .gastro-generator-header { background: #101012 !important; color: #f4f4f5 !important; border-color: #353539 !important; box-shadow: none !important; }
+html.dark:not(#dk-a):not(#dk-b) .filter-lvl1:not(.active):not(.bg-indigo-600),
+html.dark:not(#dk-a):not(#dk-b) .filter-lvl2:not(.active):not(.bg-indigo-600),
+html.dark:not(#dk-a):not(#dk-b) .generator-day-tab:not(.active):not(.bg-indigo-600) { background: #1c1c1e !important; color: #d4d4d8 !important; border-color: #3a3a3f !important; }
+
+/* Botones de acción principales: azul marino con texto blanco (igual que «Generar menú») */
+html.dark:not(#dk-a):not(#dk-b) .bg-indigo-600:not(.filter-lvl1):not(.filter-lvl2):not(.generator-day-tab):not(.nav-btn) {
+  background-color: #0b1728 !important; color: #ffffff !important; border-color: #35507c !important;
+}
+html.dark:not(#dk-a):not(#dk-b) .bg-indigo-600:not(.filter-lvl1):not(.filter-lvl2):not(.generator-day-tab):not(.nav-btn) .text-indigo-200,
+html.dark:not(#dk-a):not(#dk-b) .bg-indigo-600:not(.filter-lvl1):not(.filter-lvl2):not(.generator-day-tab):not(.nav-btn) .text-indigo-100 { color: #c7d2fe !important; }
+html.dark:not(#dk-a):not(#dk-b) #btnSaveGithubSettings,
+html.dark:not(#dk-a):not(#dk-b) #btnConfirmImportPreview,
+html.dark:not(#dk-a):not(#dk-b) #btnSaveProductAllergens { background-color: #0b1728 !important; color: #ffffff !important; border-color: #35507c !important; }
+
+/* Ventanas emergentes */
+html.dark:not(#dk-a):not(#dk-b) .day-regeneration-modal-header,
+html.dark:not(#dk-a):not(#dk-b) #modalProductAllergens > div > div:first-child { background: #17171a !important; color: #f5f5f7 !important; border-bottom-color: #2a2a2e !important; }
+html.dark:not(#dk-a):not(#dk-b) .day-regeneration-modal-header h3,
+html.dark:not(#dk-a):not(#dk-b) #modalProductAllergens > div > div:first-child h3,
+html.dark:not(#dk-a):not(#dk-b) #modalProductAllergens > div > div:first-child button { color: #f5f5f7 !important; }
+html.dark:not(#dk-a):not(#dk-b) .day-regeneration-modal-header p,
+html.dark:not(#dk-a):not(#dk-b) #modalProductAllergens > div > div:first-child p,
+html.dark:not(#dk-a):not(#dk-b) #modalProductAllergens .text-indigo-200,
+html.dark:not(#dk-a):not(#dk-b) #modalProductAllergens .text-indigo-100 { color: #a1a1aa !important; }
+html.dark:not(#dk-a):not(#dk-b) .day-regeneration-close { background: #202023 !important; color: #e4e4e7 !important; border-color: #48484f !important; }
+html.dark:not(#dk-a):not(#dk-b) .day-regeneration-close:hover,
+html.dark:not(#dk-a):not(#dk-b) #modalProductAllergens > div > div:first-child button:hover { background: #2c2c2e !important; }
+html.dark:not(#dk-a):not(#dk-b) .day-regeneration-option-number { color: #a5b8ff !important; }
+html.dark:not(#dk-a):not(#dk-b) #modalProductAllergens input::placeholder { color: #a1a1aa !important; }
+html.dark:not(#dk-a):not(#dk-b) .product-allergen-chip.is-selected { color: #c7d2fe !important; }
+
+/* Etiquetas, insignias y botones pequeños */
+html.dark:not(#dk-a):not(#dk-b) #shoppingRacionesBadge { background: #1c2230 !important; color: #a5c0ff !important; }
+html.dark:not(#dk-a):not(#dk-b) .recipe-status-badge.prepared,
+html.dark:not(#dk-a):not(#dk-b) .menu-status-badge.prepared { background: #2e1065 !important; color: #d8b4fe !important; border-color: #581c87 !important; }
+html.dark:not(#dk-a):not(#dk-b) .recipe-status-badge.precooked,
+html.dark:not(#dk-a):not(#dk-b) .menu-status-badge.precooked { background: #0f2a3d !important; color: #8fd0f5 !important; border-color: #1f4a66 !important; }
+html.dark:not(#dk-a):not(#dk-b) #dishesList .absolute button:first-child { background: #1b2a44 !important; color: #9db8ff !important; }
+html.dark:not(#dk-a):not(#dk-b) #dishesList .absolute button:last-child { background: #3a1a1e !important; color: #ff8a8a !important; }
+html.dark:not(#dk-a):not(#dk-b) #themeToggleBtn:hover { background: #3a3a3c !important; }
+
+/* v58 — modo oscuro: botones secundarios y de guardado */
+html.dark:not(#dk-a):not(#dk-b) .gastro-slot-action { background: #2c2c2e !important; color: #d4d4d8 !important; border-color: #3a3a3f !important; }
+html.dark:not(#dk-a):not(#dk-b) .gastro-slot-action:hover { background: #3a3a3c !important; color: #ffffff !important; }
+html.dark:not(#dk-a):not(#dk-b) #btnSaveKitchenRules { background-color: #0b1728 !important; color: #ffffff !important; border-color: #35507c !important; }
+html.dark:not(#dk-a):not(#dk-b) #ingredientsContainer button.text-red-500 { background: transparent !important; color: #f87171 !important; border-color: transparent !important; }
+
+/* v58 — contraste de textos pequeños (modo claro y oscuro) */
+label.backup-action.bg-blue-500 { background-color: #1d4ed8 !important; color: #ffffff !important; }
+html:not(.dark) #modalChangeDish #modalSwapSubtitle { color: #475569 !important; }
+html:not(.dark) #modalImportPreview > div > div:first-child h3 { color: #ffffff !important; }
+html:not(.dark) .text-amber-600 { color: #b45309 !important; }
+html:not(.dark) .text-emerald-600, html:not(.dark) .shopping-stock { color: #047857 !important; }
+html:not(.dark) .shopping-grid-header span { color: #64748b !important; }
+html:not(.dark) .day-regeneration-dish span, html:not(.dark) .day-regeneration-dish > span,
+html:not(.dark) .day-regeneration-group-label, html:not(.dark) .day-regeneration-group > b { color: #64748b !important; }
