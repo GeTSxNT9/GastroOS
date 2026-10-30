@@ -1227,7 +1227,7 @@ nav.fixed {
 
 #bulkToolbar .bulk-top-row {
   display: grid !important;
-  grid-template-columns: 1fr 1fr 1fr !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   align-items: center !important;
   gap: 6px !important;
   margin: 0 !important;
@@ -5163,4 +5163,11 @@ html:not(.dark) .day-regeneration-dish > span,
 html:not(.dark) .day-regeneration-group-label,
 html:not(.dark) .day-regeneration-group > b {
   color: #64748b !important;
+}
+
+/* Edición múltiple (recetario): una regla antigua dejaba la barra en una sola fila (inline-flex) y
+   los selectores quedaban diminutos. Se restaura la disposición prevista: botones arriba y, debajo,
+   los dos selectores con «Aplicar», ocupando todo el ancho. */
+#view-banco > div:nth-child(2)#bulkToolbar {
+  display: grid !important;
 }
