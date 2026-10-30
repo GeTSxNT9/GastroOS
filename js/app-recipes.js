@@ -43,7 +43,7 @@
 
                 const card = document.createElement('div');
                 card.className = "bg-white/80 p-4 rounded-2xl relative transition-all";
-                const bulkCheckbox = bulkEditMode ? `<label class="bulk-dish-select-label absolute top-3 left-3 z-10 flex items-center"><input type="checkbox" class="bulk-dish-checkbox w-4 h-4 accent-indigo-600" data-id="${escapeHtml(d.id)}" ${bulkSelectedDishIds.has(String(d.id)) ? 'checked' : ''}></label>` : '';
+                const bulkCheckbox = bulkEditMode ? `<label class="bulk-dish-select-label absolute top-3 left-3 z-10 flex items-center"><input type="checkbox" aria-label="Seleccionar ${escapeHtml(d.nombre)}" class="bulk-dish-checkbox w-4 h-4 accent-indigo-600" data-id="${escapeHtml(d.id)}" ${bulkSelectedDishIds.has(String(d.id)) ? 'checked' : ''}></label>` : '';
                 card.innerHTML = `
                     ${bulkCheckbox}
                     <div class="${bulkEditMode ? 'pl-7' : ''} pr-12">
@@ -56,8 +56,8 @@
                         </div>
                     </div>
                     <div class="absolute top-3 right-3 flex flex-col gap-2">
-                        <button onclick="editDish(decodeURIComponent('${escapeJsArg(d.id)}'))" class="text-blue-500 bg-blue-50 dark:bg-blue-950 p-1.5 rounded-full"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                        <button onclick="deleteDish(decodeURIComponent('${escapeJsArg(d.id)}'))" class="text-red-500 bg-red-50 dark:bg-red-950 p-1.5 rounded-full"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <button type="button" aria-label="Editar receta" onclick="editDish(decodeURIComponent('${escapeJsArg(d.id)}'))" class="text-blue-500 bg-blue-50 dark:bg-blue-950 p-1.5 rounded-full"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                        <button type="button" aria-label="Eliminar receta" onclick="deleteDish(decodeURIComponent('${escapeJsArg(d.id)}'))" class="text-red-500 bg-red-50 dark:bg-red-950 p-1.5 rounded-full"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                     </div>`;
                 list.appendChild(card);
             });
@@ -241,17 +241,17 @@
             row.dataset.unidadTouched = 'false';
             row.dataset.categoriaTouched = 'false';
             row.innerHTML = `
-                <input type="text" placeholder="Ingrediente..." value="${escapeHtml(nombre)}" required class="ingredient-name-input flex-[4] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                <input type="text" inputmode="decimal" placeholder="Cant." value="${escapeHtml(cantidad !== '' && cantidad !== undefined ? cantidad : '')}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
-                <select class="w-14 min-w-[3.5rem] flex-[0_0_3.5rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <input type="text" aria-label="Ingrediente" placeholder="Ingrediente..." value="${escapeHtml(nombre)}" required class="ingredient-name-input flex-[4] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <input type="text" inputmode="decimal" aria-label="Cantidad del ingrediente" placeholder="Cant." value="${escapeHtml(cantidad !== '' && cantidad !== undefined ? cantidad : '')}" class="w-16 min-w-[4rem] flex-[0_0_4rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <select aria-label="Unidad del ingrediente" class="w-14 min-w-[3.5rem] flex-[0_0_3.5rem] p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                     ${legacyUnit ? `<option value="${legacyUnit}" selected>${legacyUnit}</option>` : ''}
                     <option value="g" ${unidad==='g'?'selected':''}>g</option>
                     <option value="ml" ${unidad==='ml'?'selected':''}>ml</option>
                 </select>
-                <select class="ingredient-category-select flex-[1.25] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                <select aria-label="Categoría de proveedor del ingrediente" class="ingredient-category-select flex-[1.25] min-w-0 w-full p-2 border border-gray-300 dark:border-gray-700 rounded text-xs bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                     ${proveedorCategorias.map(c => `<option value="${c}" ${categoria===c?'selected':''}>${c}</option>`).join('')}
                 </select>
-                <button type="button" class="text-red-500 font-bold px-1" onclick="this.parentElement.remove()">×</button>
+                <button type="button" aria-label="Quitar ingrediente" class="text-red-500 font-bold px-1" onclick="this.parentElement.remove()">×</button>
             `;
             const selects = row.querySelectorAll('select');
             selects[0].addEventListener('change', () => { row.dataset.unidadTouched = 'true'; });
@@ -1154,17 +1154,17 @@
                             <div class="text-[10px] text-gray-500 dark:text-gray-400">${escapeHtml(d.categoria)}${d.proteina_segundo ? ` · ${escapeHtml(d.proteina_segundo)}` : ''}</div>
                         </div>
                         ${first ? `
-                            <select id="mig-sub-${escapeHtml(d.id)}" class="w-full p-2 mb-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
+                            <select aria-label="Subtipo de primero" id="mig-sub-${escapeHtml(d.id)}" class="w-full p-2 mb-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
                                 <option value="">Seleccionar...</option>
                                 ${Object.entries(FIRST_LABELS).map(([value,label]) => `<option value="${value}" ${d.subtipo_primero===value?'selected':''}>${label}</option>`).join("")}
                             </select>` : ''}
                         ${meat ? `
                             <div class="grid grid-cols-2 gap-2 mb-2">
-                                <select id="mig-animal-${escapeHtml(d.id)}" class="p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
+                                <select aria-label="Animal de la carne" id="mig-animal-${escapeHtml(d.id)}" class="p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
                                     <option value="">Animal...</option>
                                     ${getProteinCatalog('meat').map(a => `<option value="${escapeHtml(a.id)}" ${d.animal_carne===a.id?'selected':''}>${escapeHtml(a.label)}</option>`).join("")}
                                 </select>
-                                <select id="mig-tech-${escapeHtml(d.id)}" class="p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
+                                <select aria-label="Técnica de cocina" id="mig-tech-${escapeHtml(d.id)}" class="p-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
                                     <option value="">Técnica...</option>
                                     <option value="tecnica_guiso" ${d.tecnica_cocina==="tecnica_guiso"?'selected':''}>Guiso / En salsa</option>
                                     <option value="tecnica_seco_asado" ${(d.tecnica_cocina==="tecnica_seco_asado" || d.tecnica_cocina==="tecnica_seco")?'selected':''}>Plancha / Asado / Brasa</option>
@@ -1172,11 +1172,11 @@
                                 </select>
                             </div>` : ''}
                         ${fish ? `
-                            <select id="mig-fish-${escapeHtml(d.id)}" class="w-full p-2 mb-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
+                            <select aria-label="Especie de pescado" id="mig-fish-${escapeHtml(d.id)}" class="w-full p-2 mb-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs">
                                 <option value="">Seleccionar…</option>
                                 ${getProteinCatalog('fish').map(a => `<option value="${escapeHtml(a.id)}" ${d.especie_pescado===a.id?'selected':''}>${escapeHtml(a.label)}</option>`).join("")}
                             </select>` : ''}
-                        <button onclick="saveMigrationTag(decodeURIComponent('${escapeJsArg(d.id)}'))" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold">Guardar etiqueta</button>
+                        <button type="button" onclick="saveMigrationTag(decodeURIComponent('${escapeJsArg(d.id)}'))" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold">Guardar etiqueta</button>
                     </div>`;
             }).join("");
         }

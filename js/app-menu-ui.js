@@ -209,7 +209,7 @@
                             ${d.plato_elaborado ? '<span class="menu-status-badge prepared">Plato elaborado</span>' : ''}${d.precocinado ? '<span class="menu-status-badge precooked">Precocinado</span>' : ''}
                         </div>
                     </div>
-                    <button onclick="confirmSwap(decodeURIComponent('${escapeJsArg(d.id)}'))" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">Seleccionar</button>
+                    <button type="button" onclick="confirmSwap(decodeURIComponent('${escapeJsArg(d.id)}'))" class="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">Seleccionar</button>
                 `;
                 container.appendChild(card);
             });

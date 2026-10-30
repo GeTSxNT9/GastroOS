@@ -1123,7 +1123,7 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
                             <h3 class="font-bold text-gray-800 dark:text-gray-100 text-base">${dayName}</h3>
                         </div>
-                        <button onclick="openIntelligentDayRegeneration('${dayName}')" class="text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm">
+                        <button type="button" onclick="openIntelligentDayRegeneration('${dayName}')" class="text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm">
                             Buscar alternativas ↻
                         </button>
                     </div>
@@ -1184,7 +1184,7 @@
                             ${allergenLine}
                         </div>
                     </div>
-                    <button onclick="openSwapModal(decodeURIComponent('${safeDay}'), ${index}, decodeURIComponent('${safeCat}'), decodeURIComponent('${safeFirstSubtype}'), decodeURIComponent('${safeProtein}'))" class="gastro-slot-action flex items-center justify-center">
+                    <button type="button" onclick="openSwapModal(decodeURIComponent('${safeDay}'), ${index}, decodeURIComponent('${safeCat}'), decodeURIComponent('${safeFirstSubtype}'), decodeURIComponent('${safeProtein}'))" aria-label="Cambiar este plato" class="gastro-slot-action flex items-center justify-center">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     </button>
                 </div>

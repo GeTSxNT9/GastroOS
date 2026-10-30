@@ -404,9 +404,9 @@
                         ${servingsLabel ? `<div class="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold mt-0.5">${escapeHtml(servingsLabel)}</div>` : ''}
                     </div>
                     <div class="flex items-center gap-1">
-                        <button onclick="changeRawQty(decodeURIComponent('${escapeJsArg(item.id)}'), -1)" class="w-7 h-7 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700">-</button>
-                        <button onclick="changeRawQty(decodeURIComponent('${escapeJsArg(item.id)}'), 1)" class="w-7 h-7 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700">+</button>
-                        <button onclick="deleteRaw(decodeURIComponent('${escapeJsArg(item.id)}'))" class="text-red-500 bg-red-50 dark:bg-red-950 p-1.5 rounded-lg ml-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <button type="button" aria-label="Disminuir cantidad" onclick="changeRawQty(decodeURIComponent('${escapeJsArg(item.id)}'), -1)" class="w-7 h-7 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700">-</button>
+                        <button type="button" aria-label="Aumentar cantidad" onclick="changeRawQty(decodeURIComponent('${escapeJsArg(item.id)}'), 1)" class="w-7 h-7 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700">+</button>
+                        <button type="button" aria-label="Eliminar producto" onclick="deleteRaw(decodeURIComponent('${escapeJsArg(item.id)}'))" class="text-red-500 bg-red-50 dark:bg-red-950 p-1.5 rounded-lg ml-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -601,9 +601,9 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-1">
-                        <button onclick="changePrepQty(decodeURIComponent('${escapeJsArg(item.id)}'), -1)" class="px-2 h-7 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700">-</button>
-                        <button onclick="changePrepQty(decodeURIComponent('${escapeJsArg(item.id)}'), 1)" class="px-2 h-7 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700">+</button>
-                        <button onclick="deletePrep(decodeURIComponent('${escapeJsArg(item.id)}'))" class="text-red-500 bg-red-50 dark:bg-red-950 p-1.5 rounded-lg ml-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <button type="button" aria-label="Disminuir cantidad" onclick="changePrepQty(decodeURIComponent('${escapeJsArg(item.id)}'), -1)" class="px-2 h-7 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700">-</button>
+                        <button type="button" aria-label="Aumentar cantidad" onclick="changePrepQty(decodeURIComponent('${escapeJsArg(item.id)}'), 1)" class="px-2 h-7 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700">+</button>
+                        <button type="button" aria-label="Eliminar plato preparado" onclick="deletePrep(decodeURIComponent('${escapeJsArg(item.id)}'))" class="text-red-500 bg-red-50 dark:bg-red-950 p-1.5 rounded-lg ml-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                     </div>
                 `;
                 container.appendChild(card);

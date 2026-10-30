@@ -48,8 +48,8 @@
                         <span class="text-[10px] text-gray-500">Planificación semanal completa</span>
                     </div>
                     <div class="flex gap-1.5">
-                        <button onclick="loadHistoryMenu(decodeURIComponent('${escapeJsArg(item.id)}'))" class="bg-indigo-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold">Cargar</button>
-                        <button onclick="deleteHistoryMenu(decodeURIComponent('${escapeJsArg(item.id)}'))" class="bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 px-2.5 py-1 rounded-lg text-xs font-bold">×</button>
+                        <button type="button" aria-label="Cargar menú del historial" onclick="loadHistoryMenu(decodeURIComponent('${escapeJsArg(item.id)}'))" class="bg-indigo-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold">Cargar</button>
+                        <button type="button" aria-label="Eliminar menú del historial" onclick="deleteHistoryMenu(decodeURIComponent('${escapeJsArg(item.id)}'))" class="bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 px-2.5 py-1 rounded-lg text-xs font-bold">×</button>
                     </div>
                 `;
                 container.appendChild(row);
