@@ -192,11 +192,11 @@
                     logRecipeChange('import', null, `${dishes.length} recetas importadas`);
                 }
                 if (summary.full && Array.isArray(data.rawStock)) rawStock = data.rawStock.map(normalizeImportedStockItem);
-                if (summary.full && Array.isArray(data.preparedStock)) preparedStock = data.preparedStock.map(normalizeImportedStockItem);
+                if (summary.full && Array.isArray(data.preparedStock)) preparedStock = data.preparedStock.filter(item => item && typeof item === 'object').map(normalizeImportedStockItem);
                 if (summary.full && Object.prototype.hasOwnProperty.call(data, 'currentMenu')) currentMenu = validateImportedMenu(data.currentMenu, 'menú actual');
                 if (summary.full && Object.prototype.hasOwnProperty.call(data, 'previousWeekMenu')) previousWeekMenu = validateImportedMenu(data.previousWeekMenu, 'menú anterior');
                 if (summary.full && Array.isArray(data.historyMenus)) historyMenus = data.historyMenus.filter(isValidHistoryItem);
-                if (summary.full && Array.isArray(data.recipeChangeHistory)) recipeChangeHistory = data.recipeChangeHistory;
+                if (summary.full && Array.isArray(data.recipeChangeHistory)) recipeChangeHistory = data.recipeChangeHistory.filter(item => item && typeof item === 'object');
 
                 if (!saveAll()) throw new Error('El navegador no pudo guardar todos los datos restaurados.');
                 applyDarkMode();

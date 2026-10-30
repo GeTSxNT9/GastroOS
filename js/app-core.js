@@ -438,8 +438,20 @@
         let bulkEditMode = false;
         let bulkSelectedDishIds = new Set();
 
+        // El perfil se normaliza muchas miles de veces al generar un menú; se reutiliza el resultado
+        // mientras el perfil guardado no cambie (la clave es su contenido, así que cualquier cambio,
+        // también en el sitio, invalida la copia). Los llamadores solo leen el perfil, nunca lo modifican.
+        let kitchenProfileCacheKey = null;
+        let kitchenProfileCacheValue = null;
         function getKitchenProfile() {
-            return window.GastroOSKitchenRules.normalize(settings.kitchenProfile);
+            const raw = settings.kitchenProfile;
+            let key;
+            try { key = JSON.stringify(raw ?? null); } catch { key = null; }
+            if (key !== null && key === kitchenProfileCacheKey) return kitchenProfileCacheValue;
+            const normalized = window.GastroOSKitchenRules.normalize(raw);
+            kitchenProfileCacheKey = key;
+            kitchenProfileCacheValue = key === null ? null : normalized;
+            return normalized;
         }
 
         function getGuisoDays() {
@@ -637,10 +649,10 @@
                 maxWeeklyRice: document.getElementById('kitchenMaxRice')?.value,
                 maxWeeklyVegetableWhole: document.getElementById('kitchenMaxVegetableWhole')?.value,
                 maxWeeklySoups: document.getElementById('kitchenMaxSoups')?.value,
-                permitirPastaConsecutiva: document.getElementById('kitchenAllowPastaConsecutive')?.checked,
-                permitirLegumbresConsecutivas: document.getElementById('kitchenAllowLegumesConsecutive')?.checked,
-                permitirArrozConsecutivo: document.getElementById('kitchenAllowRiceConsecutive')?.checked,
-                permitirSopasConsecutivas: document.getElementById('kitchenAllowSoupsConsecutive')?.checked,
+                permitirPastaConsecutiva: document.getElementById('kitchenAllowPastaConsecutive')?.checked ?? getKitchenProfile().permitirPastaConsecutiva,
+                permitirLegumbresConsecutivas: document.getElementById('kitchenAllowLegumesConsecutive')?.checked ?? getKitchenProfile().permitirLegumbresConsecutivas,
+                permitirArrozConsecutivo: document.getElementById('kitchenAllowRiceConsecutive')?.checked ?? getKitchenProfile().permitirArrozConsecutivo,
+                permitirSopasConsecutivas: document.getElementById('kitchenAllowSoupsConsecutive')?.checked ?? getKitchenProfile().permitirSopasConsecutivas,
                 primerosVerdura: document.getElementById('kitchenFirstVegetableCount')?.value,
                 primerosCuchara: document.getElementById('kitchenFirstSpoonCount')?.value,
                 primerosTenedor: document.getElementById('kitchenFirstForkCount')?.value,
@@ -651,8 +663,8 @@
                 animalesCarnePermitidos: selectedAnimals,
                 especiesPescadoPersonalizadas: getKitchenProfile().especiesPescadoPersonalizadas,
                 animalesCarnePersonalizados: getKitchenProfile().animalesCarnePersonalizados,
-                permitirPrecocinados: document.getElementById('kitchenAllowPrecooked')?.checked,
-                permitirPlatosElaboradosSinStock: document.getElementById('kitchenAllowPreparedWithoutStock')?.checked,
+                permitirPrecocinados: document.getElementById('kitchenAllowPrecooked')?.checked ?? getKitchenProfile().permitirPrecocinados,
+                permitirPlatosElaboradosSinStock: document.getElementById('kitchenAllowPreparedWithoutStock')?.checked ?? getKitchenProfile().permitirPlatosElaboradosSinStock,
                 prioridadStock: document.getElementById('kitchenStockPriority')?.value,
                 evitarLiquidosEnPrimeros: document.getElementById('kitchenAvoidLiquidFirsts')?.checked,
                 evitarRepeticionPrimeroConsecutivo: document.getElementById('kitchenAvoidConsecutiveFirsts')?.checked,
@@ -906,13 +918,13 @@
                 };
             }) : [];
             const storedPrepSafe = safeLoadJSON('chefTrack_preparedStock', []);
-            preparedStock = Array.isArray(storedPrepSafe) ? storedPrepSafe : [];
+            preparedStock = Array.isArray(storedPrepSafe) ? storedPrepSafe.filter(item => item && typeof item === 'object') : [];
             currentMenu = safeLoadJSON('chefTrack_currentMenu', null);
             previousWeekMenu = safeLoadJSON('previousWeekMenu', safeLoadJSON('chefTrack_previousWeekMenu', null));
             const storedHistorySafe = safeLoadJSON('chefTrack_historyMenus', []);
             historyMenus = Array.isArray(storedHistorySafe) ? storedHistorySafe.filter(isValidHistoryItem) : [];
             const storedRecipeHistorySafe = safeLoadJSON('chefTrack_recipeChangeHistory', []);
-            recipeChangeHistory = Array.isArray(storedRecipeHistorySafe) ? storedRecipeHistorySafe : [];
+            recipeChangeHistory = Array.isArray(storedRecipeHistorySafe) ? storedRecipeHistorySafe.filter(item => item && typeof item === 'object') : [];
 
             loadGitHubSettings();
             applyDarkMode();

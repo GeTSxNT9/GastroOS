@@ -33,7 +33,7 @@
             "calabaza": "calabaza", "cebolla": "cebolla", "patata": "patata",
             "patatas": "patata", "alcachofa": "alcachofa", "alcachofas": "alcachofa",
             "guisante": "guisantes", "guisantes": "guisantes", "judion": "judias",
-            "judiones": "judias", "champiñon": "champiñones", "champiñones": "champiñones", "seta": "champiñones", "setas": "champiñones", "col": "col", "repollo": "col", "repollo": "col"
+            "judiones": "judias", "champiñon": "champiñones", "champiñones": "champiñones", "seta": "champiñones", "setas": "champiñones", "col": "col", "repollo": "col"
         };
 
         function getDayDishList(menuDays, dayIndex, cat, protein) {
@@ -817,13 +817,31 @@
             return newMenu;
         }
 
+        // Un hueco («Sin plato disponible») no incumple ninguna regla, pero es peor que otra
+        // combinación válida. Se reintenta mientras queden intentos de sobra; si el recetario
+        // no permite completar la semana, se acepta el menú con hueco (aviso rojo en el slot).
+        const EMPTY_SLOT_SOFT_LIMIT = 60;
+        function slotsHaveEmptyDish(slots) {
+            return (slots || []).some(slot => !slot?.dish || slot.dish.id === 'none');
+        }
+        function menuHasEmptySlot(menu) {
+            return Object.values(menu?.days || {}).some(slotsHaveEmptyDish);
+        }
+
         function generateWeeklyMenu() {
+            let attemptNumber = 0;
             return window.GastroOSMenuGenerationEngine.generateWeeklyMenu({
                 getCurrentMenu: () => currentMenu,
                 setCurrentMenu: menu => { currentMenu = menu; },
                 getPreviousCandidate: () => getPreviousWeekCandidateMenu(),
-                buildCandidate: previousMenu => buildWeeklyMenuCandidate(previousMenu),
-                validateCandidate: menu => validateWeeklyMenu(menu),
+                buildCandidate: previousMenu => { attemptNumber++; return buildWeeklyMenuCandidate(previousMenu); },
+                validateCandidate: menu => {
+                    const validation = validateWeeklyMenu(menu);
+                    if (validation.valid && attemptNumber < EMPTY_SLOT_SOFT_LIMIT && menuHasEmptySlot(menu)) {
+                        return { ...validation, valid: false, errors: [...validation.errors, 'Hay un hueco sin plato; se prueba otra combinación.'] };
+                    }
+                    return validation;
+                },
                 clearManualStockMarks: () => shoppingManualStockKeys.clear(),
                 setDiagnostics: value => { lastGenerationDiagnostics = value; },
                 save: () => saveAll(),
@@ -870,6 +888,7 @@
                     getPreparedMap(),
                     { previousMenu: ctx.previousMenu, usedVegetableKeys: new Set(ctx.usedVegetableKeys) }
                 );
+                if (slotsHaveEmptyDish(candidateDay)) continue;
                 const signature = candidateDay.map(slot => String(slot?.dish?.id || 'none')).join('|');
                 if (signatures.has(signature)) continue;
                 signatures.add(signature);

@@ -105,7 +105,17 @@
         return catalog.find(item => item.id === id)?.label || id;
     }
 
+    // Los perfiles que ya salieron de normalize() se reconocen por identidad y no se vuelven a procesar:
+    // isFishAllowed(), getGuisoDays()… se llaman miles de veces por menú con un perfil ya normalizado.
+    const NORMALIZED_PROFILES = new WeakSet();
     function normalize(value = {}) {
+        if (value && typeof value === 'object' && NORMALIZED_PROFILES.has(value)) return value;
+        const result = normalizeUncached(value);
+        NORMALIZED_PROFILES.add(result);
+        return result;
+    }
+
+    function normalizeUncached(value = {}) {
         const source = value && typeof value === 'object' ? value : {};
         const rawDays = Array.isArray(source.guisoDays) ? source.guisoDays : DEFAULT_RULES.guisoDays;
         const guisoDays = [...new Set(rawDays.map(Number).filter(n => Number.isInteger(n) && n >= 0 && n < DAYS.length))].sort((a,b) => a-b);
