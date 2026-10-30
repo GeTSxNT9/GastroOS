@@ -79,7 +79,6 @@
             });
 
             document.getElementById('btnBulkEdit').addEventListener('click', () => toggleBulkEditMode(!bulkEditMode));
-            document.getElementById('btnExitBulkEdit').addEventListener('click', () => toggleBulkEditMode(false));
             document.getElementById('btnBulkSelectAll').addEventListener('click', () => {
                 getVisibleFilteredDishes().forEach(d => bulkSelectedDishIds.add(String(d.id)));
                 renderDishes(); updateBulkSelectedCount();
