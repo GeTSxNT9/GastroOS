@@ -2,7 +2,7 @@
 
 **GastroOS** is a Progressive Web Application (PWA) to manage recipes, plan Monday-to-Friday menus by default, track inventory, calculate shopping lists, and apply the rules of a self-service kitchen.
 
-It is built with HTML, CSS, and JavaScript without an application framework or its own backend. Working information is stored in the browser; synchronization with GitHub is optional.
+The application is implemented in HTML, CSS (Tailwind and custom styles), and plain JavaScript, with no JavaScript framework or server-side component. Working data is stored locally in the browser; synchronization with GitHub is optional.
 
 ## Main Features
 
