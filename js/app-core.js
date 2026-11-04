@@ -243,7 +243,7 @@
             document.getElementById('modalProductAllergens')?.classList.remove('hidden');
         }
         function closeProductAllergenManager() { document.getElementById('modalProductAllergens')?.classList.add('hidden'); }
-        async function syncProductAllergensToGitHub() {
+        async function syncProductAllergensToGitHub(retryOnConflict = true) {
             const github = getGitHubSettings();
             if (!github.token || !github.owner || !github.repo) return { success: false, skipped: true };
             const path = 'product-allergens.json';
@@ -287,6 +287,8 @@
                 window.GastroOSDataStore.set('chefTrack_productAllergens', JSON.stringify(productAllergenMap));
                 return { success: true };
             } catch (error) {
+                // Si el archivo cambió entre la lectura y la subida («does not match»), se vuelve a leer y se reintenta una vez.
+                if (retryOnConflict && /does not match|conflict|\b409\b/i.test(String(error?.message || ''))) return syncProductAllergensToGitHub(false);
                 console.error('No se pudieron sincronizar los alérgenos de productos:', error);
                 return { success: false, message: error?.message || 'Error desconocido' };
             }

@@ -21,6 +21,21 @@
     return `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodedPath}`;
   }
 
+  // La API de GitHub responde con «Cache-Control: private, max-age=60»: el navegador puede devolver una
+  // lectura de hace menos de un minuto, con un «sha» ya caducado, y la subida posterior falla con
+  // «does not match». Se añade un parámetro único a las lecturas para saltarse esa caché.
+  function withCacheBust(url, options) {
+    if (String(options?.method || 'GET').toUpperCase() !== 'GET') return url;
+    try {
+      const parsed = new URL(url);
+      if (parsed.hostname !== 'api.github.com') return url;
+      parsed.searchParams.set('_', `${Date.now()}${Math.floor(Math.random() * 1000)}`);
+      return parsed.toString();
+    } catch (_) {
+      return url;
+    }
+  }
+
   async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
     const controller = new AbortController();
     const timeout = Math.max(1000, Number.isFinite(Number(timeoutMs)) ? Number(timeoutMs) : DEFAULT_TIMEOUT_MS);
@@ -40,7 +55,7 @@
       }
     }
     try {
-      return await fetch(url, { ...options, signal: controller.signal });
+      return await fetch(withCacheBust(url, options), { ...options, signal: controller.signal });
     } catch (error) {
       if (timedOut) {
         const timeoutError = new Error(`La petición a GitHub superó el límite de ${Math.round(timeout / 1000)} segundos.`);

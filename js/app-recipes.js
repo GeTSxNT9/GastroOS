@@ -684,7 +684,7 @@
             throw new Error("Formato de recetario no compatible.");
         }
 
-        async function syncProteinCatalogToGitHub() {
+        async function syncProteinCatalogToGitHub(retryOnConflict = true) {
             const github = getGitHubSettings();
             if (!github.token || !github.owner || !github.repo || !github.path) return { success: false, skipped: true };
             try {
@@ -710,6 +710,7 @@
                 markGitHubSyncSuccess('Catálogo de carnes y pescados actualizado en recipes.json.');
                 return { success: true, skipped: false };
             } catch (error) {
+                if (retryOnConflict && /does not match|conflict|\b409\b/i.test(String(error?.message || ''))) return syncProteinCatalogToGitHub(false);
                 console.warn('No se pudo sincronizar el catálogo de proteínas:', error);
                 return { success: false, skipped: false, message: error?.message || 'Error desconocido' };
             }
