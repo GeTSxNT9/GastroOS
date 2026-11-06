@@ -3,21 +3,46 @@
  * en el orden indicado en index.html: comparte el ámbito global con el resto de partes. */
         // --- 5. STOCK Y PREVISIÓN ---
 
-        function getSecondProteinIngredients() {
-            const unique = new Map();
-            dishes
-                .map(normalizeDishData)
-                .filter(d => d?.categoria === "Segundo")
-                .forEach(d => {
-                    (Array.isArray(d.ingredientes) ? d.ingredientes : []).forEach(ing => {
-                        const providerCategory = String(ing?.categoria_proveedor || "").trim();
-                        const name = String(ing?.nombre || "").trim();
-                        if (!name || !["Carne", "Pescado"].includes(providerCategory)) return;
-                        const key = normalizeFoodKey(name);
-                        if (!unique.has(key)) unique.set(key, name);
-                    });
-                });
-            return [...unique.values()].sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+        // Materias primas de las recetas, siempre derivadas del recetario (nunca de una lista fija):
+        //  · todo ingrediente de Carne o Pescado de cualquier receta (primeros y segundos);
+        //  · la proteína principal de un segundo de carne/pescado cuando el recetario la clasifica
+        //    como Congelados (cuartos traseros de pollo, albóndigas de carne, bacalao, panga…).
+        // Así, al crear o editar una receta su materia prima aparece sola en el selector del stock.
+        function getRecipeRawMaterials() {
+            const found = new Map();
+            const add = ing => {
+                const name = String(ing?.nombre || '').trim();
+                const category = String(ing?.categoria_proveedor || '').trim();
+                const key = normalizeFoodKey(name);
+                if (!name || !key) return;
+                if (!found.has(key)) found.set(key, { name, categories: new Map() });
+                const entry = found.get(key);
+                entry.categories.set(category, (entry.categories.get(category) || 0) + 1);
+            };
+            dishes.map(normalizeDishData).forEach(dish => {
+                if (!dish || dish.plato_elaborado) return; // los elaborados no tienen ingredientes: se gestionan como plato elaborado
+                const ingredients = (Array.isArray(dish.ingredientes) ? dish.ingredientes : []).filter(ing => String(ing?.nombre || '').trim());
+                const proteins = ingredients.filter(ing => ['Carne', 'Pescado'].includes(String(ing?.categoria_proveedor || '').trim()));
+                proteins.forEach(add);
+                if (!proteins.length && dish.categoria === 'Segundo' && ['Carne', 'Pescado'].includes(dish.proteina_segundo)) {
+                    const main = ingredients.find(ing => ['Congelados', 'Carne', 'Pescado'].includes(String(ing?.categoria_proveedor || '').trim()));
+                    if (main) add(main);
+                }
+            });
+            return [...found.entries()].map(([key, entry]) => {
+                const ranked = [...entry.categories.entries()].sort((x, y) => y[1] - x[1]);
+                return { key, name: entry.name, category: ranked[0][0], categories: ranked.map(([category]) => category) };
+            }).sort((x, y) => x.name.localeCompare(y.name, 'es', { sensitivity: 'base' }));
+        }
+
+        // Categorías de proveedor con las que aparece un ingrediente en el recetario (p. ej. «Bacalao» es
+        // Pescado en una receta y Congelados en otra). Sirve para que el stock cubra todas ellas.
+        function getIngredientCategoryAliases(key) {
+            const categories = new Set();
+            dishes.forEach(dish => (Array.isArray(dish?.ingredientes) ? dish.ingredientes : []).forEach(ing => {
+                if (normalizeFoodKey(ing?.nombre) === key) categories.add(String(ing?.categoria_proveedor || '').trim());
+            }));
+            return categories;
         }
 
         function getPrecookedRecipes() {
@@ -45,18 +70,20 @@
         function renderRawIngredientOptions(selectedValue = "") {
             const select = document.getElementById("rawName");
             if (!select) return;
-            const ingredients = getSecondProteinIngredients();
+            const ingredients = getRecipeRawMaterials();
             const precooked = getPrecookedRecipes();
             const precookedKeys = new Set(precooked.map(d => normalizeFoodKey(d.nombreStock)));
             const current = String(selectedValue || select.value || "");
             select.innerHTML = '<option value="">Seleccionar...</option>';
 
             const ingredientGroup = document.createElement("optgroup");
-            ingredientGroup.label = "Ingredientes de carne y pescado";
-            ingredients.filter(name => !precookedKeys.has(normalizeFoodKey(name))).forEach(name => {
+            ingredientGroup.label = "Materias primas de las recetas";
+            ingredients.filter(item => !precookedKeys.has(item.key)).forEach(item => {
                 const option = document.createElement("option");
-                option.value = name;
-                option.textContent = name;
+                option.value = item.name;
+                option.textContent = item.name;
+                option.dataset.category = item.category;
+                option.dataset.categories = item.categories.join('|');
                 ingredientGroup.appendChild(option);
             });
             if (ingredientGroup.children.length) select.appendChild(ingredientGroup);
@@ -69,6 +96,7 @@
                     option.value = dish.nombreStock;
                     option.textContent = dish.nombreStock;
                     option.dataset.stockType = "precocinado";
+                    option.dataset.category = "Congelados";
                     precookedGroup.appendChild(option);
                 });
                 select.appendChild(precookedGroup);
@@ -350,6 +378,23 @@
             return Number.isFinite(servings) && servings > 0 ? servings : 0;
         }
 
+        // Al elegir una materia prima se rellenan la categoría de proveedor y la conservación según el recetario,
+        // para que el stock coincida siempre con el ingrediente de las recetas (y descuente en la compra).
+        function syncRawFormFromProduct() {
+            const select = document.getElementById('rawName');
+            const option = select?.selectedOptions?.[0];
+            const category = option?.dataset?.category;
+            if (!category) return;
+            const categorySelect = document.getElementById('rawCategory');
+            if (categorySelect && [...categorySelect.options].some(o => o.value === category)) categorySelect.value = category;
+            // Congelados → «Congelado». Si la conservación la puso este automatismo y el producto elegido ya no es
+            // congelado, se vuelve a «Refrigerado»; una elección manual del usuario nunca se pisa.
+            const conservation = document.getElementById('rawConserv');
+            if (!conservation) return;
+            if (category === 'Congelados') { conservation.value = 'Congelado'; conservation.dataset.auto = '1'; }
+            else if (conservation.dataset.auto === '1') { conservation.value = 'Refrigerado'; delete conservation.dataset.auto; }
+        }
+
         function handleAddRawStock(e) {
             e.preventDefault();
             const select = document.getElementById('rawName');
@@ -365,7 +410,7 @@
                 nombre: precookedDish ? precookedDish.nombreStock : nombre,
                 cantidad,
                 unidad: document.getElementById('rawUnit').value,
-                categoria_proveedor: precookedDish ? "Congelados" : document.getElementById('rawCategory').value,
+                categoria_proveedor: precookedDish ? "Congelados" : resolveRawStockCategory(nombre, document.getElementById('rawCategory').value),
                 conservacion: document.getElementById('rawConserv').value === 'Refrigerado' ? 'Refrigerado' : 'Congelado',
                 ...(precookedDish ? { tipo_stock: 'precocinado' } : {})
             };
@@ -374,6 +419,14 @@
             renderRawStock();
             document.getElementById('rawStockForm').reset();
             refreshStockReferenceSelectors();
+        }
+
+        // Si el producto existe en el recetario, su categoría debe ser una de las que usan las recetas;
+        // si el usuario eligió otra distinta, se usa la más habitual del recetario.
+        function resolveRawStockCategory(name, selectedCategory) {
+            const material = getRecipeRawMaterials().find(item => item.key === normalizeFoodKey(name));
+            if (!material) return selectedCategory;
+            return material.categories.includes(selectedCategory) ? selectedCategory : material.category;
         }
 
         function renderRawStock() {

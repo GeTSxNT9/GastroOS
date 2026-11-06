@@ -99,6 +99,8 @@
             });
 
             document.getElementById('rawStockForm').addEventListener('submit', handleAddRawStock);
+            document.getElementById('rawName').addEventListener('change', syncRawFormFromProduct);
+            document.getElementById('rawConserv').addEventListener('change', event => { delete event.target.dataset.auto; });
             document.getElementById('prepStockForm').addEventListener('submit', handleAddPrepStock);
             document.getElementById('prepName').addEventListener('change', () => {
                 renderPreparedAssignmentOptions(document.getElementById('prepName').value);

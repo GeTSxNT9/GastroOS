@@ -102,7 +102,8 @@
                 getDemandPortionFactor,
                 purchaseAdjustment: getKitchenProfile().ajusteCompraPorcentaje,
                 manualStockKeys: shoppingManualStockKeys,
-                stockUtils: window.GastroOSStockUtils
+                stockUtils: window.GastroOSStockUtils,
+                categoryAliasesFor: getIngredientCategoryAliases
             });
         }
 

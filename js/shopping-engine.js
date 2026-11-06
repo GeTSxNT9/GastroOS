@@ -6,7 +6,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    function createStockLedger(rawStock, normalizeFoodKey, stockUtils) {
+    function createStockLedger(rawStock, normalizeFoodKey, stockUtils, categoryAliasesFor) {
         return (Array.isArray(rawStock) ? rawStock : []).map(stock => {
             const unit = String(stock?.unidad || '').trim().toLowerCase();
             const dimension = stockUtils.getUnitDimension(unit);
@@ -17,6 +17,8 @@
                 stock,
                 key: normalizeFoodKey(stock?.nombre),
                 category: String(stock?.categoria_proveedor || ''),
+                // Un mismo producto puede figurar con distinta categoría en recetas distintas (Bacalao: Pescado/Congelados).
+                aliases: typeof categoryAliasesFor === 'function' ? categoryAliasesFor(normalizeFoodKey(stock?.nombre)) : null,
                 dimension: dimension === 'unknown' ? null : dimension,
                 remaining: Math.max(0, Number.isFinite(baseQty) ? baseQty : 0)
             };
@@ -31,7 +33,8 @@
         let remaining = requiredQtyBase;
         for (const entry of ledger) {
             if (remaining <= 0) break;
-            if (!entry.key || entry.remaining <= 0 || entry.dimension !== dimension || entry.category !== category) continue;
+            if (!entry.key || entry.remaining <= 0 || entry.dimension !== dimension) continue;
+            if (entry.category !== category && !(entry.aliases && entry.aliases.has(category))) continue;
             if (!(entry.key === name || stockUtils.foodNamesMatch(entry.key, name))) continue;
             const used = Math.min(remaining, entry.remaining);
             entry.remaining -= used;
@@ -44,7 +47,7 @@
         const {
             currentMenu, daysList, proveedorCategorias, rawStock, normalizeFoodKey,
             getTotalRaciones, getDemandPortionFactor, purchaseAdjustment,
-            manualStockKeys, stockUtils
+            manualStockKeys, stockUtils, categoryAliasesFor
         } = context || {};
         if (!currentMenu?.days) return { totalRacionesPorComida: getTotalRaciones(), groupedByCategory: Object.fromEntries((proveedorCategorias || []).map(category => [category, []])) };
         if (!Array.isArray(daysList) || !Array.isArray(proveedorCategorias) || typeof normalizeFoodKey !== 'function' ||
@@ -54,7 +57,7 @@
 
         const totalRacionesPorComida = getTotalRaciones();
         const aggregated = Object.create(null);
-        const stockLedger = createStockLedger(rawStock, normalizeFoodKey, stockUtils);
+        const stockLedger = createStockLedger(rawStock, normalizeFoodKey, stockUtils, categoryAliasesFor);
         const manuallyAvailable = manualStockKeys instanceof Set ? manualStockKeys : new Set();
 
         daysList.forEach(dayName => {
