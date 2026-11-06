@@ -2,7 +2,7 @@
 
 **GastroOS** is a Progressive Web Application (PWA) to manage recipes, plan Monday-to-Friday menus by default, track inventory, calculate shopping lists, and apply the rules of a self-service kitchen.
 
-The application is implemented in HTML, CSS (Tailwind and custom styles), and plain JavaScript, with no JavaScript framework or server-side component. Working data is stored locally in the browser; synchronization with GitHub is optional.
+It is built with HTML, CSS, and JavaScript without an application framework or its own backend. Working information is stored in the browser; synchronization with GitHub is optional.
 
 ## Main Features
 
@@ -10,6 +10,7 @@ The application is implemented in HTML, CSS (Tailwind and custom styles), and pl
 - Generation and validation of weekly menus with configurable structure, daily and weekly rules, repetition limits, meat and fish restrictions, stews, and stock availability.
 - Day regeneration and search for alternatives that respect the configured rules.
 - Differentiated management of raw materials/pre-cooked products and prepared dishes.
+- The raw-stock selector is always derived from the recipe book (every Carne/Pescado ingredient plus the frozen main protein of each meat/fish main course), so a new recipe's raw material appears automatically; choosing a product pre-fills its supplier category and storage.
 - Stock and ingredient names are matched by whole words (tolerating simple plurals), so "pan" never matches "panga" and "jamón" never matches "jamoncitos de pollo".
 - Shopping list calculation, grouping by supplier category, quantity adjustment, and TXT export.
 - Editable catalogs of meat and fish species.
