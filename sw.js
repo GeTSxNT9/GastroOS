@@ -2,14 +2,14 @@
 'use strict';
 
 const CACHE_PREFIX = 'gastroos-';
-const CACHE_NAME = 'gastroos-v66';
+const CACHE_NAME = 'gastroos-v67';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './recipes.json',
   './product-allergens.json',
-  './css/01-base.css', './css/02-layout-movil.css', './css/03-fases-ux.css', './css/04-design-system.css', './css/05-renovacion-clara.css', './css/06-modo-oscuro.css',
+  './css/01-base.css', './css/02-mobile-layout.css', './css/03-ux-phases.css', './css/04-design-system.css', './css/05-light-refresh.css', './css/06-dark-mode.css',
   './js/app-core.js', './js/app-views.js', './js/app-recipes.js', './js/app-stock.js', './js/app-menu-engine.js', './js/app-menu-ui.js', './js/app-history-backup.js',
   './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js', './js/menu-daily-rules.js',
   './js/github-network.js',
@@ -22,7 +22,7 @@ const APP_SHELL = [
   './icon-512.png',
   'https://cdn.tailwindcss.com'
 ];
-const CORE = ['./index.html', './js/github-network.js', './css/01-base.css', './css/02-layout-movil.css', './css/03-fases-ux.css', './css/04-design-system.css', './css/05-renovacion-clara.css', './css/06-modo-oscuro.css', './js/app-core.js', './js/app-views.js', './js/app-recipes.js', './js/app-stock.js', './js/app-menu-engine.js', './js/app-menu-ui.js', './js/app-history-backup.js', './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js', './js/menu-daily-rules.js', './js/data-store-facade.js'];
+const CORE = ['./index.html', './js/github-network.js', './css/01-base.css', './css/02-mobile-layout.css', './css/03-ux-phases.css', './css/04-design-system.css', './css/05-light-refresh.css', './css/06-dark-mode.css', './js/app-core.js', './js/app-views.js', './js/app-recipes.js', './js/app-stock.js', './js/app-menu-engine.js', './js/app-menu-ui.js', './js/app-history-backup.js', './js/kitchen-rules.js', './js/stock-utils.js', './js/shopping-engine.js', './js/menu-generation-engine.js', './js/menu-selection-rules.js', './js/menu-structure-validator.js', './js/menu-frequency-rules.js', './js/menu-continuity-rules.js', './js/menu-daily-rules.js', './js/data-store-facade.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil((async () => {

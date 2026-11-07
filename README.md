@@ -26,11 +26,11 @@ GastroOS-main/
 ├── index.html                  # Interface, views, and ordered module loading
 ├── css/
 │   ├── 01-base.css             # Base variables, surfaces, typography, controls, modals
-│   ├── 02-layout-movil.css     # Compact mobile layout of each view
-│   ├── 03-fases-ux.css         # UX improvement phases
+│   ├── 02-mobile-layout.css    # Compact mobile layout of each view
+│   ├── 03-ux-phases.css        # UX improvement phases
 │   ├── 04-design-system.css    # Global design-system coherence layer
-│   ├── 05-renovacion-clara.css # Light visual renovation
-│   └── 06-modo-oscuro.css      # Dark mode (final); new dark fixes go at the end of this file
+│   ├── 05-light-refresh.css    # Light visual renovation
+│   └── 06-dark-mode.css        # Dark mode (final); new dark fixes go at the end of this file
 ├── js/
 │   ├── app-core.js             # State, catalogs, kitchen profile, data loading
 │   ├── app-views.js            # Events and view switching
@@ -68,7 +68,7 @@ GastroOS-main/
 - The `app-*.js` files are the main application (formerly a single `gastroos.js`): they contain the interface and important parts of the culinary engine. They are plain scripts that share the global scope and **must be loaded in the order listed in `index.html`**. Facades are not duplicated engines: they expose existing functions to facilitate gradual separation.
 - The `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js`, and `shopping-engine.js` modules separate specific rules and calculations from the main interface logic. This is an architectural separation, not a claim that a test suite is included in the repository.
 - `index.html` scripts are loaded in a deliberate order: utilities and rules first, then the `app-*.js` files, and finally the facades that expose their functions.
-- `css/01…06-*.css` contain the application styles, stacked by layer. **Load order matters** (it is fixed in `index.html`): at equal specificity the later rule wins, so do not reorder files or blocks; add new rules at the end of the relevant file (dark-mode fixes in `06-modo-oscuro.css`).
+- `css/01…06-*.css` contain the application styles, stacked by layer. **Load order matters** (it is fixed in `index.html`): at equal specificity the later rule wins, so do not reorder files or blocks; add new rules at the end of the relevant file (dark-mode fixes in `06-dark-mode.css`).
 - `recipes.json` is used as an initial source when there is no usable local recipe book. Service Worker installation treats it as an essential resource along with the application modules.
 - `product-allergens.json` provides initial product-level allergen data; user changes are stored locally by the application.
 
