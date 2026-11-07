@@ -970,12 +970,25 @@
             const productAllergenStatus = document.getElementById('productAllergenStatus');
             if (productAllergenStatus) productAllergenStatus.textContent = `${Object.keys(productAllergenMap).length} productos con alérgenos configurados.`;
             updateAutoBackupStatus();
+            try { initDataProtection(); } catch (error) { console.warn('No se pudo iniciar la protección de datos:', error); }
             finishAppSplash();
         }
 
         function registerServiceWorker() {
             if (!('serviceWorker' in navigator)) return;
+            // Si ya había un service worker al abrir la página, un cambio de controlador significa que se ha
+            // instalado una versión nueva: se avisa, sin recargar solos para no perder un formulario a medias.
+            const hadController = !!navigator.serviceWorker.controller;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (hadController) document.getElementById('updateBanner')?.classList.remove('hidden');
+            });
             navigator.serviceWorker.register('./sw.js', { scope: './' })
+                .then(registration => {
+                    // La app instalada puede pasar días en segundo plano: se busca versión nueva al volver a ella.
+                    const checkForUpdate = () => registration.update().catch(() => {});
+                    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkForUpdate(); });
+                    window.setInterval(checkForUpdate, 60 * 60 * 1000);
+                })
                 .catch(error => console.warn('No se pudo registrar el Service Worker:', error));
         }
 

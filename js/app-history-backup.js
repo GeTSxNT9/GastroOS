@@ -76,6 +76,85 @@
         function exportData() {
             const data = buildBackupData('full-backup', 'exportación manual');
             downloadJsonFile(data, `gastroos_backup_${new Date().toISOString().slice(0,10)}.json`);
+            window.GastroOSDataStore.set('chefTrack_lastExportAt', new Date().toISOString());
+            window.GastroOSDataStore.remove('chefTrack_backupReminderSnoozedUntil');
+            updateBackupReminder();
+            updateDataProtectionStatus();
+        }
+
+        // ---- Protección de datos: almacenamiento persistente y recordatorio de copia de seguridad ----
+        const BACKUP_REMINDER_DAYS = 7;
+        const BACKUP_REMINDER_SNOOZE_DAYS = 3;
+        let storagePersisted = null; // true / false / null (el navegador no lo permite saber)
+
+        function daysSinceIso(iso) {
+            const time = Date.parse(iso);
+            return Number.isFinite(time) ? Math.max(0, Math.floor((Date.now() - time) / 86400000)) : null;
+        }
+
+        async function requestPersistentStorage() {
+            try {
+                if (!navigator.storage?.persisted || !navigator.storage?.persist) {
+                    storagePersisted = null;
+                } else {
+                    storagePersisted = await navigator.storage.persisted();
+                    if (!storagePersisted) storagePersisted = await navigator.storage.persist();
+                }
+            } catch (_) {
+                storagePersisted = null;
+            }
+            updateDataProtectionStatus();
+        }
+
+        function updateDataProtectionStatus() {
+            const el = document.getElementById('dataProtectionStatus');
+            if (!el) return;
+            const last = window.GastroOSDataStore.get('chefTrack_lastExportAt');
+            const days = last ? daysSinceIso(last) : null;
+            const exported = last
+                ? `Última copia exportada: ${new Date(last).toLocaleDateString('es-ES')}${days === 0 ? ' (hoy)' : days ? ` (hace ${days} ${days === 1 ? 'día' : 'días'})` : ''}.`
+                : 'Todavía no has exportado ninguna copia.';
+            const storage = storagePersisted === true
+                ? 'Almacenamiento protegido por el navegador ✓.'
+                : storagePersisted === false
+                    ? 'El navegador no garantiza conservar los datos si falta espacio: exporta copias con regularidad y, si puedes, añade GastroOS a la pantalla de inicio.'
+                    : '';
+            el.textContent = [exported, storage].filter(Boolean).join(' ');
+        }
+
+        function updateBackupReminder() {
+            const box = document.getElementById('backupReminder');
+            if (!box) return;
+            const hasData = rawStock.length > 0 || preparedStock.length > 0 || historyMenus.length > 0 || !!currentMenu;
+            const reference = window.GastroOSDataStore.get('chefTrack_lastExportAt') || window.GastroOSDataStore.get('chefTrack_firstSeenAt');
+            const days = reference ? daysSinceIso(reference) : null;
+            const snoozedUntil = Date.parse(window.GastroOSDataStore.get('chefTrack_backupReminderSnoozedUntil') || '');
+            const snoozed = Number.isFinite(snoozedUntil) && snoozedUntil > Date.now();
+            const due = hasData && days !== null && days >= BACKUP_REMINDER_DAYS && !snoozed;
+            box.classList.toggle('hidden', !due);
+            if (!due) return;
+            const never = !window.GastroOSDataStore.get('chefTrack_lastExportAt');
+            document.getElementById('backupReminderText').textContent = (never
+                ? 'Todavía no has exportado ninguna copia de seguridad.'
+                : `Hace ${days} días que no exportas una copia de seguridad.`) + ' Tu stock, historial y ajustes solo están en este dispositivo.';
+        }
+
+        function snoozeBackupReminder() {
+            window.GastroOSDataStore.set('chefTrack_backupReminderSnoozedUntil', new Date(Date.now() + BACKUP_REMINDER_SNOOZE_DAYS * 86400000).toISOString());
+            updateBackupReminder();
+        }
+
+        function initDataProtection() {
+            if (!window.GastroOSDataStore.get('chefTrack_firstSeenAt')) window.GastroOSDataStore.set('chefTrack_firstSeenAt', new Date().toISOString());
+            document.getElementById('btnBackupReminderExport')?.addEventListener('click', exportData);
+            document.getElementById('btnBackupReminderLater')?.addEventListener('click', snoozeBackupReminder);
+            document.getElementById('btnApplyUpdate')?.addEventListener('click', () => window.location.reload());
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') updateBackupReminder(); });
+            requestPersistentStorage();
+            // Algunos navegadores solo conceden el almacenamiento persistente tras una interacción del usuario.
+            document.addEventListener('click', () => { if (storagePersisted === false) requestPersistentStorage(); }, { once: true });
+            updateBackupReminder();
+            updateDataProtectionStatus();
         }
 
         function exportRecipesOnly() {
