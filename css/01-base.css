@@ -1,0 +1,412 @@
+/* GastroOS — hoja de estilos, parte 1 de 6: Base: variables, superficies, tipografía, botones, formularios, tarjetas, modales, accesibilidad.
+ *
+ * El orden de carga importa y está fijado en index.html (01 → 06): a igualdad de especificidad gana
+ * siempre la regla que va después. No reordenes archivos ni bloques. Un cambio nuevo se añade al final
+ * del archivo que corresponda (los de modo oscuro, en 06-modo-oscuro.css). */
+
+/* Historial de limpieza (v59) —
+ *
+ * IMPORTANTE: el orden de los bloques importa. Están apilados por capas (de la más antigua a la
+ * más reciente) y, a igualdad de especificidad, gana siempre el bloque que va después. Por eso
+ * no conviene reordenar bloques ni mezclarlos: un cambio nuevo se añade al final.
+ * El último bloque («v58») contiene la revisión completa del modo oscuro; usa el prefijo
+ * html.dark:not(#dk-a):not(#dk-b) solo para ganar en especificidad a reglas con #identificador.
+ *
+ * Limpieza v59: se eliminaron 666 declaraciones que ninguna regla posterior dejaba aplicarse,
+ * 151 reglas que quedaron vacías y 39 selectores de clases/ids que ya no existen en la app.
+ * Se comprobó que los estilos calculados de 157.000 elementos (claro/oscuro, móvil/escritorio,
+ * todas las pantallas y ventanas) son idénticos a los de la versión anterior.
+ */
+
+
+/* ===== Bloque CSS original 1 ===== */
+
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ===== Bloque CSS original 2 ===== */
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#main-container {
+  scroll-behavior: smooth;
+}
+
+/* Native-app top bar */
+
+body > header,
+header {
+  height: 60px !important;
+  min-height: 60px;
+}
+
+header h1 {
+  font-weight: 700 !important;
+}
+
+#themeToggleBtn {
+  transition: transform .18s ease, background .18s ease !important;
+}
+
+#themeToggleBtn:hover {
+  background: #e9eef5 !important;
+}
+
+#themeToggleBtn:active {
+  transform: scale(.96);
+}
+
+/* Shared glass surfaces */
+
+#dishesList > div,
+#generatedMenuContainer > div,
+#historyListContainer > div,
+#rawStockList > div,
+#prepStockList > div,
+#shoppingListBreakdown > div,
+main section,
+#dishForm,
+#subtab-shopping-content > div,
+#modalChangeDish > div {
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+
+/* Type */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--g-text);
+}
+
+.text-gray-800,
+.text-gray-700,
+.text-gray-600 {
+  color: var(--g-text) !important;
+}
+
+.text-gray-500,
+.text-gray-400 {
+  color: var(--g-muted) !important;
+}
+
+/* Search / controls */
+
+#searchInput,
+input:not([type="checkbox"]):not([type="file"]),
+select,
+textarea {
+  background: var(--g-control) !important;
+  color: var(--g-text) !important;
+  border-color: transparent !important;
+  border-radius: 12px !important;
+  box-shadow: inset 0 0 0 1px rgba(15,23,42,.035) !important;
+  transition: background .18s ease, box-shadow .18s ease, transform .18s ease !important;
+}
+
+#searchInput {
+  padding-left: 15px !important;
+}
+
+input:not([type="checkbox"]):not([type="file"]):focus,
+select:focus,
+textarea:focus,
+#searchInput:focus {
+  outline: none !important;
+  background: rgba(255,255,255,.96) !important;
+  box-shadow: 0 0 0 3px rgba(0,113,227,.10), inset 0 0 0 1px rgba(0,113,227,.18) !important;
+}
+
+html.dark input:not([type="checkbox"]):not([type="file"]):focus,
+html.dark select:focus,
+html.dark textarea:focus,
+html.dark #searchInput:focus {
+  background: rgba(39,39,42,.96) !important;
+  box-shadow: 0 0 0 3px rgba(41,151,255,.14), inset 0 0 0 1px rgba(41,151,255,.24) !important;
+}
+
+/* Pill filters and tabs */
+
+.filter-lvl1,
+.filter-lvl2,
+.generator-day-tab {
+  border: 1px solid rgba(15,23,42,.07) !important;
+  transition: all .18s ease-out !important;
+}
+
+/* Buttons */
+
+button,
+label[for="fileImport"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not([disabled]):active,
+label[for="fileImport"]:active {
+  transform: scale(.98);
+}
+
+#btnGenerateMenu,
+#dishForm button[type="submit"],
+#rawStockForm button[type="submit"],
+#prepStockForm button[type="submit"],
+#btnDownloadShoppingTxt,
+label[for="fileImport"] {
+  box-shadow: 0 4px 14px rgba(15,23,42,.08) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.01em;
+}
+
+label[for="fileImport"] {
+  background: #eef2f7 !important;
+  color: #334155 !important;
+}
+
+.backup-action {
+  min-height: 52px;
+}
+
+/* Form grouping */
+
+#dishForm label,
+#rawStockForm label,
+#prepStockForm label {
+  letter-spacing: -.005em;
+}
+
+#dishForm .border-t {
+  border-color: rgba(15,23,42,.08) !important;
+}
+
+/* Demand / semantic badges */
+
+.bg-indigo-50,
+.bg-indigo-100 {
+  background-color: var(--g-accent-soft) !important;
+}
+
+/* Menu generator */
+
+#subtab-menu-content > div:first-child {
+  border: 1px solid rgba(15,23,42,.08) !important;
+}
+
+html.dark #subtab-menu-content > div:first-child {
+  border-color: var(--g-border) !important;
+  box-shadow: var(--g-shadow) !important;
+}
+
+#subtab-menu-content > div:first-child p {
+  color: var(--g-muted) !important;
+}
+
+/* Slot cards */
+
+.gastro-slot {
+  border: 1px solid rgba(15,23,42,.065);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.gastro-slot:hover {
+  box-shadow: 0 5px 18px rgba(15,23,42,.045);
+  transform: translateY(-1px);
+}
+
+/* Floating edit/delete actions */
+
+#dishesList .absolute button {
+  border-radius: 999px !important;
+  transition: transform .15s ease, background .15s ease !important;
+}
+
+#dishesList .absolute button:first-child {
+  background: #eaf4ff !important;
+}
+
+#dishesList .absolute button:last-child {
+  background: #fff1f2 !important;
+}
+
+#dishesList .absolute button:active {
+  transform: scale(.95);
+}
+
+/* Bottom navigation: translucent floating native feel */
+
+body > nav,
+nav.fixed {
+  box-sizing: border-box !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+.nav-btn {
+  transition: color .18s ease, transform .18s ease !important;
+}
+
+.nav-btn:active {
+  transform: scale(.96);
+}
+
+/* Modal */
+
+#modalChangeDish {
+  z-index: 60 !important;
+}
+
+#modalChangeDish > div {
+  overflow: hidden;
+  min-height: 0;
+  animation: gastroModalIn .2s ease-out both;
+}
+
+#modalChangeDish #modalDishList {
+  min-height: 0 !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 1rem;
+}
+
+#modalChangeDish .modal-close-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #334155 !important;
+  background: rgba(15,23,42,.08) !important;
+}
+
+#modalChangeDish .modal-close-btn:hover {
+  background: rgba(15,23,42,.14) !important;
+}
+
+#modalChangeDish > div > div:first-child {
+  background: rgba(255,255,255,.82) !important;
+  color: var(--g-text) !important;
+  border-bottom: 1px solid var(--g-border);
+}
+
+#modalChangeDish #modalSearchInput {
+  min-height: 42px;
+}
+
+/* Dark mode: generator and dish-swap modal */
+
+html.dark .gastro-slot:hover {
+  box-shadow: 0 5px 18px rgba(0,0,0,.20);
+}
+
+html.dark #modalChangeDish {
+  background: rgba(0,0,0,.56) !important;
+}
+
+html.dark #modalChangeDish > div {
+  border-color: rgba(255,255,255,.10) !important;
+}
+
+html.dark #modalChangeDish > div > div:first-child {
+  border-bottom-color: rgba(255,255,255,.09) !important;
+}
+
+html.dark #modalChangeDish .modal-close-btn {
+  color: #f5f5f7 !important;
+  background: rgba(255,255,255,.08) !important;
+}
+
+html.dark #modalChangeDish .modal-close-btn:hover {
+  background: rgba(255,255,255,.15) !important;
+}
+
+html.dark #modalChangeDish #modalSwapSubtitle {
+  color: #a9cfff !important;
+}
+
+html.dark #modalChangeDish > div > div:nth-child(2) {
+  background: rgba(39,39,42,.92) !important;
+  border-bottom-color: rgba(255,255,255,.08) !important;
+}
+
+html.dark #modalChangeDish #modalSearchInput {
+  background: rgba(39,39,42,.98) !important;
+  color: #f5f5f7 !important;
+  border-color: rgba(255,255,255,.10) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03) !important;
+}
+
+html.dark #modalChangeDish #modalSearchInput::placeholder {
+  color: #a1a1aa !important;
+}
+
+html.dark #modalChangeDish #modalDishList {
+  background: rgba(18,18,20,.98) !important;
+}
+
+html.dark #modalChangeDish #modalDishList > div:hover {
+  background: rgba(52,52,55,.98) !important;
+}
+
+html.dark #modalChangeDish #modalDishList h4 {
+  color: #f5f5f7 !important;
+}
+
+@keyframes gastroModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Accessibility / motion */
+
+@media (min-width: 768px) {
+  main {
+    max-width: 1100px;
+    margin-inline: auto;
+  }
+
+  #dishesList {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  #dishesList > div {
+    height: 100%;
+  }
+
+  #generatedMenuContainer {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 14px;
+  }
+
+  #generatedMenuContainer > div {
+    margin: 0 !important;
+  }
+}

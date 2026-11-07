@@ -1,0 +1,951 @@
+/* GastroOS — hoja de estilos, parte 2 de 6: Maquetación móvil compacta: recetario, generador, formulario, stock, ajustes y navegación inferior.
+ *
+ * El orden de carga importa y está fijado en index.html (01 → 06): a igualdad de especificidad gana
+ * siempre la regla que va después. No reordenes archivos ni bloques. Un cambio nuevo se añade al final
+ * del archivo que corresponda (los de modo oscuro, en 06-modo-oscuro.css). */
+
+/* ===== Bloque CSS original 3 ===== */
+
+:root {
+  --accent: #007AFF;
+  --accent-soft: #F2F2F7;
+  --bg-main: #F2F2F7;
+  --bg-card: #FFFFFF;
+  --text-main: #111113;
+  --text-secondary: #6E6E73;
+  --border-soft: #E5E5EA;
+  --inactive: #8E8E93;
+  --radius-card: 16px;
+  --control-h: 40px;
+}
+
+html.dark {
+  --accent: #2997FF;
+  --accent-soft: #2C2C2E;
+  --bg-main: #000;
+  --bg-card: #1C1C1E;
+  --text-main: #F5F5F7;
+  --text-secondary: #A1A1A6;
+  --border-soft: rgba(255,255,255,.12);
+  --inactive: #98989D;
+}
+
+/* Global density */
+
+main > h2 {
+  margin-bottom: 12px !important;
+}
+
+#view-banco {
+  padding-top: 10px !important;
+  padding-bottom: 16px !important;
+}
+
+/* Recetario search/action row */
+
+#searchInput {
+  height: var(--control-h) !important;
+  font-size: 14px !important;
+}
+
+#btnBulkEdit {
+  border-radius: 9px !important;
+  border: 1px solid var(--border-soft) !important;
+}
+
+#bulkSelectedCount {
+  right: 0;
+}
+
+#bulkToolbar {
+  margin-bottom: 10px !important;
+}
+
+/* Filters: compact iOS pills */
+
+#filters-primeros,
+#filters-segundos {
+  margin-bottom: 8px !important;
+}
+
+.filter-lvl1 {
+  min-height: 34px !important;
+  padding-block: 6px !important;
+  font-size: 11px !important;
+}
+
+.filter-lvl2 {
+  padding-block: 5px !important;
+}
+
+/* Recipe cards: 7–8 visible on typical mobile viewport */
+
+#dishesList > div {
+  min-height: 0 !important;
+}
+
+#dishesList > div h3 {
+  font-size: 13px !important;
+  line-height: 1.22 !important;
+  margin-bottom: 4px !important;
+}
+
+#dishesList > div .flex.flex-wrap {
+  margin-top: 4px !important;
+  gap: 4px !important;
+}
+
+#dishesList > div .px-2.py-0\.5 {
+  padding: 2px 6px !important;
+  font-size: 9px !important;
+  line-height: 1.2 !important;
+}
+
+#dishesList .absolute {
+  top: 8px !important;
+  right: 8px !important;
+  transform: none !important;
+}
+
+#dishesList .absolute button {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--inactive) !important;
+  opacity: .9;
+}
+
+#dishesList .absolute button svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+#dishesList .absolute button:first-child {
+  color: var(--accent) !important;
+}
+
+#dishesList .absolute button:last-child {
+  color: #FF3B30 !important;
+}
+
+#dishesList .absolute button:hover {
+  background: var(--accent-soft) !important;
+  border-radius: 6px !important;
+}
+
+/* Generator */
+
+#view-generator {
+  padding-top: 10px !important;
+  gap: 10px !important;
+}
+
+#subtab-menu-content {
+  gap: 10px !important;
+}
+
+#subtab-menu-content > div:first-child {
+  padding: 9px 10px !important;
+  text-align: left !important;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.gastro-generator-title {
+  display: none !important;
+}
+
+.gastro-generator-description {
+  display: none !important;
+}
+
+#btnGenerateMenu {
+  width: 100% !important;
+  min-height: 40px !important;
+  padding: 9px 12px !important;
+  font-size: 13px !important;
+}
+
+#btnSaveToHistory,
+#btnDownloadMenuTxt {
+  min-height: 32px !important;
+  padding: 6px 9px !important;
+  font-size: 10px !important;
+}
+
+#dayTabsContainer {
+  overflow-x: auto !important;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.generator-day-tab {
+  flex: 0 0 auto !important;
+  min-width: max-content !important;
+  min-height: 34px !important;
+  padding: 7px 13px !important;
+  scroll-snap-align: start;
+}
+
+#generatedMenuContainer {
+  gap: 8px !important;
+}
+
+.gastro-slot {
+  min-height: 54px !important;
+  padding: 9px 10px !important;
+}
+
+.gastro-slot-action {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.gastro-slot-action:hover {
+  background: var(--accent-soft) !important;
+  color: var(--accent) !important;
+}
+
+/* Dish form: compact controls */
+
+#dishForm > div {
+  margin-top: 0 !important;
+}
+
+#dishForm .grid {
+  gap: 8px !important;
+}
+
+#dishForm input:not([type="checkbox"]),
+#dishForm select,
+#dishForm textarea {
+  min-height: 38px !important;
+  padding-block: 8px !important;
+}
+
+#dishForm label.block.text-xs {
+  margin-bottom: 3px !important;
+}
+
+/* Precocinado / elaborado: preserve the original card + checkbox appearance and behavior. */
+
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div {
+  min-height: 0 !important;
+}
+
+/* Allergens become compact chips while preserving checkbox names/values. */
+
+#allergensContainer {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+
+#allergensContainer > label {
+  position: relative;
+  display: inline-flex !important;
+  flex: 0 0 auto;
+  align-items: center;
+  background: #F2F2F7 !important;
+  border: 1px solid var(--border-soft) !important;
+  color: #3A3A3C !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+}
+
+#allergensContainer > label input {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+#allergensContainer > label:has(input:checked) {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+html.dark #allergensContainer > label {
+  background: #2C2C2E !important;
+  color: #F5F5F7 !important;
+}
+
+html.dark #allergensContainer > label:has(input:checked) {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+
+/* Stock / forecast */
+
+#view-stock > section {
+  padding: 11px !important;
+}
+
+#view-stock > section:first-child > div.grid > div:first-child {
+  min-width: 0;
+}
+
+#rawStockForm,
+#prepStockForm {
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+}
+
+#rawStockForm > div:first-child,
+#prepStockForm > div:first-child {
+  grid-column: 1 / -1;
+}
+
+#rawStockForm > div:nth-child(2),
+#rawStockForm > div:nth-child(3),
+#prepStockForm > div:nth-child(2),
+#prepStockForm > div:nth-child(3) {
+  display: contents !important;
+}
+
+#rawStockForm > div:nth-child(2) > *,
+#rawStockForm > div:nth-child(3) > *,
+#prepStockForm > div:nth-child(2) > *,
+#prepStockForm > div:nth-child(3) > * {
+  min-width: 0;
+}
+
+#rawStockForm > button,
+#prepStockForm > button {
+  grid-column: 1 / -1;
+  margin-top: 1px;
+}
+
+/* Settings / diagnostics */
+
+#recipeDiagnostics {
+  grid-template-columns: repeat(4,minmax(0,1fr)) !important;
+  gap: 6px !important;
+}
+
+#recipeDiagnostics > div {
+  padding: 8px !important;
+  min-width: 0;
+  border-radius: 11px !important;
+}
+
+#recipeDiagnostics > div .text-lg {
+  font-size: 16px !important;
+}
+
+.gastro-settings-details {
+  overflow: hidden;
+}
+
+.gastro-settings-summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 54px;
+  padding: 11px 13px;
+  cursor: pointer;
+}
+
+.gastro-settings-summary::-webkit-details-marker {
+  display: none;
+}
+
+.gastro-chevron {
+  color: var(--inactive);
+  font-size: 18px;
+  transition: transform .2s ease;
+}
+
+.gastro-settings-details[open] .gastro-chevron {
+  transform: rotate(180deg);
+}
+
+.gastro-settings-details-body {
+  padding: 0 13px 13px;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* Bottom navigation */
+
+.nav-btn {
+  position: relative;
+  padding-top: 2px !important;
+}
+
+.nav-btn svg {
+  color: currentColor !important;
+}
+
+.nav-btn span {
+  color: currentColor !important;
+}
+
+.nav-btn.active::before,
+.nav-btn.text-indigo-600::before,
+.nav-btn.text-indigo-400::before {
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateX(-50%);
+}
+
+.nav-btn:not(.active):not(.text-indigo-600):not(.text-indigo-400) {
+  color: var(--inactive) !important;
+}
+
+/* Small screens */
+
+@media (min-width: 768px) {
+  main {
+    padding: 16px !important;
+  }
+
+  #dishesList {
+    gap: 10px !important;
+  }
+
+  #dishesList > div {
+    padding: 11px 48px 11px 12px !important;
+  }
+}
+
+/* RECETARIO — edición múltiple: contador a la izquierda, acción a la derecha */
+
+#bulkSelectedCount {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  white-space: nowrap !important;
+}
+
+/* RECETARIO — tarjetas más compactas y acciones discretas horizontales */
+
+#dishesList .absolute {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 2px !important;
+}
+
+#dishesList .absolute button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  padding: 0 !important;
+}
+
+/* FORMULARIO — separación vertical real entre demanda y bloques de estado */
+
+#dishDemand {
+  margin-bottom: 0 !important;
+}
+
+#dishDemand + * {
+  margin-top: 0 !important;
+}
+
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div {
+  margin: 0 !important;
+}
+
+/* PRECOCINADO / ELABORADO — conservar tarjetas, colores, checkbox y clics originales */
+
+#dishPrecooked,
+#dishPrepared {
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  position: static !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  flex-shrink: 0 !important;
+  accent-color: initial !important;
+}
+
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:first-child {
+  background-color: rgb(238 242 255) !important;
+  border-color: rgb(224 231 255) !important;
+  padding: 12px !important;
+  border-radius: 0.5rem !important;
+}
+
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:last-child {
+  background-color: rgb(250 245 255) !important;
+  border-color: rgb(243 232 255) !important;
+  padding: 12px !important;
+  border-radius: 0.5rem !important;
+}
+
+html.dark #dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:first-child {
+  background-color: rgb(30 27 75 / .5) !important;
+}
+
+html.dark #dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div:last-child {
+  background-color: rgb(59 7 100 / .4) !important;
+}
+
+/* ALÉRGENOS — más aire arriba y antes de Ingredientes */
+
+#dishForm > div:has(#allergensContainer) {
+  padding-top: 16px !important;
+}
+
+/* STOCK / PREVISIÓN — ambos controles comparten exactamente la misma altura y eje */
+
+#view-stock > section:first-child > div.grid > div:first-child,
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+  height: 38px !important;
+  min-height: 38px !important;
+  align-self: stretch !important;
+  margin: 0 !important;
+}
+
+#view-stock > section:first-child > div.grid > div:first-child {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+}
+
+/* MATERIA PRIMA — grid compacto y limpio */
+
+#rawStockForm,
+#prepStockForm {
+  align-items: end !important;
+}
+
+#rawStockForm input,
+#rawStockForm select,
+#prepStockForm input,
+#prepStockForm select {
+  min-width: 0 !important;
+}
+
+/* GITHUB — contenido del desplegable más respirado */
+
+#githubSettingsDetails {
+  margin-bottom: 16px !important;
+}
+
+#githubSettingsDetails .gastro-settings-details-body > .space-y-3 {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* NAVEGACIÓN INFERIOR — separación superior y zona segura */
+
+@media (min-width:768px) {
+  #main-container {
+    padding-bottom: 116px !important;
+  }
+}
+
+/* 1. RECETARIO — buscador + edición múltiple en una sola fila 50/50 */
+
+#view-banco > div:first-child,
+#view-banco > div:nth-child(2) {
+  display: inline-flex !important;
+  vertical-align: top !important;
+  box-sizing: border-box !important;
+  width: calc(50% - 5px) !important;
+  margin-bottom: 12px !important;
+}
+
+#view-banco > div:first-child {
+  margin-right: 10px !important;
+}
+
+#view-banco > div:first-child input {
+  width: 100% !important;
+}
+
+#view-banco > div:nth-child(2) {
+  min-height: 40px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  position: relative !important;
+}
+
+#btnBulkEdit {
+  order: 2 !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  margin-left: auto !important;
+  white-space: nowrap !important;
+}
+
+#bulkSelectedCount {
+  order: 1 !important;
+  position: static !important;
+  margin: 0 auto 0 0 !important;
+  line-height: 1.2 !important;
+}
+
+#bulkSelectedCount.hidden {
+  display: none !important;
+}
+
+/* 1b. Tarjetas — acciones cuadradas, algo mayores y centradas verticalmente */
+
+#dishesList > div {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+#dishesList > div > .absolute {
+  top: 50% !important;
+  right: 10px !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 6px !important;
+}
+
+#dishesList > div > .absolute button {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 9px !important;
+}
+
+#dishesList > div > .absolute button svg {
+  width: 17px !important;
+  height: 17px !important;
+}
+
+#dishesList > div > div.pr-12 {
+  padding-right: 82px !important;
+}
+
+/* 2. FORMULARIO — separación de los campos superiores */
+
+#dishForm > div {
+  margin-bottom: 16px !important;
+}
+
+#dishForm > div:has(#dishName),
+#dishForm > div:has(#dishCategory) {
+  margin-bottom: 16px !important;
+}
+
+#dishForm > div:has(> #dishDemand),
+#dishForm > div:has(#dishDemand) {
+  margin-bottom: 16px !important;
+}
+
+/* Mantener bloques originales Precocinado / Elaborado */
+
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 {
+  margin-top: 0 !important;
+  margin-bottom: 16px !important;
+  gap: 10px !important;
+}
+
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > div {
+  margin-bottom: 0 !important;
+}
+
+/* Alérgenos: aire arriba y abajo */
+
+#dishForm > div:has(#allergensContainer) {
+  margin-top: 12px !important;
+  margin-bottom: 30px !important;
+}
+
+#dishForm > div:has(#allergensContainer) > div:first-child {
+  margin-bottom: 10px !important;
+}
+
+#allergensContainer {
+  margin-top: 10px !important;
+  margin-bottom: 30px !important;
+}
+
+/* 3. STOCK — previsión perfectamente alineada */
+
+#view-stock > section:first-child > div.grid {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important;
+  align-items: end !important;
+}
+
+#view-stock > section:first-child > div.grid > div:nth-child(1),
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+  height: 38px !important;
+  align-self: end !important;
+  box-sizing: border-box !important;
+}
+
+#view-stock > section:first-child > div.grid > div:nth-child(1) label {
+  display: block !important;
+  height: 14px !important;
+  line-height: 14px !important;
+  margin-bottom: 4px !important;
+}
+
+#view-stock > section:first-child > div.grid > div:nth-child(1) input {
+  height: 38px !important;
+  box-sizing: border-box !important;
+}
+
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 12px !important;
+}
+
+/* Materia prima / elaborados: grid compacto */
+
+#rawStockForm > div,
+#prepStockForm > div {
+  min-width: 0 !important;
+}
+
+/* 4. GITHUB — contenido interior más respirado */
+
+#githubSettingsDetails .gastro-settings-details-body {
+  padding: 18px 20px 20px !important;
+}
+
+#githubSettingsDetails .gastro-settings-details-body > .space-y-3 {
+  gap: 16px !important;
+}
+
+#githubSettingsDetails .gastro-settings-details-body > .space-y-3 > * {
+  margin: 0 !important;
+}
+
+#githubSettingsDetails .gastro-settings-details-body input,
+#githubSettingsDetails .gastro-settings-details-body button {
+  min-height: 42px !important;
+}
+
+/* 5. BOTTOM NAV — menos hueco superior, manteniendo la zona segura */
+
+body > nav,
+nav.fixed {
+  height: 82px !important;
+  padding-top: 8px !important;
+  padding-bottom: 4px !important;
+}
+
+#main-container {
+  padding-bottom: 108px !important;
+}
+
+@media (max-width:480px) {
+  #view-banco > div:first-child,
+  #view-banco > div:nth-child(2) {
+    width: calc(50% - 4px) !important;
+  }
+
+  #view-banco > div:first-child {
+    margin-right: 8px !important;
+  }
+
+  #btnBulkEdit {
+    padding-inline: 8px !important;
+    font-size: 10px !important;
+  }
+
+  #bulkSelectedCount {
+    font-size: 10px !important;
+  }
+
+  #dishesList > div > .absolute {
+    right: 8px !important;
+    gap: 5px !important;
+  }
+
+  #dishesList > div > .absolute button {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+
+  #dishesList > div > div.pr-12 {
+    padding-right: 76px !important;
+  }
+}
+
+/* RECETARIO — buscador y edición múltiple en la misma fila */
+
+#view-banco > div:first-child.recetario-search-actions {
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  box-sizing: border-box !important;
+}
+
+#view-banco > div:first-child.recetario-search-actions #searchInput {
+  flex: 1 !important;
+}
+
+#view-banco > div:first-child.recetario-search-actions #bulkSelectedCount {
+  order: 1 !important;
+  white-space: nowrap !important;
+}
+
+#view-banco > div:first-child.recetario-search-actions #btnBulkEdit {
+  order: 2 !important;
+  margin: 0 !important;
+}
+
+/* El panel solo se muestra al activar edición múltiple. */
+
+#bulkToolbar.hidden {
+  display: none !important;
+}
+
+#bulkToolbar {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 6px !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 0 10px 0 !important;
+  padding: 7px 10px !important;
+  box-sizing: border-box !important;
+}
+
+#bulkToolbar .bulk-top-row {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 0 !important;
+}
+
+#bulkToolbar .bulk-top-row button {
+  width: 100% !important;
+  min-height: 28px !important;
+  padding: 3px 6px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+#bulkToolbar .bulk-fields-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin: 0 !important;
+}
+
+#bulkToolbar select {
+  min-width: 0 !important;
+  min-height: 32px !important;
+  height: 32px !important;
+  padding: 4px 7px !important;
+  box-sizing: border-box !important;
+}
+
+#bulkToolbar .bulk-actions-row {
+  display: contents !important;
+  margin: 0 !important;
+}
+
+#bulkToolbar .bulk-actions-row button {
+  width: auto !important;
+  min-width: 74px !important;
+  min-height: 32px !important;
+  height: 32px !important;
+  margin: 0 !important;
+  padding: 4px 10px !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Casilla de selección a la izquierda, sin pisar editar/eliminar. */
+
+#dishesList > div > label.bulk-dish-select-label {
+  position: absolute !important;
+  top: 50% !important;
+  left: 10px !important;
+  right: auto !important;
+  transform: translateY(-50%) !important;
+  z-index: 10 !important;
+  margin: 0 !important;
+}
+
+#dishesList > div > label.bulk-dish-select-label input.bulk-dish-checkbox {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+}
+
+#dishesList > div:has(.bulk-dish-checkbox) > div.pr-12 {
+  padding-left: 38px !important;
+}
+
+/* El panel de edición múltiple ocupa todo el ancho y permanece oculto hasta activarlo. */
+
+#view-banco > div:nth-child(2)#bulkToolbar {
+  max-width: none !important;
+  margin-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#view-banco > div:nth-child(2)#bulkToolbar.hidden {
+  display: none !important;
+}
+
+/* PREVISIÓN DE COMENSALES — separar ligeramente los textos y controles */
+
+#view-stock > section:first-child > div:first-child {
+  margin-bottom: 20px !important;
+  align-items: flex-start !important;
+}
+
+#view-stock > section:first-child > div:first-child h2 {
+  line-height: 1.25 !important;
+  margin-bottom: 4px !important;
+}
+
+#view-stock > section:first-child > div.grid > div:first-child label {
+  margin-top: 2px !important;
+}
+
+#view-stock > section:first-child > div.grid {
+  gap: 12px !important;
+}
+
+#view-stock > section:first-child > div.grid > div:first-child label {
+  margin-bottom: 6px !important;
+  line-height: 1.25 !important;
+}
+
+#view-stock > section:first-child > div.grid > div:nth-child(2) {
+  line-height: 1.35 !important;
+}
+
+/* AÑADIR PLATO — toda la tarjeta de estado es clicable */
+
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > label {
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#dishForm > div.grid.grid-cols-1.gap-2.mt-2 > label span {
+  cursor: pointer !important;
+}

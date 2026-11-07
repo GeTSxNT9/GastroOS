@@ -1,0 +1,884 @@
+/* GastroOS — hoja de estilos, parte 4 de 6: Sistema de diseño: coherencia global de controles, superficies, radios, bordes, foco y estados.
+ *
+ * El orden de carga importa y está fijado en index.html (01 → 06): a igualdad de especificidad gana
+ * siempre la regla que va después. No reordenes archivos ni bloques. Un cambio nuevo se añade al final
+ * del archivo que corresponda (los de modo oscuro, en 06-modo-oscuro.css). */
+
+/* =====================================================================
+   GastroOS Design System — capa de coherencia visual global
+   Mantiene intactas las reglas funcionales; unifica controles, superficies,
+   radios, bordes, foco y estados en todas las vistas y modales.
+   ===================================================================== */
+
+:root {
+  --g-radius-small: 8px;
+}
+
+html.dark {
+  --g-bg: #11151d;
+  --g-surface: #1a202b;
+  --g-surface-strong: #202735;
+  --g-control: #151b25;
+  --g-border: #30394a;
+  --g-text: #edf1f8;
+  --g-muted: #a3aec1;
+  --g-accent: #83a5ff;
+  --g-accent-hover: #a0b8ff;
+  --g-accent-soft: #252f48;
+  --g-focus: rgba(131, 165, 255, .25);
+  --g-shadow: 0 10px 28px rgba(0, 0, 0, .22);
+  --g-shadow-sm: 0 3px 10px rgba(0, 0, 0, .16);
+}
+
+html {
+  background: var(--g-bg);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.45;
+}
+
+header,
+body > header,
+html.dark header,
+html.dark body > header {
+  background: var(--g-surface) !important;
+  color: var(--g-text) !important;
+  border-color: var(--g-border) !important;
+  box-shadow: 0 1px 0 var(--g-border) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Tarjetas y contenedores principales comparten la misma superficie. */
+
+#dishesList > div,
+#generatedMenuContainer > div,
+#historyListContainer > div,
+#rawStockList > div,
+#prepStockList > div,
+#shoppingListBreakdown > div,
+main section,
+#dishForm,
+#rawStockForm,
+#prepStockForm,
+#subtab-shopping-content > div,
+#modalChangeDish > div,
+#subtab-menu-content > div:first-child,
+.day-regeneration-modal-panel,
+.day-regeneration-option {
+  border-color: var(--g-border) !important;
+  box-shadow: var(--g-shadow-sm) !important;
+}
+
+#subtab-menu-content > div:first-child,
+html.dark #subtab-menu-content > div:first-child {
+  background: var(--g-surface) !important;
+  color: var(--g-text) !important;
+}
+
+.gastro-slot,
+.day-regeneration-dish,
+.day-regeneration-modal .day-regeneration-dish {
+  border-radius: var(--g-radius-control) !important;
+  border-color: var(--g-border) !important;
+}
+
+.gastro-slot {
+  background: var(--g-control) !important;
+}
+
+.gastro-slot:hover {
+  background: var(--g-surface) !important;
+}
+
+/* Todos los campos editables tienen altura, radio, borde y foco coherentes. */
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select,
+textarea,
+.settings-input,
+.day-regeneration-select {
+  border: 1px solid var(--g-border) !important;
+  background-color: var(--g-control) !important;
+  box-shadow: none !important;
+}
+
+textarea {
+  min-height: 84px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--g-muted) !important;
+  opacity: .85;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+select:focus,
+textarea:focus,
+.settings-input:focus,
+.day-regeneration-select:focus {
+  outline: none !important;
+  border-color: var(--g-accent) !important;
+  box-shadow: 0 0 0 3px var(--g-focus) !important;
+}
+
+/* Botones: altura y forma coherentes; se conservan los colores semánticos de
+   peligro/éxito/advertencia cuando el código ya los define explícitamente. */
+
+button:not(.nav-btn):not(.generator-day-tab):not(.filter-lvl1):not(.filter-lvl2),
+label[for="fileImport"],
+.secondary-action,
+.backup-action {
+  font-weight: 650;
+  transition: background-color .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease, color .16s ease !important;
+}
+
+button:focus-visible,
+label[for="fileImport"]:focus-visible {
+  outline: 3px solid var(--g-focus) !important;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .52;
+}
+
+#btnGenerateMenu,
+#dishForm button[type="submit"],
+#rawStockForm button[type="submit"],
+#prepStockForm button[type="submit"],
+#btnDownloadShoppingTxt,
+#btnExport,
+.day-regeneration-select {
+  background: var(--g-accent) !important;
+  border: 1px solid var(--g-accent) !important;
+  border-radius: var(--g-radius-control) !important;
+  box-shadow: none !important;
+}
+
+#btnSaveToHistory,
+#btnDownloadMenuTxt,
+#themeToggleBtn,
+.gastro-slot-action,
+.day-regeneration-close {
+  border-radius: var(--g-radius-control) !important;
+  border: 1px solid var(--g-border) !important;
+  background: var(--g-control) !important;
+  color: var(--g-text) !important;
+  box-shadow: none !important;
+}
+
+#themeToggleBtn {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+/* Navegación y filtros: la forma es siempre píldora, con un único acento. */
+
+.filter-lvl1,
+.filter-lvl2,
+.generator-day-tab,
+#btnSubTabMenu,
+#btnSubTabShopping {
+  border-color: var(--g-border) !important;
+  box-shadow: none !important;
+}
+
+.filter-lvl1.active,
+.filter-lvl1.bg-indigo-600,
+.generator-day-tab.active,
+.generator-day-tab.bg-indigo-600 {
+  background: var(--g-accent) !important;
+  border-color: var(--g-accent) !important;
+  color: #fff !important;
+}
+
+.filter-lvl2.active,
+.filter-lvl2.bg-indigo-100 {
+  background: var(--g-accent-soft) !important;
+  border-color: var(--g-accent) !important;
+  color: var(--g-accent) !important;
+}
+
+.bg-indigo-600 {
+  background-color: var(--g-accent) !important;
+}
+
+.border-indigo-100,
+.border-indigo-200 {
+  border-color: var(--g-border) !important;
+}
+
+/* Modales, alertas y elementos de ayuda usan la misma familia de superficies. */
+
+.day-regeneration-modal-panel,
+.day-regeneration-modal-header,
+.day-regeneration-option,
+.day-regeneration-dish {
+  border-color: var(--g-border) !important;
+}
+
+.day-regeneration-modal-panel,
+.day-regeneration-modal-header,
+.day-regeneration-option,
+.day-regeneration-dish,
+html.dark .day-regeneration-modal-panel,
+html.dark .day-regeneration-modal-header,
+html.dark .day-regeneration-option,
+html.dark .day-regeneration-dish {
+  color: var(--g-text) !important;
+}
+
+.day-regeneration-modal-header,
+.day-regeneration-option,
+html.dark .day-regeneration-modal-header,
+html.dark .day-regeneration-option {
+  background: var(--g-surface) !important;
+}
+
+.day-regeneration-dish,
+html.dark .day-regeneration-dish {
+  background: var(--g-control) !important;
+}
+
+.day-regeneration-option-note,
+.day-regeneration-group-label {
+  color: var(--g-muted) !important;
+}
+
+/* Reducir movimiento si el dispositivo lo solicita. */
+
+@media (max-width: 640px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+  select,
+  .settings-input {
+    min-height: 42px;
+  }
+}
+
+/* =====================================================================
+   GastroOS — ajuste final de consistencia visual
+   Última capa intencionada para neutralizar reglas históricas duplicadas.
+   Mantiene los colores semánticos de estado y unifica las formas.
+   ===================================================================== */
+
+:root {
+  --g-radius-card: 14px;
+  --g-radius-badge: 5px;
+  --g-control-height: 40px;
+}
+
+/* Campos: misma geometría, borde, fondo y estado de foco en toda la app. */
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select,
+textarea,
+.settings-input,
+.day-regeneration-select {
+  border-color: var(--g-border) !important;
+  color: var(--g-text) !important;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select,
+.settings-input {
+  min-height: var(--g-control-height);
+}
+
+/* Botones de acción con una forma común; navegación y filtros conservan
+   su forma de pestaña porque cumplen una función visual distinta. */
+
+button:not(.nav-btn):not(.generator-day-tab):not(.filter-lvl1):not(.filter-lvl2),
+label[for="fileImport"],
+.secondary-action,
+.backup-action,
+.gastro-slot-action,
+.day-regeneration-close {
+  border-radius: var(--g-radius-control) !important;
+}
+
+/* Tarjetas, paneles y modales usan la misma familia de esquinas. */
+
+#dishesList > div,
+#generatedMenuContainer > div,
+#historyListContainer > div,
+#rawStockList > div,
+#prepStockList > div,
+#shoppingListBreakdown > div,
+main section,
+#dishForm,
+#rawStockForm,
+#prepStockForm,
+#subtab-shopping-content > div,
+#modalChangeDish > div,
+#subtab-menu-content > div:first-child,
+.day-regeneration-modal-panel,
+.day-regeneration-option,
+.settings-card,
+.backup-action {
+  border-radius: var(--g-radius-card) !important;
+}
+
+/* Etiquetas de estado: rectangulares con esquinas suavemente redondeadas,
+   nunca ovaladas. Solo varía el tamaño según el contexto. */
+
+.recipe-status-badge,
+.menu-status-badge {
+  width: max-content;
+  max-width: 100%;
+  border-style: solid !important;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .recipe-status-badge {
+    padding: 2px 4px !important;
+    font-size: 9px !important;
+  }
+
+  .menu-status-badge {
+    padding: 3px 6px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* El tema oscuro usa los mismos tokens y no introduce geometrías distintas. */
+
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html.dark select,
+html.dark textarea,
+html.dark .settings-input,
+html.dark .day-regeneration-select {
+  border-color: var(--g-border) !important;
+}
+
+/* GastroOS · ajustes de interfaz solicitados (octubre 2026) */
+
+:root {
+  --g-radius-control: 7px;
+  --g-navy: #071a33;
+  --g-navy-hover: #102a4b;
+}
+
+html.dark {
+  --g-navy: #10233d;
+  --g-navy-hover: #193654;
+}
+
+/* Ningún control tipo píldora: controles y etiquetas comparten rectángulo redondeado. */
+
+button,
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select,
+textarea,
+.settings-input,
+.filter-lvl1,
+.filter-lvl2,
+.generator-day-tab,
+#btnSubTabMenu,
+#btnSubTabShopping,
+#allergensContainer > label,
+.product-allergen-chip,
+.recipe-status-badge,
+.menu-status-badge,
+.badge,
+.status-badge,
+.day-choice-grid label,
+.compact-check-grid label,
+.product-allergen-row,
+.settings-accordion summary,
+.day-regeneration-select {
+  border-radius: 7px !important;
+}
+
+#allergensContainer > label {
+  padding: 6px 9px !important;
+  min-height: 30px;
+}
+
+.product-allergen-chip {
+  border-radius: 6px !important;
+}
+
+/* CTA principales con azul marino profundo, manteniendo contraste y estados de foco. */
+
+#btnGenerateMenu,
+#dishForm button[type="submit"],
+#rawStockForm button[type="submit"],
+#prepStockForm button[type="submit"],
+#btnDownloadShoppingTxt,
+#btnExport {
+  background: var(--g-navy) !important;
+  border-color: var(--g-navy) !important;
+  color: #fff !important;
+}
+
+#btnGenerateMenu:hover,
+#dishForm button[type="submit"]:hover,
+#rawStockForm button[type="submit"]:hover,
+#prepStockForm button[type="submit"]:hover,
+#btnDownloadShoppingTxt:hover,
+#btnExport:hover {
+  background: var(--g-navy-hover) !important;
+}
+
+/* Edición múltiple: misma altura visual que el buscador. */
+
+#view-banco > .recetario-search-actions {
+  align-items: stretch !important;
+}
+
+#view-banco #searchInput,
+#view-banco #btnBulkEdit {
+  min-height: 40px !important;
+  height: 40px !important;
+  box-sizing: border-box !important;
+}
+
+#view-banco #btnBulkEdit {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  align-self: stretch !important;
+}
+
+/* Límites semanales en tres columnas compactas. */
+
+.settings-metric-grid {
+  grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+  gap: 8px !important;
+}
+
+.settings-metric-grid > div {
+  min-width: 0;
+}
+
+.settings-metric-grid .input-suffix {
+  min-width: 0;
+}
+
+.settings-metric-grid .input-suffix input {
+  min-width: 0;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+.settings-metric-grid .input-suffix span {
+  font-size: 9px;
+}
+
+/* Al añadir una receta, reservar más ancho para el nombre del ingrediente. */
+
+.ingredient-row {
+  gap: 6px !important;
+}
+
+.ingredient-row .ingredient-name-input {
+  flex: 4 1 0% !important;
+}
+
+.ingredient-row input[inputmode="decimal"] {
+  flex: 0 0 48px !important;
+  width: 48px !important;
+  min-width: 48px !important;
+}
+
+.ingredient-row select:first-of-type {
+  flex: 0 0 52px !important;
+  width: 52px !important;
+  min-width: 52px !important;
+}
+
+.ingredient-row .ingredient-category-select {
+  flex: 1.2 1 0% !important;
+  min-width: 82px !important;
+  padding-left: 5px !important;
+  padding-right: 4px !important;
+}
+
+/* Formulario de materia prima: categoría más compacta que nombre/cantidad. */
+
+#rawStockForm > .grid.grid-cols-2:last-of-type {
+  grid-template-columns: minmax(0,1.15fr) minmax(0,.85fr) !important;
+}
+
+/* Alternativas de menú: tarjetas claras, jerarquía y botones legibles también en tema oscuro. */
+
+#modalChangeDish #modalDishList {
+  display: grid;
+  gap: 8px;
+}
+
+#modalChangeDish #modalDishList > div {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--g-border) !important;
+  background: var(--g-surface-strong) !important;
+  box-shadow: 0 1px 2px rgba(15,23,42,.035);
+}
+
+#modalChangeDish #modalDishList h4 {
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  overflow-wrap: anywhere;
+}
+
+#modalChangeDish #modalDishList > div > div > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+#modalChangeDish #modalDishList > div > button {
+  min-width: 88px;
+  min-height: 36px;
+  padding: 8px 12px !important;
+  white-space: nowrap;
+  background: var(--g-navy) !important;
+  color: #fff !important;
+  border: 1px solid var(--g-navy) !important;
+  border-radius: 7px !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+}
+
+#modalChangeDish #modalDishList > div > button:hover {
+  background: var(--g-navy-hover) !important;
+}
+
+html.dark #modalChangeDish #modalDishList > div {
+  background: #171d28 !important;
+  border-color: #344154 !important;
+}
+
+/* Tabs de días conservan el estilo común rectangular y compacto. */
+
+@media (max-width: 380px) {
+  .settings-metric-grid {
+    gap: 6px !important;
+  }
+
+  .settings-metric-grid .field-label {
+    font-size: 9px;
+    line-height: 1.25;
+  }
+
+  .ingredient-row {
+    gap: 4px !important;
+  }
+
+  .ingredient-row .ingredient-category-select {
+    min-width: 72px !important;
+    font-size: 10px !important;
+  }
+
+  #modalChangeDish #modalDishList > div {
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 7px;
+    padding: 9px !important;
+  }
+
+  #modalChangeDish #modalDishList > div > button {
+    min-width: 76px;
+    padding: 7px 8px !important;
+  }
+}
+
+/* Ajustes solicitados: centrar días y unificar alternativas con el modal de cambio de plato. */
+
+#dayTabsContainer {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  overflow: visible !important;
+  width: 100% !important;
+  margin-inline: auto !important;
+}
+
+#dayTabsContainer .generator-day-tab {
+  flex: 0 0 auto !important;
+}
+
+.day-regeneration-modal {
+  background: rgba(15,23,42,.60) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  padding: 0 !important;
+}
+
+.day-regeneration-modal-panel {
+  width: min(100%, 512px) !important;
+  max-height: 85vh !important;
+  border-radius: 16px !important;
+  background: #fff !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 20px 50px rgba(15,23,42,.24) !important;
+}
+
+.day-regeneration-modal-header {
+  padding: 16px !important;
+}
+
+.day-regeneration-modal-header h3 {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+.day-regeneration-modal-header p {
+  font-size: 11px !important;
+}
+
+.day-regeneration-close {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+}
+
+#dayRegenerationList {
+  padding: 12px !important;
+  overflow-y: auto !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: calc(85vh - 68px) !important;
+}
+
+.day-regeneration-modal .day-regeneration-option {
+  padding: 12px !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  box-shadow: 0 1px 3px rgba(15,23,42,.05) !important;
+}
+
+.day-regeneration-modal .day-regeneration-option + .day-regeneration-option {
+  margin-top: 10px !important;
+}
+
+.day-regeneration-option-head {
+  align-items: center !important;
+  margin-bottom: 10px !important;
+}
+
+.day-regeneration-option-number {
+  color: #4f46e5 !important;
+  font-size: 10px !important;
+}
+
+.day-regeneration-option-note {
+  font-size: 10px !important;
+}
+
+.day-regeneration-modal .day-regeneration-select {
+  min-height: 36px !important;
+  padding: 8px 12px !important;
+  border-radius: 7px !important;
+  background: #071a33 !important;
+  color: #fff !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+}
+
+.day-regeneration-modal .day-regeneration-group-label {
+  color: #64748b !important;
+  font-size: 9px !important;
+  letter-spacing: .06em !important;
+}
+
+.day-regeneration-modal .day-regeneration-dish {
+  gap: 8px !important;
+  padding: 7px 8px !important;
+  border: 1px solid #eef0f4 !important;
+  border-radius: 8px !important;
+  background: #f9fafb !important;
+}
+
+.day-regeneration-modal .day-regeneration-dish strong {
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+}
+
+html.dark .day-regeneration-modal-panel {
+  background: #111827 !important;
+  color: #f3f4f6 !important;
+  border-color: #374151 !important;
+}
+
+html.dark .day-regeneration-modal .day-regeneration-option {
+  background: #1f2937 !important;
+  border-color: #374151 !important;
+}
+
+html.dark .day-regeneration-modal .day-regeneration-dish {
+  background: #111827 !important;
+  border-color: #374151 !important;
+}
+
+html.dark .day-regeneration-modal .day-regeneration-group-label {
+  color: #9ca3af !important;
+}
+
+@media (max-width:640px) {
+  #dayTabsContainer {
+    gap: 6px !important;
+  }
+
+  .day-regeneration-modal {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+
+  .day-regeneration-modal-panel {
+    width: 100% !important;
+    max-height: 85vh !important;
+    border-radius: 16px 16px 0 0 !important;
+  }
+
+  #dayRegenerationList {
+    max-height: calc(85vh - 68px) !important;
+  }
+
+  .day-regeneration-option-head {
+    align-items: flex-start !important;
+  }
+
+  .day-regeneration-modal .day-regeneration-select {
+    white-space: normal !important;
+  }
+}
+
+/* Ajustes finales de alternativas: cabecera blanca y etiquetas junto al nombre, sin huecos vacíos. */
+
+.day-regeneration-modal-header {
+  color: #111827 !important;
+}
+
+.day-regeneration-modal-header h3 {
+  color: #111827 !important;
+}
+
+.day-regeneration-modal-header p {
+  color: #4b5563 !important;
+}
+
+.day-regeneration-close {
+  background: #f3f4f6 !important;
+  border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+}
+
+.day-regeneration-close:hover {
+  background: #e5e7eb !important;
+}
+
+.day-regeneration-modal .day-regeneration-dish {
+  grid-template-columns: 78px minmax(0, 1fr) !important;
+  align-items: center !important;
+}
+
+.day-regeneration-dish-content {
+  display: flex !important;
+  flex-flow: row wrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 6px 8px !important;
+  min-width: 0 !important;
+}
+
+.day-regeneration-dish-content > strong {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.day-regeneration-dish-content > .menu-status-badges {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  flex-flow: row wrap !important;
+  align-items: center !important;
+  gap: 4px !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.day-regeneration-dish-content > .menu-status-badges .menu-status-badge {
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+html.dark .day-regeneration-modal-header {
+  background: #ffffff !important;
+  color: #111827 !important;
+  border-bottom-color: #e5e7eb !important;
+}
+
+html.dark .day-regeneration-modal-header h3 {
+  color: #111827 !important;
+}
+
+html.dark .day-regeneration-modal-header p {
+  color: #4b5563 !important;
+}
+
+html.dark .day-regeneration-close {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+  border-color: #e5e7eb !important;
+}
+
+@media (max-width:640px) {
+  .day-regeneration-modal .day-regeneration-dish {
+    grid-template-columns: 70px minmax(0, 1fr) !important;
+  }
+
+  .day-regeneration-dish-content {
+    gap: 5px 7px !important;
+  }
+}
+
+/* Corrección definitiva: el menú generado solo reserva ancho para etiquetas que existen. */
+
+.gastro-slot-title-row {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.gastro-slot-title-row.no-badges {
+  display: block !important;
+}
+
+.gastro-slot-title-row.no-badges > .text-sm {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
+}
+
+.gastro-slot-title-row.has-badges {
+  display: grid !important;
+}
+
+.gastro-slot-title-row.has-badges > .text-sm {
+  min-width: 0 !important;
+  width: auto !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
+}
+
+.gastro-slot-title-row.has-badges .menu-status-badges-inline {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  align-items: center !important;
+  margin: 0 !important;
+}
