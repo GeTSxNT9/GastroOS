@@ -19,7 +19,12 @@
             darkMode: 'class',
         }
     </script>
-        <link rel="stylesheet" href="css/gastroos.css">
+        <link rel="stylesheet" href="css/01-base.css">
+    <link rel="stylesheet" href="css/02-layout-movil.css">
+    <link rel="stylesheet" href="css/03-fases-ux.css">
+    <link rel="stylesheet" href="css/04-design-system.css">
+    <link rel="stylesheet" href="css/05-renovacion-clara.css">
+    <link rel="stylesheet" href="css/06-modo-oscuro.css">
 </head>
 <body class="h-screen flex flex-col font-sans overflow-hidden transition-colors">
     <noscript><p style="padding:24px;font:16px system-ui;text-align:center">GastroOS necesita JavaScript activado para funcionar.</p></noscript>
@@ -40,6 +45,21 @@
             </svg>
         </button>
     </header>
+
+    <!-- AVISOS: versión nueva y recordatorio de copia de seguridad -->
+    <div id="appNotices" class="flex-shrink-0">
+        <div id="updateBanner" role="status" class="hidden mx-3 mt-2 flex items-center justify-between gap-3 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-2 text-xs text-indigo-900 dark:text-indigo-100">
+            <span>Hay una versión nueva de GastroOS disponible.</span>
+            <button type="button" id="btnApplyUpdate" class="flex-shrink-0 rounded-lg bg-indigo-700 px-3 py-2 text-[11px] font-bold text-white">Actualizar ahora</button>
+        </div>
+        <div id="backupReminder" role="status" class="hidden mx-3 mt-2 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 px-3 py-2 text-xs text-amber-900 dark:text-amber-100">
+            <p id="backupReminderText"></p>
+            <div class="mt-2 grid grid-cols-2 gap-2">
+                <button type="button" id="btnBackupReminderExport" class="rounded-lg bg-amber-700 py-2 text-[11px] font-bold text-white">Exportar ahora</button>
+                <button type="button" id="btnBackupReminderLater" class="rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-900 py-2 text-[11px] font-bold text-amber-900 dark:text-amber-100">Más tarde</button>
+            </div>
+        </div>
+    </div>
 
     <!-- CONTENEDOR PRINCIPAL DE VISTAS -->
     <div class="flex-1 overflow-y-auto no-scrollbar relative pb-24" id="main-container">
@@ -663,6 +683,7 @@
                     </div>
                 </div>
                 <div id="autoBackupStatus" class="text-[10px] text-gray-500 dark:text-gray-400"></div>
+                <div id="dataProtectionStatus" class="mt-1 text-[10px] text-gray-500 dark:text-gray-400"></div>
                 <div class="border-t border-gray-200 dark:border-gray-800 pt-4 mt-4">
                     <button type="button" id="btnWipeData" class="w-full bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 hover:bg-red-200 py-3 rounded-lg font-bold text-sm shadow-sm">
                         Borrar Datos y Restaurar

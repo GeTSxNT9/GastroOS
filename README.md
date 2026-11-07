@@ -10,6 +10,8 @@ It is built with HTML, CSS, and JavaScript without an application framework or i
 - Generation and validation of weekly menus with configurable structure, daily and weekly rules, repetition limits, meat and fish restrictions, stews, and stock availability.
 - Day regeneration and search for alternatives that respect the configured rules.
 - Differentiated management of raw materials/pre-cooked products and prepared dishes.
+- Data protection: the app asks the browser for persistent storage, shows its status and the date of the last exported backup in Settings, and reminds you (every 7 days, snoozable for 3) to export a full backup when you have stock, history or a menu stored only on the device.
+- Updates: when a new version is published and the installed app picks it up, an "Actualizar ahora" notice appears instead of silently running mixed versions (the app checks for updates whenever it returns to the foreground).
 - The raw-stock selector is always derived from the recipe book (every Carne/Pescado ingredient plus the frozen main protein of each meat/fish main course), so a new recipe's raw material appears automatically; choosing a product pre-fills its supplier category and storage.
 - Stock and ingredient names are matched by whole words (tolerating simple plurals), so "pan" never matches "panga" and "jamón" never matches "jamoncitos de pollo".
 - Shopping list calculation, grouping by supplier category, quantity adjustment, and TXT export.
@@ -23,7 +25,12 @@ It is built with HTML, CSS, and JavaScript without an application framework or i
 GastroOS-main/
 ├── index.html                  # Interface, views, and ordered module loading
 ├── css/
-│   └── gastroos.css            # Visual design, layout, responsive rules, and app-specific styles
+│   ├── 01-base.css             # Base variables, surfaces, typography, controls, modals
+│   ├── 02-layout-movil.css     # Compact mobile layout of each view
+│   ├── 03-fases-ux.css         # UX improvement phases
+│   ├── 04-design-system.css    # Global design-system coherence layer
+│   ├── 05-renovacion-clara.css # Light visual renovation
+│   └── 06-modo-oscuro.css      # Dark mode (final); new dark fixes go at the end of this file
 ├── js/
 │   ├── app-core.js             # State, catalogs, kitchen profile, data loading
 │   ├── app-views.js            # Events and view switching
@@ -61,7 +68,7 @@ GastroOS-main/
 - The `app-*.js` files are the main application (formerly a single `gastroos.js`): they contain the interface and important parts of the culinary engine. They are plain scripts that share the global scope and **must be loaded in the order listed in `index.html`**. Facades are not duplicated engines: they expose existing functions to facilitate gradual separation.
 - The `*-rules.js`, `menu-structure-validator.js`, `stock-utils.js`, and `shopping-engine.js` modules separate specific rules and calculations from the main interface logic. This is an architectural separation, not a claim that a test suite is included in the repository.
 - `index.html` scripts are loaded in a deliberate order: utilities and rules first, then the `app-*.js` files, and finally the facades that expose their functions.
-- `css/gastroos.css` contains the application styles: layout, component appearance, responsive behavior, and theme-specific presentation. It is separate from the HTML so visual changes can be maintained without editing the application logic.
+- `css/01…06-*.css` contain the application styles, stacked by layer. **Load order matters** (it is fixed in `index.html`): at equal specificity the later rule wins, so do not reorder files or blocks; add new rules at the end of the relevant file (dark-mode fixes in `06-modo-oscuro.css`).
 - `recipes.json` is used as an initial source when there is no usable local recipe book. Service Worker installation treats it as an essential resource along with the application modules.
 - `product-allergens.json` provides initial product-level allergen data; user changes are stored locally by the application.
 
